@@ -1,0 +1,17 @@
+{
+  "name": "cfw-bindings-wrangler-bridge",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.mjs",
+  "types": "index.d.ts",
+  "scripts": {},
+  "keywords": [],
+  "author": "Yuji Sugiura",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "@cloudflare/workers-types": "^4.20230518.0"
+  }
+}
