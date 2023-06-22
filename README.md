@@ -1,20 +1,24 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
+Bridge between local development code and Cloudflare bindings, via `wrangler dev --remote` command.
+
 ## Motivation
 
-- Imagine you are
-  - using frameworks like SvelteKit
-  - and deploy your app to Cloudflare Pages
-  - with platform specific features like KV, D1, etc...
-- You choose `@sveltejs/adapter-cloudflare` and adapt your app
-  - It works fine in actual environment! ;D
-- But in local development, `vite dev` cannot help us to use platform specific features like KV, D1, etc...
-  - It means that `platform.env.MY_KV` is always `undefined`
-- Some frameworks offer a way to use `wrangler pages dev` which can use platform features locally
-  - but currently there is no `--remote` support
-  - In addition, (maybe) this is not easy way for Vite-based frameworks...
-- This library aims to solve this issue by providing a mock implementation that can be injected in local development
-  - and this mock becomes bridge between running `wrangler` process which can access remote platform features
+Imagine you want to deploy your application to Cloudflare pages using a framework like SvelteKit.
+
+`vite dev` is fast and DX is very good. Deployment is no problem either, with adapters available. 🥳
+
+However, as soon as you try to use features specific to the Cloudflare platform (like KV, D1, etc.), you run into problems...
+
+SvelteKit and `vite dev` don't know about such platform-specific features, so you can't verify any behavior during local development. 😢
+(That means `platform.env.MY_KV` is always `undefined`!)
+
+Some frameworks offer to use the `wrangler pages dev' command for local development. But this command is also locally closed, no real data is available.
+(And with Vite-based frameworks, it is often impractical to use this command, as far as I know.)
+
+By the way, this problem also occurs when developing APIs using only Pages Functions.
+
+So this bridge 🌉 allows you to use the real data even from your local development environment via the `wrangler dev --remote` command.
 
 ## Install
 
@@ -30,6 +34,8 @@ npm install -D cfw-bindings-wrangler-bridge
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.mjs --remote
 ```
 
+Of course you can interact with local environment by omitting `--remote`.
+
 2️⃣ Create and use bridge anywhere in your app for local development.
 
 ```js
@@ -43,7 +49,11 @@ await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
 
-### Example: CLI tool
+Currently you need to update type definitions by yourself.
+
+## Usage example
+
+### CLI tool
 
 If you are using REST API in your CLI, now you can replace it.
 
@@ -59,13 +69,15 @@ If you are using REST API in your CLI, now you can replace it.
 -  if (!json.success)
 -    throw new Error(json.errors.map(({ message }) => message).join("\n"));
 -};
++import { createBridge } from "cfw-bindings-wrangler-bridge";
++
 +const putKV = async (KV_NAMESPACE_ID, [key, value]) => {
 +  const KV = createBridge("http://127.0.0.1:8787").KV(KV_NAMESPACE_ID);
 +  await KV.put(key, value);
 +};
 ```
 
-### Example: SvelteKit
+### SvelteKit
 
 ```js
 // server.hooks.js
@@ -94,6 +106,7 @@ export const handle = async ({ event, resolve }) => {
 - [x] KV
 - [ ] D1
 - [ ] R2
+- [ ] Service
 
 ## Notes
 
@@ -105,4 +118,5 @@ export const handle = async ({ event, resolve }) => {
 - `wrangler.unstable_dev()` is better?
   - Maybe? but it is literally unstable
   - I'm not sure how to ensure `await worker.stop()` on Vite process exit
-  - For CLI usage, it may be worth
+    - Side-effect should be avoided...
+  - Performance may suffer if repeating start/stop on every call
