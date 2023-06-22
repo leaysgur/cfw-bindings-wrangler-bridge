@@ -2,8 +2,10 @@
   "name": "cfw-bindings-wrangler-bridge",
   "version": "0.0.1",
   "type": "module",
-  "module": "bridge/index.mjs",
-  "types": "index.d.ts",
+  "exports": {
+    "types": "./index.d.ts",
+    "default": "./bridge/index.js"
+  },
   "scripts": {
     "format": "npx prettier -w ."
   },
@@ -17,8 +19,8 @@
   "license": "MIT",
   "files": [
     "bridge",
-    "worker",
-    "index.d.ts"
+    "index.d.ts",
+    "worker"
   ],
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230518.0"

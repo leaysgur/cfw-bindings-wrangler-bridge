@@ -1,4 +1,4 @@
-import { kvHandle } from "./kv.mjs";
+import { kvHandle } from "./kv.js";
 
 export default {
   /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler} */

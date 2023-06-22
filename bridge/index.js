@@ -1,5 +1,5 @@
 // @ts-check
-import { KVBridge } from "./kv.mjs";
+import { KVBridge } from "./kv.js";
 
 /** @param {string} wranglerUrl */
 export const createBridge = (wranglerUrl) => {
