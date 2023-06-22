@@ -25,7 +25,12 @@ export const kvHandle = async (KV, OPERATION, req) => {
       return Response.json(null);
     }
     case "kv_get": {
-      const { value, metadata } = await KV.getWithMetadata(key, options);
+      const { value, metadata } = await KV.getWithMetadata(key, {
+        ...options,
+        // This is fastest way, type handling will be done by bridge
+        type: "stream",
+      });
+
       return new Response(value, {
         headers: { "CF-KV-Metadata": JSON.stringify(metadata) },
       });
