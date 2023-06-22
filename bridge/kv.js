@@ -6,21 +6,21 @@
 
 export class KVBridge {
   #wranglerUrl;
-  #namespaceId;
+  #bindingName;
 
   /**
    * @param {string} wranglerUrl
-   * @param {string} namespaceId
+   * @param {string} bindingName
    */
-  constructor(wranglerUrl, namespaceId) {
+  constructor(wranglerUrl, bindingName) {
     this.#wranglerUrl = wranglerUrl;
-    this.#namespaceId = namespaceId;
+    this.#bindingName = bindingName;
   }
 
   /** @param {import("@cloudflare/workers-types").KVNamespaceListOptions} [options] */
   async list(options) {
     const url = new URL(this.#wranglerUrl);
-    url.pathname = `/kv_list/${this.#namespaceId}`;
+    url.pathname = `/kv_list/${this.#bindingName}`;
 
     if (typeof options?.prefix === "string")
       url.searchParams.set("prefix", options.prefix);
@@ -42,7 +42,7 @@ export class KVBridge {
    */
   async put(key, value, options) {
     const url = new URL(this.#wranglerUrl);
-    url.pathname = `/kv_put/${this.#namespaceId}/${encodeURIComponent(key)}`;
+    url.pathname = `/kv_put/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     if (typeof options?.expirationTtl === "number")
       url.searchParams.set("expirationTtl", String(options.expirationTtl));
@@ -73,7 +73,7 @@ export class KVBridge {
    */
   async getWithMetadata(key, typeOrOptions) {
     const url = new URL(this.#wranglerUrl);
-    url.pathname = `/kv_get/${this.#namespaceId}/${encodeURIComponent(key)}`;
+    url.pathname = `/kv_get/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     let type;
     let cacheTtl;
@@ -104,7 +104,7 @@ export class KVBridge {
   /** @param {string} key */
   async delete(key) {
     const url = new URL(this.#wranglerUrl);
-    url.pathname = `/kv_delete/${this.#namespaceId}/${encodeURIComponent(key)}`;
+    url.pathname = `/kv_delete/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     await fetch(url, { method: "DELETE" });
   }
