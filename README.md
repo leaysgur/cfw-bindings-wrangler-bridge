@@ -24,13 +24,13 @@ npm install -D cfw-bindings-wrangler-bridge
 
 ## How to use
 
-Set up your `wrangler.toml` properly and start `wrangler dev` process.
+1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process.
 
 ```
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.mjs --remote
 ```
 
-Create and use bridge anywhere in your app for local development.
+2️⃣ Create and use bridge anywhere in your app for local development.
 
 ```js
 import { createBridge } from "cfw-bindings-wrangler-bridge";
@@ -41,6 +41,28 @@ const MY_KV = createBridge("http://127.0.0.1:8787").KV("MY_KV");
 // ✌️ This is real KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
+```
+
+### Example: CLI tool
+
+If you are using REST API in your CLI, now you can replace it.
+
+```diff
+-const putKV = async (API_KEY, API_URL, [key, value]) => {
+-  const res = await fetch(`${API_URL}/values/${key}`, {
+-    method: "PUT",
+-    headers: { Authorization: `Bearer ${API_KEY}` },
+-    body: value,
+-  });
+-
+-  const json = await res.json();
+-  if (!json.success)
+-    throw new Error(json.errors.map(({ message }) => message).join("\n"));
+-};
++const putKV = async (KV_NAMESPACE_ID, [key, value]) => {
++  const KV = createBridge("http://127.0.0.1:8787").KV(KV_NAMESPACE_ID);
++  await KV.put(key, value);
++};
 ```
 
 ### Example: SvelteKit
@@ -71,13 +93,16 @@ export const handle = async ({ event, resolve }) => {
 
 - [x] KV
 - [ ] D1
+- [ ] R2
 
 ## Notes
 
 - Why not use REST API?
   - REST API cannot offer `--local` behavior
-- `wrangler.unstable_dev()` is better?
-  - It is literally unstable
-  - I'm not sure how to ensure `await worker.stop()` on Vite process exit
+  - `getWithMetadata()` needs 2 separate API calls
 - How about `wrangler kv:key`?
-  - Limited features, no metadata support, etc...
+  - Features are limited, no metadata support, etc...
+- `wrangler.unstable_dev()` is better?
+  - Maybe? but it is literally unstable
+  - I'm not sure how to ensure `await worker.stop()` on Vite process exit
+  - For CLI usage, it may be worth
