@@ -3,13 +3,13 @@
     "target": "esnext",
     "module": "esnext",
     "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
     "esModuleInterop": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }

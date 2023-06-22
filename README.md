@@ -44,11 +44,11 @@ await MY_KV.get("foo"); // "bar"
 import { createBridge } from "cfw-bindings-wrangler-bridge";
 import { dev } from "$app/environment";
 
-const bridge = createBridge("http://127.0.0.1:8787");
-
 export const handle = async ({ event, resolve }) => {
   // Will be removed if `dev === false`
   if (dev) {
+    const bridge = createBridge("http://127.0.0.1:8787");
+
     event.platform = {
       env: {
         MY_KV1: bridge.KV("MY_KV1"),
@@ -62,4 +62,14 @@ export const handle = async ({ event, resolve }) => {
 ```
 
 ## Supported bindings
+
+- [x] KV
+- [ ] D1
+
 ## Notice
+
+- Why not use REST API?
+  - If so, you can not use `--local` behavior
+- `wrangler.unstable_dev` is better?
+  - But how to ensure `await worker.stop()` inside Vite app?
+- Arguments and response must be JSON serializable
