@@ -1,4 +1,4 @@
-# cfw-bindings-wrangler-bridge
+# 🌉 cfw-bindings-wrangler-bridge
 
 ## Motivation
 
