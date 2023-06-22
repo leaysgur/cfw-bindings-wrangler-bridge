@@ -49,7 +49,7 @@ await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
 
-Currently you need to update type definitions by yourself.
+Currently you may need to update type definitions by yourself. 😅
 
 ## Usage example
 
@@ -71,8 +71,8 @@ If you are using REST API in your CLI, now you can replace it.
 -};
 +import { createBridge } from "cfw-bindings-wrangler-bridge";
 +
-+const putKV = async (KV_NAMESPACE_ID, [key, value]) => {
-+  const KV = createBridge("http://127.0.0.1:8787").KV(KV_NAMESPACE_ID);
++const putKV = async (KV_BINDING_NAME, [key, value]) => {
++  const KV = createBridge("http://127.0.0.1:8787").KV(KV_BINDING_NAME);
 +  await KV.put(key, value);
 +};
 ```
@@ -91,8 +91,8 @@ export const handle = async ({ event, resolve }) => {
 
     event.platform = {
       env: {
-        MY_KV1: bridge.KV("MY_KV1"),
-        MY_KV2: bridge.KV("MY_KV2"),
+        SESSIONS: bridge.KV("SESSIONS"),
+        TODOS: bridge.KV("TODOS"),
       },
     };
   }
@@ -113,6 +113,7 @@ export const handle = async ({ event, resolve }) => {
 - Why not use REST API?
   - REST API cannot offer `--local` behavior
   - `getWithMetadata()` needs 2 separate API calls
+  - `put()` requires using `FormData` with serialized `string`
 - How about `wrangler kv:key`?
   - Features are limited, no metadata support, etc...
 - `wrangler.unstable_dev()` is better?
