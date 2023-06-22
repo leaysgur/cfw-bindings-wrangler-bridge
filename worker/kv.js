@@ -1,4 +1,5 @@
 // @ts-check
+
 /**
  * @param {import("@cloudflare/workers-types").KVNamespace} KV
  * @param {string} OPERATION
@@ -9,36 +10,43 @@ export const kvHandle = async (KV, OPERATION, req) => {
   const [, , , key] = url.pathname.split("/");
   const options = Object.fromEntries(url.searchParams.entries());
 
-  switch (OPERATION) {
-    case "kv_list": {
-      const result = await KV.list(options);
-      return Response.json(result);
-    }
-    case "kv_put": {
-      const value = req.body ?? "";
+  // Handle `get()` + `getWithMetadata()`
+  // `metadata` will be ignored for `get()`
+  if (OPERATION === "kv_get") {
+    const { value, metadata } = await KV.getWithMetadata(key, {
+      ...options,
+      // This is fastest, type handling will be done by bridge side
+      type: "stream",
+    });
 
-      const metadata = req.headers.get("CF-KV-Metadata");
-      if (metadata) options.metadata = JSON.parse(metadata);
+    return new Response(value, {
+      headers: { "CF-KV-Metadata": JSON.stringify(metadata) },
+    });
+  }
 
-      // Need to await here, otherwise response already sent error
-      await KV.put(key, value, options);
-      return Response.json(null);
-    }
-    case "kv_get": {
-      const { value, metadata } = await KV.getWithMetadata(key, {
-        ...options,
-        // This is fastest way, type handling will be done by bridge
-        type: "stream",
-      });
+  if (OPERATION === "kv_put") {
+    // May not be `null` but for TS
+    const value = req.body ?? "";
 
-      return new Response(value, {
-        headers: { "CF-KV-Metadata": JSON.stringify(metadata) },
-      });
-    }
-    case "kv_delete": {
-      await KV.delete(key);
-      return Response.json(null);
-    }
+    const metadata = req.headers.get("CF-KV-Metadata");
+    if (metadata) options.metadata = JSON.parse(metadata);
+
+    // Need to await here, otherwise already sent error
+    await KV.put(key, value, options);
+
+    return Response.json(null);
+  }
+
+  if (OPERATION === "kv_list") {
+    const result = await KV.list(options);
+
+    return Response.json(result);
+  }
+
+  if (OPERATION === "kv_delete") {
+    await KV.delete(key);
+
+    return Response.json(null);
   }
 
   return Response.json(

@@ -9,14 +9,22 @@ export default {
     if (BINDING in env === false)
       return Response.json(
         { error: "Binding not found. Check your `wrangler.toml`." },
-        { status: 404 }
+        { status: 400 }
       );
 
-    if (OPERATION.startsWith("kv_"))
-      return kvHandle(env[BINDING], OPERATION, req);
+    if (
+      OPERATION.startsWith("kv_") &&
+      env[BINDING].constructor.name === "KvNamespace"
+    )
+      return kvHandle(env[BINDING], OPERATION, req).catch((err) =>
+        Response.json(
+          { error: `Failed in kvHandle(): ${err.message}` },
+          { status: 500 }
+        )
+      );
 
     return Response.json(
-      { error: `Unknown operation: ${OPERATION}.` },
+      { error: `Not supported operation: ${OPERATION}.` },
       { status: 404 }
     );
   },
