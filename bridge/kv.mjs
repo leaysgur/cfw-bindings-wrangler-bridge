@@ -1,13 +1,14 @@
 // @ts-check
 
-// Refs: 
+// Refs:
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B
 // https://github.com/cloudflare/workers-sdk/blob/main/packages/wrangler/src/kv/index.ts
+
 export class KVBridge {
   #wranglerUrl;
   #namespaceId;
 
-  /** 
+  /**
    * @param {string} wranglerUrl
    * @param {string} namespaceId
    */
@@ -34,7 +35,7 @@ export class KVBridge {
     return json;
   }
 
-  /** 
+  /**
    * @param {string} key
    * @param {string | ArrayBuffer | ArrayBufferView | ReadableStream} value
    * @param {import("@cloudflare/workers-types").KVNamespacePutOptions} [options]
@@ -55,7 +56,7 @@ export class KVBridge {
     await fetch(req);
   }
 
-  /** 
+  /**
    * @template Type
    * @param {string} key
    * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
@@ -65,7 +66,7 @@ export class KVBridge {
     return value;
   }
 
-  /** 
+  /**
    * @template Type
    * @param {string} key
    * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
@@ -78,14 +79,14 @@ export class KVBridge {
     let cacheTtl;
     if (!typeOrOptions) {
       type = "text";
-    }  else if (typeof typeOrOptions === "string") {
+    } else if (typeof typeOrOptions === "string") {
       type = typeOrOptions;
     } else {
       type = typeOrOptions.type;
       cacheTtl = typeOrOptions.cacheTtl;
     }
 
-    if (typeof cacheTtl === "number") 
+    if (typeof cacheTtl === "number")
       url.searchParams.set("cacheTtl", String(cacheTtl));
 
     const res = await fetch(url);

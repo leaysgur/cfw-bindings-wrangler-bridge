@@ -2,15 +2,19 @@
 
 ## Motivation
 
-- Imagine using frameworks like SvelteKit and want to deploy app to Cloudflare Pages
-  - You will pick `@sveltejs/adapter-cloudflare` and adapt your app
-- But in local development, `vite dev` can not help you to use platform specific features like KV, D1, etc...
-  - It means `platform.env.MY_KV` is always `undefined`
-- Some frameworks offers way to use `wrangler pages dev` directly, but currently there is no `--remote` support
-- It seems there are only 2 ways to access platform specific features remotely
-  - 1: Use REST API
-  - 2: Use `wrangler` CLI
-- This library aims to provide mock implementation injected in local development which can access remote platform features
+- Imagine you are
+  - using frameworks like SvelteKit
+  - and deploy your app to Cloudflare Pages
+  - with platform specific features like KV, D1, etc...
+- You choose `@sveltejs/adapter-cloudflare` and adapt your app
+  - It works fine in actual environment! ;D
+- But in local development, `vite dev` cannot help us to use platform specific features like KV, D1, etc...
+  - It means that `platform.env.MY_KV` is always `undefined`
+- Some frameworks offer a way to use `wrangler pages dev` which can use platform features locally
+  - but currently there is no `--remote` support
+  - In addition, (maybe) this is not easy way for Vite-based frameworks...
+- This library aims to solve this issue by providing a mock implementation that can be injected in local development
+  - and this mock becomes bridge between running `wrangler` process which can access remote platform features
 
 ## Install
 
@@ -20,19 +24,21 @@ npm install -D cfw-bindings-wrangler-bridge
 
 ## How to use
 
-Set up your `wrangler.toml` and start `wrangler dev` process.
+Set up your `wrangler.toml` properly and start `wrangler dev` process.
 
 ```
-wrangler dev --remote ./node_modules/cfw-bindings-wrangler-bridge/worker.js
+wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.mjs --remote
 ```
 
-Create and use bridge in your app for local development.
+Create and use bridge anywhere in your app for local development.
 
 ```js
 import { createBridge } from "cfw-bindings-wrangler-bridge";
 
+/** @type {import("@cloduflare/workers-types").KVNamespace} */
 const MY_KV = createBridge("http://127.0.0.1:8787").KV("MY_KV");
 
+// ✌️ This is real KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
@@ -66,10 +72,12 @@ export const handle = async ({ event, resolve }) => {
 - [x] KV
 - [ ] D1
 
-## Notice
+## Notes
 
 - Why not use REST API?
-  - If so, you can not use `--local` behavior
-- `wrangler.unstable_dev` is better?
-  - But how to ensure `await worker.stop()` inside Vite app?
-- Arguments and response must be JSON serializable
+  - REST API cannot offer `--local` behavior
+- `wrangler.unstable_dev()` is better?
+  - It is literally unstable
+  - I'm not sure how to ensure `await worker.stop()` on Vite process exit
+- How about `wrangler kv:key`?
+  - Limited features, no metadata support, etc...
