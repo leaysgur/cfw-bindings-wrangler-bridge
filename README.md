@@ -4,9 +4,9 @@ Bridge between local development code and Cloudflare bindings, via `wrangler dev
 
 ## Motivation
 
-Imagine you want to deploy your application to Cloudflare pages using a framework like SvelteKit.
+Imagine you want to deploy your application to Cloudflare Pages using a framework like SvelteKit.
 
-`vite dev` is fast and DX is very good. Deployment is no problem either, with adapters available. 🥳
+`vite dev` is fast and DX is very good. Deployment is no problem either, with adapters available. GitHub connected auto CI, preview branches are really nice. 🥳
 
 However, as soon as you try to use features specific to the Cloudflare platform (like KV, D1, etc.), you run into problems...
 
