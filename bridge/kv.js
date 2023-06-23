@@ -4,6 +4,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B
 // https://github.com/cloudflare/workers-sdk/blob/main/packages/wrangler/src/kv/index.ts
 
+// KVNamespace
 export class KVBridge {
   #wranglerUrl;
   #bindingName;
@@ -50,6 +51,8 @@ export class KVBridge {
       url.searchParams.set("expiration", String(options.expiration));
 
     const req = new Request(url, { method: "PUT", body: value });
+
+    // Metadata is set in header to keep `request.body` as-is
     if (options?.metadata)
       req.headers.set("CF-KV-Metadata", JSON.stringify(options.metadata));
 

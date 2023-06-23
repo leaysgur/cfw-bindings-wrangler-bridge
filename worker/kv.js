@@ -3,7 +3,7 @@
 /**
  * @param {import("@cloudflare/workers-types").KVNamespace} KV
  * @param {string} OPERATION
- * @param {Request} req
+ * @param {import("@cloudflare/workers-types").Request} req
  */
 export const kvHandle = async (KV, OPERATION, req) => {
   const url = new URL(req.url);
