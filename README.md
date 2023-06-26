@@ -56,8 +56,8 @@ await MY_SERVICE.fetch("http://fake-host.example.com");
 // You can mix `--local` and `--remote`!
 const MY_SERVICE = createBridge("http://127.0.0.1:8787").SERVICE(
   "MY_SERVICE",
-  "http://127.0.0.1:8788"
-); // 👈
+  "http://127.0.0.1:8788" // 👈
+);
 ```
 
 Currently you may need to update type definitions by yourself. 😅
