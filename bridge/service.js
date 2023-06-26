@@ -27,7 +27,7 @@ export class ServiceBridge {
 
     const originalReq = new Request(requestOrUrl, requestInit);
 
-    // Route to bridge worker w/ original url
+    // Route to bridge(worker) w/ original url
     const req = new Request(url, originalReq);
     req.headers.set("X-ServiceFetch-Original-Url", originalReq.url);
 
@@ -53,7 +53,7 @@ export class ServiceBridgeDirect {
     const originalReq = new Request(requestOrUrl, requestInit);
 
     // Replace `origin` part for routing, others are kept as-is
-    // This may be problematic if service depends on incoming `origin` string
+    // This may be problematic if service(worker) depends on incoming `origin` string
     const url = new URL(originalReq.url);
     url.protocol = serviceWranglerUrl.protocol;
     url.host = serviceWranglerUrl.host;

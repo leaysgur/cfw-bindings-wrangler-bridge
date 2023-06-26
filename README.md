@@ -47,6 +47,17 @@ const MY_KV = createBridge("http://127.0.0.1:8787").KV("MY_KV");
 // ✌️ This is real KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
+
+/** @type {import("@cloduflare/workers-types").Fetcher} */
+const MY_SERVICE = createBridge("http://127.0.0.1:8787").SERVICE("MY_SERVICE");
+
+// 💪 Service
+await MY_SERVICE.fetch("http://fake-host.example.com");
+// You can mix `--local` and `--remote`!
+const MY_SERVICE = createBridge("http://127.0.0.1:8787").SERVICE(
+  "MY_SERVICE",
+  "http://127.0.0.1:8788"
+); // 👈
 ```
 
 Currently you may need to update type definitions by yourself. 😅
@@ -104,9 +115,14 @@ export const handle = async ({ event, resolve }) => {
 ## Supported bindings
 
 - [x] KV
+  - [x] `.list()`
+  - [x] `.get()`
+  - [x] `.put()`
+  - [x] `.delete()`
+- [x] Service
+  - [x] `.fetch()`
 - [ ] D1
 - [ ] R2
-- [ ] Service
 
 ## Notes
 
