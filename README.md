@@ -62,7 +62,19 @@ const MY_SERVICE = createBridge("http://127.0.0.1:8787").SERVICE(
 
 Currently you may need to update type definitions by yourself. 😅
 
-## Usage example
+## Supported bindings
+
+- [x] KV
+  - [x] `.list()`
+  - [x] `.get()`
+  - [x] `.put()`
+  - [x] `.delete()`
+- [x] Service
+  - [x] `.fetch()`
+- [ ] D1
+- [ ] R2
+
+## Usage examples
 
 ### CLI tool
 
@@ -111,18 +123,6 @@ export const handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 ```
-
-## Supported bindings
-
-- [x] KV
-  - [x] `.list()`
-  - [x] `.get()`
-  - [x] `.put()`
-  - [x] `.delete()`
-- [x] Service
-  - [x] `.fetch()`
-- [ ] D1
-- [ ] R2
 
 ## Notes
 
