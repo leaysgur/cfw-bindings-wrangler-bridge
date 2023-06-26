@@ -31,7 +31,7 @@ npm install -D cfw-bindings-wrangler-bridge
 1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process.
 
 ```
-wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.mjs --remote
+wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote
 ```
 
 Of course you can interact with local environment by omitting `--remote`.
@@ -67,6 +67,7 @@ Currently you may need to update type definitions by yourself. 😅
 - [x] KV
   - [x] `.list()`
   - [x] `.get()`
+  - [x] `.getWithMetadata()`
   - [x] `.put()`
   - [x] `.delete()`
 - [x] Service
