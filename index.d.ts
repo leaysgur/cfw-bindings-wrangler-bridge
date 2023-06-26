@@ -1,4 +1,5 @@
-export declare function createBridge(wranglerUrl: string): {
+export declare function createBridge(bridgeWranglerOrigin: string): {
   // Should be typed here...?
   KV(namespaceId: string): any;
+  SERVICE(namespaceId: string, serviceWranlgerOrigin?: string): any;
 };

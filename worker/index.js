@@ -1,4 +1,5 @@
 import { kvHandle } from "./kv.js";
+import { serviceHandle } from "./service.js";
 
 export default {
   /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler} */
@@ -12,6 +13,7 @@ export default {
         { status: 400 }
       );
 
+    // KV ---
     if (
       OPERATION.startsWith("kv_") &&
       env[BINDING].constructor.name === "KvNamespace"
@@ -19,6 +21,20 @@ export default {
       return kvHandle(env[BINDING], OPERATION, req).catch((err) =>
         Response.json(
           { error: `Failed in kvHandle(): ${err.message}` },
+          { status: 500 }
+        )
+      );
+
+    // Service ---
+    if (
+      OPERATION.startsWith("service_") &&
+      // This is `Object` in local :(
+      // env[BINDING].constructor.name === "Fetcher"
+      typeof env[BINDING].fetch === "function"
+    )
+      return serviceHandle(env[BINDING], OPERATION, req).catch((err) =>
+        Response.json(
+          { error: `Failed in serviceHandle(): ${err.message}` },
           { status: 500 }
         )
       );
