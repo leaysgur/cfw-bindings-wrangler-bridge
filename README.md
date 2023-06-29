@@ -72,8 +72,15 @@ Currently you may need to update type definitions by yourself. 😅
   - [x] `.delete()`
 - [x] Service
   - [x] `.fetch()`
-- [ ] D1
 - [ ] R2
+  - [x] `.list()`
+  - [x] `head()`
+  - [x] `.get()`
+  - [x] `.put()`
+  - [x] `.delete()`
+  - [ ] `.createMultipartUpload()`
+  - [ ] `.resumeMultipartUpload()`
+- [ ] D1
 
 ## Usage examples
 

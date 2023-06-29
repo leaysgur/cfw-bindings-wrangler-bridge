@@ -1,6 +1,7 @@
 // @ts-check
 import { KVBridge } from "./kv.js";
 import { ServiceBridge, ServiceBridgeDirect } from "./service.js";
+import { R2Bridge } from "./r2.js";
 
 /** @param {string} bridgeWranglerOrigin */
 export const createBridge = (bridgeWranglerOrigin) => ({
@@ -22,4 +23,7 @@ export const createBridge = (bridgeWranglerOrigin) => ({
     serviceWranglerOrigin
       ? new ServiceBridgeDirect(serviceWranglerOrigin)
       : new ServiceBridge(bridgeWranglerOrigin, bindingName),
+
+  /** @param {string} bindingName */
+  R2: (bindingName) => new R2Bridge(bridgeWranglerOrigin, bindingName),
 });
