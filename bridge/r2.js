@@ -96,7 +96,8 @@ export class R2Bridge {
     const req = new Request(url, { method: "GET" });
     if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
 
-    return await fetch(req);
+    const res = await fetch(req);
+    return res;
   }
 
   /**
@@ -106,6 +107,7 @@ export class R2Bridge {
    */
   async put(key, value, options) {
     const url = new URL(this.#wranglerOrigin);
+    // pathname is like `/r2_get/BINDING/encodeURIComponent(key)`
     url.pathname = `/r2_put/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     const req = new Request(url, { method: "PUT", body: value });

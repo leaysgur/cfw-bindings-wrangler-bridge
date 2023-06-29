@@ -18,7 +18,6 @@ export const r2Handle = async (R2, OPERATION, req) => {
 
   if (OPERATION === "r2_get") {
     const result = await R2.get(key, options);
-    console.log({ result });
     if (result == null)
       return Response.json({ error: "Not found" }, { status: 404 });
 
