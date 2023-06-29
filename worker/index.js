@@ -1,4 +1,5 @@
 import { kvHandle } from "./kv.js";
+import { r2Handle } from "./r2.js";
 import { serviceHandle } from "./service.js";
 
 export default {
@@ -35,6 +36,15 @@ export default {
       return serviceHandle(env[BINDING], OPERATION, req).catch((err) =>
         Response.json(
           { error: `Failed in serviceHandle(): ${err.message}` },
+          { status: 500 }
+        )
+      );
+
+    // R2 ---
+    if (OPERATION.startsWith("r2_") && typeof env[BINDING].get === "function")
+      return r2Handle(env[BINDING], OPERATION, req).catch((err) =>
+        Response.json(
+          { error: `Failed in r2Handle(): ${err.message}` },
           { status: 500 }
         )
       );
