@@ -39,8 +39,7 @@ export const r2Handle = async (R2, OPERATION, req) => {
   }
 
   if (OPERATION === "r2_put") {
-    // May not be `null` but for TS
-    const value = req.body ?? "";
+    const value = req.body;
 
     // Need to await here, otherwise already sent error
     const result = await R2.put(key, value, options);
