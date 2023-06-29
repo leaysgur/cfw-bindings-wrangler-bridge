@@ -94,7 +94,7 @@ export class R2Bridge {
     url.pathname = `/r2_list/${this.#bindingName}`;
 
     const req = new Request(url, { method: "GET" });
-    req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
+    if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
 
     return await fetch(req);
   }
@@ -109,9 +109,7 @@ export class R2Bridge {
     url.pathname = `/r2_put/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     const req = new Request(url, { method: "PUT", body: value });
-
-    // Options is set in header to keep `request.body` as-is
-    req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
+    if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
 
     await fetch(req);
   }
