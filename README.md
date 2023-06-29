@@ -74,7 +74,7 @@ Currently you may need to update type definitions by yourself. 😅
   - [x] `.fetch()`
 - [ ] R2
   - [x] `.list()`
-  - [x] `head()`
+  - [x] `.head()`
   - [x] `.get()`
   - [x] `.put()`
   - [x] `.delete()`
