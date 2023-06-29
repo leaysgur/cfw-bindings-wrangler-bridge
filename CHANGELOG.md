@@ -1,5 +1,10 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
+## 0.2.0
+
+- [#3](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/3) Initial(but partial) support R2 bindings
+  - Thanks [@ryoppippi](https://github.com/ryoppippi)!
+
 ## 0.1.1
 
 - [#2](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/2) Fix KV key was not decoded
