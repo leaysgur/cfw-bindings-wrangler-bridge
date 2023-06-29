@@ -7,7 +7,8 @@
  */
 export const kvHandle = async (KV, OPERATION, req) => {
   const url = new URL(req.url);
-  const [, , , key] = url.pathname.split("/");
+  const [, , , keyRaw] = url.pathname.split("/");
+  const key = decodeURIComponent(keyRaw);
   const options = Object.fromEntries(url.searchParams.entries());
 
   // Handle `get()` + `getWithMetadata()`
