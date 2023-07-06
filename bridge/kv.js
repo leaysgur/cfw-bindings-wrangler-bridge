@@ -1,10 +1,12 @@
 // @ts-check
 
 // Refs:
-// https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B
+// https://developers.cloudflare.com/workers/runtime-apis/kv/
+// https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
+// https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
 
-// KVNamespace
-export class KVBridge {
+// implements KVNamespace
+export class KVBridgeModule {
   #bridgeWranglerOrigin;
   #bindingName;
 
@@ -22,7 +24,7 @@ export class KVBridge {
    * @param {any[]} parameters
    * @param {BodyInit} [body]
    */
-  async #fetch(operation, parameters, body) {
+  async #dispatch(operation, parameters, body) {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
@@ -43,7 +45,7 @@ export class KVBridge {
 
   /** @param {KVNamespaceListOptions} [options] */
   async list(options) {
-    const res = await this.#fetch("list", [options]);
+    const res = await this.#dispatch("list", [options]);
 
     const json = await res.json();
     return json;
@@ -55,16 +57,16 @@ export class KVBridge {
    * @param {KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
-    await this.#fetch("put", [key, null, options], value);
+    await this.#dispatch("put", [key, null, options], value);
   }
 
   /**
    * @template Type
    * @param {string} key
-   * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
+   * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async get(key, typeOrOptions) {
-    const res = await this.#fetch("get", [key, typeOrOptions]);
+    const res = await this.#dispatch("get", [key, typeOrOptions]);
 
     let type;
     if (!typeOrOptions) {
@@ -87,10 +89,10 @@ export class KVBridge {
   /**
    * @template Type
    * @param {string} key
-   * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
+   * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async getWithMetadata(key, typeOrOptions) {
-    const res = await this.#fetch("getWithMetadata", [key, typeOrOptions]);
+    const res = await this.#dispatch("getWithMetadata", [key, typeOrOptions]);
 
     let type;
     if (!typeOrOptions) {
@@ -116,6 +118,6 @@ export class KVBridge {
 
   /** @param {string} key */
   async delete(key) {
-    await this.#fetch("delete", [key]);
+    await this.#dispatch("delete", [key]);
   }
 }

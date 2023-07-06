@@ -1,12 +1,12 @@
 // @ts-check
-import { KVBridge } from "./kv.js";
+import { KVBridgeModule } from "./kv.js";
 import { ServiceBridge, ServiceBridgeDirect } from "./service.js";
 import { R2Bridge } from "./r2.js";
 
 /** @param {string} bridgeWranglerOrigin */
 export const createBridge = (bridgeWranglerOrigin) => ({
   /** @param {string} bindingName */
-  KV: (bindingName) => new KVBridge(bridgeWranglerOrigin, bindingName),
+  KV: (bindingName) => new KVBridgeModule(bridgeWranglerOrigin, bindingName),
 
   /**
    * @param {string} bindingName

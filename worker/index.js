@@ -1,11 +1,10 @@
 // @ts-check
-
-import { isKVBinding, kvHandle } from "./kv.js";
+import { isKVBinding, handleKVDispatch } from "./kv.js";
 import { isServiceBinding, serviceHandle } from "./service.js";
 import { isR2Binding, r2Handle } from "./r2.js";
 
 export default {
-  /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler<Record<string, unknown>>} */
+  /** @type {ExportedHandlerFetchHandler<Record<string, unknown>>} */
   async fetch(req, env) {
     // KV or R2 or ...
     const BINDING_MODULE = req.headers.get("X-BRIDGE-BINDING-MODULE");
@@ -25,7 +24,7 @@ export default {
       );
 
     if (BINDING_MODULE === "KV" && isKVBinding(BINDING))
-      return kvHandle(BINDING, req).catch(
+      return handleKVDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 

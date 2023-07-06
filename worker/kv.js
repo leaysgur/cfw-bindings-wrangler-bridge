@@ -11,7 +11,7 @@ export const isKVBinding = (binding) =>
  * @param {KVNamespace} KV
  * @param {Request} req
  */
-export const kvHandle = async (KV, req) => {
+export const handleKVDispatch = async (KV, req) => {
   const { operation, parameters } = JSON.parse(
     req.headers.get("X-BRIDGE-KV-REQUEST") ?? "{}"
   );
@@ -40,7 +40,7 @@ export const kvHandle = async (KV, req) => {
     });
 
     return new Response(value, {
-      headers: { "X-BRIDGE-RESPONSE": JSON.stringify({ metadata }) },
+      headers: { "X-BRIDGE-KV-RESPONSE": JSON.stringify({ metadata }) },
     });
   }
 
@@ -71,5 +71,5 @@ export const kvHandle = async (KV, req) => {
     return new Response();
   }
 
-  return new Response(`Unknown operation: ${operation}.`, { status: 404 });
+  throw new Error(`Unknown operation: ${operation}.`);
 };
