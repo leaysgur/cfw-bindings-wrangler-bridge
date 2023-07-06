@@ -7,56 +7,53 @@ export const isKVBinding = (binding) =>
 /**
  * @param {import("@cloudflare/workers-types").KVNamespace} KV
  * @param {string} OPERATION
- * @param {import("@cloudflare/workers-types").Request} req
+ * @param {any[]} parameters
+ * @param {import("@cloudflare/workers-types").Request["body"]} body
  */
-export const kvHandle = async (KV, OPERATION, req) => {
-  const url = new URL(req.url);
-  // pathname is like `/kv_get/BINDING/encodeURIComponent(key)`
-  const [, , , encodedKey] = url.pathname.split("/");
-  const key = decodeURIComponent(encodedKey);
-  const options = Object.fromEntries(url.searchParams.entries());
-
+export const kvHandle = async (KV, OPERATION, parameters, body) => {
   // Handle `get()` + `getWithMetadata()`
   // `metadata` will be ignored for `get()`
-  if (OPERATION === "kv_get") {
+  if (OPERATION === "KV.getWithMetadata") {
+    const [key, typeOrOptions] = parameters;
+
     const { value, metadata } = await KV.getWithMetadata(key, {
-      ...options,
-      // This is fastest, type handling will be done by bridge side
+      ...typeOrOptions,
+      // Override it to respond over our bridge.
+      // `stream` is fastest and type conversion is done by bridge module.
       type: "stream",
     });
 
     return new Response(value, {
-      headers: { "CF-KV-Metadata": JSON.stringify(metadata) },
+      headers: { "X-BRIDGE-RESPONSE": JSON.stringify({ metadata }) },
     });
   }
 
-  if (OPERATION === "kv_put") {
-    // May not be `null` but for TS
-    const value = req.body ?? "";
-
-    const metadata = req.headers.get("CF-KV-Metadata");
-    if (metadata) options.metadata = JSON.parse(metadata);
+  if (OPERATION === "KV.put") {
+    const [key, , options] = parameters;
+    // XXX: For TS...
+    const value = body ?? "";
 
     // Need to await here, otherwise already sent error
     await KV.put(key, value, options);
 
-    return Response.json(null);
+    return new Response(null);
   }
 
-  if (OPERATION === "kv_list") {
+  if (OPERATION === "KV.list") {
+    const [options] = parameters;
+
     const result = await KV.list(options);
 
     return Response.json(result);
   }
 
-  if (OPERATION === "kv_delete") {
+  if (OPERATION === "KV.delete") {
+    const [key] = parameters;
+
     await KV.delete(key);
 
-    return Response.json(null);
+    return new Response(null);
   }
 
-  return Response.json(
-    { error: `Unknown operation: ${OPERATION}.` },
-    { status: 404 }
-  );
+  return new Response(`Unknown operation: ${OPERATION}.`, { status: 404 });
 };

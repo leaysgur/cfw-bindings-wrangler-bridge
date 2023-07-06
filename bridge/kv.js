@@ -2,7 +2,6 @@
 
 // Refs:
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B
-// https://github.com/cloudflare/workers-sdk/blob/main/packages/wrangler/src/kv/index.ts
 
 // KVNamespace
 export class KVBridge {
@@ -20,19 +19,23 @@ export class KVBridge {
 
   /** @param {import("@cloudflare/workers-types").KVNamespaceListOptions} [options] */
   async list(options) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_list/${this.#bindingName}`;
+    const res = await fetch(this.#wranglerOrigin, {
+      method: "POST",
+      headers: {
+        "X-BRIDGE-REQUEST": JSON.stringify({
+          binding: this.#bindingName,
+          operation: "KV.list",
+          parameters: [options],
+        }),
+      },
+    });
 
-    if (typeof options?.prefix === "string")
-      url.searchParams.set("prefix", options.prefix);
-    if (typeof options?.limit === "number")
-      url.searchParams.set("limit", String(options.limit));
-    if (typeof options?.cursor === "string")
-      url.searchParams.set("cursor", options.cursor);
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error);
+    }
 
-    const res = await fetch(url);
     const json = await res.json();
-
     return json;
   }
 
@@ -42,21 +45,22 @@ export class KVBridge {
    * @param {import("@cloudflare/workers-types").KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_put/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await fetch(this.#wranglerOrigin, {
+      method: "POST",
+      headers: {
+        "X-BRIDGE-REQUEST": JSON.stringify({
+          binding: this.#bindingName,
+          operation: "KV.put",
+          parameters: [key, null, options],
+        }),
+      },
+      body: value,
+    });
 
-    if (typeof options?.expirationTtl === "number")
-      url.searchParams.set("expirationTtl", String(options.expirationTtl));
-    if (typeof options?.expiration === "number")
-      url.searchParams.set("expiration", String(options.expiration));
-
-    const req = new Request(url, { method: "PUT", body: value });
-
-    // Metadata is set in header to keep `request.body` as-is
-    if (options?.metadata)
-      req.headers.set("CF-KV-Metadata", JSON.stringify(options.metadata));
-
-    await fetch(req);
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error);
+    }
   }
 
   /**
@@ -75,25 +79,34 @@ export class KVBridge {
    * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async getWithMetadata(key, typeOrOptions) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_get/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await fetch(this.#wranglerOrigin, {
+      method: "POST",
+      headers: {
+        "X-BRIDGE-REQUEST": JSON.stringify({
+          binding: this.#bindingName,
+          operation: "KV.getWithMetadata",
+          parameters: [key, typeOrOptions],
+        }),
+      },
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error);
+    }
+
+    const { metadata } = JSON.parse(
+      res.headers.get("X-BRIDGE-RESPONSE") ?? "{}"
+    );
 
     let type;
-    let cacheTtl;
     if (!typeOrOptions) {
       type = "text";
     } else if (typeof typeOrOptions === "string") {
       type = typeOrOptions;
     } else {
       type = typeOrOptions.type;
-      cacheTtl = typeOrOptions.cacheTtl;
     }
-
-    if (typeof cacheTtl === "number")
-      url.searchParams.set("cacheTtl", String(cacheTtl));
-
-    const res = await fetch(url);
-    const metadata = JSON.parse(res.headers.get("CF-KV-Metadata") ?? "null");
 
     let value;
     if (type === "json") value = await res.json();
@@ -101,14 +114,25 @@ export class KVBridge {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
-    return { value, metadata };
+    return { value, metadata: metadata ?? null };
   }
 
   /** @param {string} key */
   async delete(key) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_delete/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await fetch(this.#wranglerOrigin, {
+      method: "POST",
+      headers: {
+        "X-BRIDGE-REQUEST": JSON.stringify({
+          binding: this.#bindingName,
+          operation: "KV.delete",
+          parameters: [key],
+        }),
+      },
+    });
 
-    await fetch(url, { method: "DELETE" });
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error);
+    }
   }
 }
