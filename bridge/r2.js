@@ -74,7 +74,7 @@ class R2ObjectBody extends Response {
   }
 }
 
-// R2Namespace
+// R2Bucket
 export class R2Bridge {
   #wranglerOrigin;
   #bindingName;
@@ -97,7 +97,8 @@ export class R2Bridge {
     if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
 
     const res = await fetch(req);
-    return res;
+    const json = await res.json();
+    return json;
   }
 
   /**
@@ -164,7 +165,7 @@ export class R2Bridge {
   /** @param {string} key */
   async delete(key) {
     const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_delete/${this.#bindingName}/${encodeURIComponent(key)}`;
+    url.pathname = `/r2_delete/${this.#bindingName}/${encodeURIComponent(key)}`;
 
     await fetch(url, { method: "DELETE" });
   }
