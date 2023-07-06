@@ -136,8 +136,9 @@ export const handle = async ({ event, resolve }) => {
 
 - Why not use REST API?
   - REST API cannot offer `--local` behavior
-  - `getWithMetadata()` needs 2 separate API calls
-  - `put()` requires using `FormData` with serialized `string`
+  - `KV.getWithMetadata()` needs 2 separate API calls
+  - `KV.put()` requires using `FormData` with serialized `string`
+  - `R2.*()` are all not supported
 - How about `wrangler kv:key`?
   - Features are limited, no metadata support, etc...
 - `wrangler.unstable_dev()` is better?
