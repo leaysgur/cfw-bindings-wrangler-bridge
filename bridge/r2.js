@@ -120,7 +120,9 @@ export class R2Bridge {
   async list(options) {
     const res = await this.#fetch("list", [options]);
 
-    // TODO: return R2Object or null
+    class R2Objects {}
+
+    // TODO: return R2Objects or null
     const json = await res.json();
     return json;
   }

@@ -1,5 +1,9 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
+## 0.2.1
+
+- Fix some bugs of R2 bridge
+
 ## 0.2.0
 
 - [#3](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/3) Initial(but partial) support R2 bindings
