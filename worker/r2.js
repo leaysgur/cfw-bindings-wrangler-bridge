@@ -10,7 +10,7 @@ export const isR2Binding = (binding) => binding.constructor.name === "R2Bucket";
  * @param {R2Bucket} R2
  * @param {Request} req
  */
-export const r2Handle = async (R2, req) => {
+export const handleR2Dispatch = async (R2, req) => {
   const { operation, parameters } = JSON.parse(
     req.headers.get("X-BRIDGE-R2-REQUEST") ?? "{}"
   );
@@ -74,12 +74,12 @@ export const r2Handle = async (R2, req) => {
   }
 
   if (operation === "delete") {
-    const [key] = parameters;
+    const [keys] = parameters;
 
-    await R2.delete(key);
+    await R2.delete(keys);
 
     return new Response();
   }
 
-  return new Response(`Unknown operation: ${operation}.`, { status: 404 });
+  throw new Error(`R2.${operation}() is not supported.`);
 };

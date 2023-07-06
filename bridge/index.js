@@ -1,10 +1,10 @@
 // @ts-check
 import { KVBridgeModule } from "./kv.js";
-import { ServiceBridge, ServiceBridgeDirect } from "./service.js";
-import { R2Bridge } from "./r2.js";
+import { ServiceBridgeModule, ServiceBridgeModuleDirect } from "./service.js";
+import { R2BridgeModule } from "./r2.js";
 
-/** @param {string} bridgeWranglerOrigin */
-export const createBridge = (bridgeWranglerOrigin) => ({
+/** @param {string} [bridgeWranglerOrigin] */
+export const createBridge = (bridgeWranglerOrigin = "http://127.0.0.1:8787") => ({
   /** @param {string} bindingName */
   KV: (bindingName) => new KVBridgeModule(bridgeWranglerOrigin, bindingName),
 
@@ -21,9 +21,9 @@ export const createBridge = (bridgeWranglerOrigin) => ({
     //
     // But our brige make it possible to mix them by calling service(worker) directly!
     serviceWranglerOrigin
-      ? new ServiceBridgeDirect(serviceWranglerOrigin)
-      : new ServiceBridge(bridgeWranglerOrigin, bindingName),
+      ? new ServiceBridgeModuleDirect(serviceWranglerOrigin)
+      : new ServiceBridgeModule(bridgeWranglerOrigin, bindingName),
 
   /** @param {string} bindingName */
-  R2: (bindingName) => new R2Bridge(bridgeWranglerOrigin, bindingName),
+  R2: (bindingName) => new R2BridgeModule(bridgeWranglerOrigin, bindingName),
 });

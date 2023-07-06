@@ -71,5 +71,5 @@ export const handleKVDispatch = async (KV, req) => {
     return new Response();
   }
 
-  throw new Error(`Unknown operation: ${operation}.`);
+  throw new Error(`KV.${operation}() is not supported.`);
 };

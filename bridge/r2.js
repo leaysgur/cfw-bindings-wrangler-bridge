@@ -1,8 +1,10 @@
 // @ts-check
 
 // Refs:
+// https://developers.cloudflare.com/r2/api/workers/workers-api-reference/
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-rpc.c%2B%2B
+// https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 
 class R2ObjectBody extends Response {
   /** @type {string?} */
@@ -78,8 +80,8 @@ class R2ObjectBody extends Response {
   }
 }
 
-// R2Bucket
-export class R2Bridge {
+// implements R2Bucket
+export class R2BridgeModule {
   #bridgeWranglerOrigin;
   #bindingName;
 
@@ -207,8 +209,8 @@ export class R2Bridge {
     return json;
   }
 
-  /** @param {string} key */
-  async delete(key) {
-    await this.#fetch("delete", [key]);
+  /** @param {string | string[]} keys */
+  async delete(keys) {
+    await this.#fetch("delete", [keys]);
   }
 }

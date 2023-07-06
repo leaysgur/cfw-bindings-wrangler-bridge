@@ -1,7 +1,7 @@
 // @ts-check
 import { isKVBinding, handleKVDispatch } from "./kv.js";
-import { isServiceBinding, serviceHandle } from "./service.js";
-import { isR2Binding, r2Handle } from "./r2.js";
+import { isServiceBinding, handleServiceDispatch } from "./service.js";
+import { isR2Binding, handleR2Dispatch } from "./r2.js";
 
 export default {
   /** @type {ExportedHandlerFetchHandler<Record<string, unknown>>} */
@@ -23,23 +23,24 @@ export default {
         { status: 400 }
       );
 
+    // Let's handle dispatch from bridge module!
     if (BINDING_MODULE === "KV" && isKVBinding(BINDING))
       return handleKVDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
     if (BINDING_MODULE === "SERVICE" && isServiceBinding(BINDING))
-      return serviceHandle(BINDING, req).catch(
+      return handleServiceDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
     if (BINDING_MODULE === "R2" && isR2Binding(BINDING))
-      return r2Handle(BINDING, req).catch(
+      return handleR2Dispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
     return new Response(
-      `Not supported binding: ${BINDING_MODULE} or your binding: ${BINDING_NAME} is not compatible.`,
+      `Not supported binding: ${BINDING_MODULE} or binding: ${BINDING_NAME} is not compatible.`,
       { status: 404 }
     );
   },

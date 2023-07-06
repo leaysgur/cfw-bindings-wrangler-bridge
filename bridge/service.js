@@ -1,10 +1,11 @@
 // @ts-check
 
 // Refs:
+// https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/http.c%2B%2B
 
-// Fetcher
-export class ServiceBridge {
+// implements Fetcher
+export class ServiceBridgeModule {
   #bridgeWranglerOrigin;
   #bindingName;
 
@@ -37,8 +38,8 @@ export class ServiceBridge {
   }
 }
 
-// Fetcher
-export class ServiceBridgeDirect {
+// implements Fetcher
+export class ServiceBridgeModuleDirect {
   #serviceWranglerOrigin;
 
   /** @param {string} origin */

@@ -13,7 +13,7 @@ export const isServiceBinding = (binding) =>
  * @param {Fetcher} SERVICE
  * @param {Request} req
  */
-export const serviceHandle = async (SERVICE, req) => {
+export const handleServiceDispatch = async (SERVICE, req) => {
   const { operation, parameters } = JSON.parse(
     req.headers.get("X-BRIDGE-SERVICE-REQUEST") ?? "{}"
   );
@@ -32,5 +32,5 @@ export const serviceHandle = async (SERVICE, req) => {
     return SERVICE.fetch(originalReq);
   }
 
-  return new Response(`Unknown operation: ${operation}.`, { status: 404 });
+  throw new Error(`SERVICE.${operation}() is not supported.`);
 };

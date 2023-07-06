@@ -1,6 +1,6 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
-Bridge between local development code and Cloudflare bindings, via `wrangler dev --remote` command.
+Bridge between local development code and Cloudflare Workers bindings, via `wrangler dev --remote` command.
 
 ## Motivation
 
@@ -8,7 +8,7 @@ Imagine you want to deploy your application to Cloudflare Pages using a framewor
 
 `vite dev` is fast and DX is very good. Deployment is no problem either, with adapters available. GitHub connected auto CI, preview branches are really nice. 🥳
 
-However, as soon as you try to use features specific to the Cloudflare platform (like KV, D1, etc.), you run into problems...
+However, as soon as you try to use features specific to the Cloudflare Workers platform (like KV, D1, etc.), you run into problems...
 
 SvelteKit and `vite dev` don't know about such platform-specific features, so you can't verify any behavior during local development. 😢
 (That means `platform.env.MY_KV` is always `undefined`!)
