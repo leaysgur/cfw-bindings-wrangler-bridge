@@ -1,60 +1,46 @@
+// @ts-check
+
 import { isKVBinding, kvHandle } from "./kv.js";
 import { isServiceBinding, serviceHandle } from "./service.js";
 import { isR2Binding, r2Handle } from "./r2.js";
 
 export default {
-  /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler} */
+  /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler<Record<string, unknown>>} */
   async fetch(req, env) {
-    if (req.method !== "POST")
+    // KV or R2 or ...
+    const BINDING_MODULE = req.headers.get("X-BRIDGE-BINDING-MODULE");
+    // MY_KV or MY_R2 or ...
+    const BINDING_NAME = req.headers.get("X-BRIDGE-BINDING-NAME");
+    if (!(BINDING_MODULE && BINDING_NAME))
       return new Response(
-        "Wrong usage of bridge worker. It should be called via bridge module.",
+        "Wrong usage of bridge worker. Required headers are not presented.",
         { status: 400 }
       );
 
-    const bridgeRequestHeader = req.headers.get("X-BRIDGE-REQUEST");
-    if (!bridgeRequestHeader)
+    const BINDING = env[BINDING_NAME];
+    if (!BINDING)
       return new Response(
-        "Wrong usage of bridge worker. Required header is not presented.",
+        `Binding: ${BINDING_NAME} is not loaded. Check your wrangler.toml and reload.`,
         { status: 400 }
       );
 
-    /**
-     * @type {{
-     *   binding: string;
-     *   operation: string;
-     *   parameters: any[];
-     * }} bridgeRequest
-     */
-    const {
-      binding: BINDING,
-      operation: OPERATION,
-      parameters,
-    } = JSON.parse(bridgeRequestHeader);
-    const body = req.body;
-
-    if (BINDING in env === false)
-      return new Response(
-        `Binding: ${BINDING} is not loaded. Check your wrangler.toml and reload.`,
-        { status: 400 }
-      );
-
-    if (OPERATION.startsWith("KV.") && isKVBinding(env[BINDING]))
-      return kvHandle(env[BINDING], OPERATION, parameters, req.body).catch(
+    if (BINDING_MODULE === "KV" && isKVBinding(BINDING))
+      return kvHandle(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
-    if (OPERATION.startsWith("SERVICE.") && isServiceBinding(env[BINDING]))
-      return serviceHandle(env[BINDING], OPERATION, parameters, req.body).catch(
+    if (BINDING_MODULE === "SERVICE" && isServiceBinding(BINDING))
+      return serviceHandle(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
-    if (OPERATION.startsWith("R2.") && isR2Binding(env[BINDING]))
-      return r2Handle(env[BINDING], OPERATION, parameters, req.body).catch(
+    if (BINDING_MODULE === "R2" && isR2Binding(BINDING))
+      return r2Handle(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 })
       );
 
     return new Response(
-      `Not supported operation: ${OPERATION}. Or your binding: ${BINDING} is not compatible.`,
+      `Not supported binding: ${BINDING_MODULE} or your binding: ${BINDING_NAME} is not compatible.`,
       { status: 404 }
     );
   },

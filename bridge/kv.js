@@ -5,35 +5,45 @@
 
 // KVNamespace
 export class KVBridge {
-  #wranglerOrigin;
+  #bridgeWranglerOrigin;
   #bindingName;
 
   /**
-   * @param {string} wranglerOrigin
+   * @param {string} origin
    * @param {string} bindingName
    */
-  constructor(wranglerOrigin, bindingName) {
-    this.#wranglerOrigin = wranglerOrigin;
+  constructor(origin, bindingName) {
+    this.#bridgeWranglerOrigin = origin;
     this.#bindingName = bindingName;
   }
 
-  /** @param {import("@cloudflare/workers-types").KVNamespaceListOptions} [options] */
-  async list(options) {
-    const res = await fetch(this.#wranglerOrigin, {
+  /**
+   * @param {string} operation
+   * @param {any[]} parameters
+   * @param {BodyInit} [body]
+   */
+  async #fetch(operation, parameters, body) {
+    const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
-        "X-BRIDGE-REQUEST": JSON.stringify({
-          binding: this.#bindingName,
-          operation: "KV.list",
-          parameters: [options],
-        }),
+        "X-BRIDGE-BINDING-MODULE": "KV",
+        "X-BRIDGE-BINDING-NAME": this.#bindingName,
+        "X-BRIDGE-KV-REQUEST": JSON.stringify({ operation, parameters }),
       },
+      body,
     });
 
     if (!res.ok) {
       const error = await res.text();
       throw new Error(error);
     }
+
+    return res;
+  }
+
+  /** @param {KVNamespaceListOptions} [options] */
+  async list(options) {
+    const res = await this.#fetch("list", [options]);
 
     const json = await res.json();
     return json;
@@ -42,25 +52,10 @@ export class KVBridge {
   /**
    * @param {string} key
    * @param {string | ArrayBuffer | ArrayBufferView | ReadableStream} value
-   * @param {import("@cloudflare/workers-types").KVNamespacePutOptions} [options]
+   * @param {KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
-    const res = await fetch(this.#wranglerOrigin, {
-      method: "POST",
-      headers: {
-        "X-BRIDGE-REQUEST": JSON.stringify({
-          binding: this.#bindingName,
-          operation: "KV.put",
-          parameters: [key, null, options],
-        }),
-      },
-      body: value,
-    });
-
-    if (!res.ok) {
-      const error = await res.text();
-      throw new Error(error);
-    }
+    await this.#fetch("put", [key, null, options], value);
   }
 
   /**
@@ -69,35 +64,7 @@ export class KVBridge {
    * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async get(key, typeOrOptions) {
-    const { value } = await this.getWithMetadata(key, typeOrOptions);
-    return value;
-  }
-
-  /**
-   * @template Type
-   * @param {string} key
-   * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
-   */
-  async getWithMetadata(key, typeOrOptions) {
-    const res = await fetch(this.#wranglerOrigin, {
-      method: "POST",
-      headers: {
-        "X-BRIDGE-REQUEST": JSON.stringify({
-          binding: this.#bindingName,
-          operation: "KV.getWithMetadata",
-          parameters: [key, typeOrOptions],
-        }),
-      },
-    });
-
-    if (!res.ok) {
-      const error = await res.text();
-      throw new Error(error);
-    }
-
-    const { metadata } = JSON.parse(
-      res.headers.get("X-BRIDGE-RESPONSE") ?? "{}"
-    );
+    const res = await this.#fetch("get", [key, typeOrOptions]);
 
     let type;
     if (!typeOrOptions) {
@@ -114,25 +81,41 @@ export class KVBridge {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
+    return value;
+  }
+
+  /**
+   * @template Type
+   * @param {string} key
+   * @param {import("@cloudflare/workers-types").KVNamespaceGetOptions<Type>} [typeOrOptions]
+   */
+  async getWithMetadata(key, typeOrOptions) {
+    const res = await this.#fetch("getWithMetadata", [key, typeOrOptions]);
+
+    let type;
+    if (!typeOrOptions) {
+      type = "text";
+    } else if (typeof typeOrOptions === "string") {
+      type = typeOrOptions;
+    } else {
+      type = typeOrOptions.type;
+    }
+
+    let value;
+    if (type === "json") value = await res.json();
+    if (type === "text") value = await res.text();
+    if (type === "arrayBuffer") value = await res.arrayBuffer();
+    if (type === "stream") value = res.body;
+
+    const { metadata } = JSON.parse(
+      res.headers.get("X-BRIDGE-KV-RESPONSE") ?? "{}"
+    );
+
     return { value, metadata: metadata ?? null };
   }
 
   /** @param {string} key */
   async delete(key) {
-    const res = await fetch(this.#wranglerOrigin, {
-      method: "POST",
-      headers: {
-        "X-BRIDGE-REQUEST": JSON.stringify({
-          binding: this.#bindingName,
-          operation: "KV.delete",
-          parameters: [key],
-        }),
-      },
-    });
-
-    if (!res.ok) {
-      const error = await res.text();
-      throw new Error(error);
-    }
+    await this.#fetch("delete", [key]);
   }
 }

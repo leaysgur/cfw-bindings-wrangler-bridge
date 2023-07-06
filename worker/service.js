@@ -1,30 +1,36 @@
 // @ts-check
 
-/** @param {any} binding */
+/**
+ * @param {any} binding
+ * @returns {binding is Fetcher}
+ */
 export const isServiceBinding = (binding) =>
   // This is true in remote but `Object` in local :(
   // binding.constructor.name === "Fetcher"
   typeof binding.fetch === "function";
 
 /**
- * @param {import("@cloudflare/workers-types").Fetcher} SERVICE
- * @param {string} OPERATION
- * @param {import("@cloudflare/workers-types").Request} req
+ * @param {Fetcher} SERVICE
+ * @param {Request} req
  */
-export const serviceHandle = async (SERVICE, OPERATION, req) => {
-  if (OPERATION === "service_fetch") {
-    const originalUrl =
-      req.headers.get("X-ServiceFetch-Original-Url") ?? req.url;
+export const serviceHandle = async (SERVICE, req) => {
+  const { operation, parameters } = JSON.parse(
+    req.headers.get("X-BRIDGE-SERVICE-REQUEST") ?? "{}"
+  );
+
+  if (operation === "fetch") {
+    const [originalUrl] = parameters;
+
+    // Route to original service(worker)
+    const originalReq = new Request(originalUrl, req);
 
     // Clean up our header
-    const originalReq = new Request(originalUrl, req);
-    originalReq.headers.delete("X-ServiceFetch-Original-Url");
+    originalReq.headers.delete("X-BRIDGE-BINDING-MODULE")
+    originalReq.headers.delete("X-BRIDGE-BINDING-NAME")
+    originalReq.headers.delete("X-BRIDGE-SERVICE-REQUEST")
 
     return SERVICE.fetch(originalReq);
   }
 
-  return Response.json(
-    { error: `Unknown operation: ${OPERATION}.` },
-    { status: 404 }
-  );
+  return new Response(`Unknown operation: ${operation}.`, { status: 404 });
 };

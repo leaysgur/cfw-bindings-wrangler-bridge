@@ -1,5 +1,9 @@
 // @ts-check
 
+// Refs:
+// https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
+// https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-rpc.c%2B%2B
+
 class R2ObjectBody extends Response {
   /** @type {string?} */
   key;
@@ -39,11 +43,11 @@ class R2ObjectBody extends Response {
    * @param {number?} size
    * @param {string?} etag
    * @param {string?} httpEtag
-   * @param {import("@cloudflare/workers-types").R2Checksums?} checksums
+   * @param {R2Checksums?} checksums
    * @param {Date?} uploaded
-   * @param {import("@cloudflare/workers-types").R2HTTPMetadata?} httpMetadata
+   * @param {R2HTTPMetadata?} httpMetadata
    * @param {Record<string, string>?} customMetadata
-   * @param {import("@cloudflare/workers-types").R2Range?} range
+   * @param {R2Range?} range
    */
   constructor(
     body,
@@ -74,67 +78,108 @@ class R2ObjectBody extends Response {
   }
 }
 
-// R2Namespace
+// R2Bucket
 export class R2Bridge {
-  #wranglerOrigin;
+  #bridgeWranglerOrigin;
   #bindingName;
 
   /**
-   * @param {string} wranglerOrigin
+   * @param {string} origin
    * @param {string} bindingName
    */
-  constructor(wranglerOrigin, bindingName) {
-    this.#wranglerOrigin = wranglerOrigin;
+  constructor(origin, bindingName) {
+    this.#bridgeWranglerOrigin = origin;
     this.#bindingName = bindingName;
   }
 
-  /** @param {import("@cloudflare/workers-types").R2ListOptions} [options] */
-  async list(options) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/r2_list/${this.#bindingName}`;
+  /**
+   * @param {string} operation
+   * @param {any[]} parameters
+   * @param {BodyInit} [body]
+   */
+  async #fetch(operation, parameters, body) {
+    const res = await fetch(this.#bridgeWranglerOrigin, {
+      method: "POST",
+      headers: {
+        "X-BRIDGE-BINDING-MODULE": "KV",
+        "X-BRIDGE-BINDING-NAME": this.#bindingName,
+        "X-BRIDGE-R2-REQUEST": JSON.stringify({ operation, parameters }),
+      },
+      body,
+    });
 
-    const req = new Request(url, { method: "GET" });
-    if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(error);
+    }
 
-    const res = await fetch(req);
     return res;
+  }
+
+  /** @param {R2ListOptions} [options] */
+  async list(options) {
+    const res = await this.#fetch("list", [options]);
+
+    // TODO: return R2Object or null
+    const json = await res.json();
+    return json;
   }
 
   /**
    * @param {string} key
    * @param {ReadableStream | ArrayBuffer | ArrayBufferView | string | null | Blob} value
-   * @param {import("@cloudflare/workers-types").R2PutOptions} [options]
+   * @param {R2PutOptions} [options]
    */
   async put(key, value, options) {
-    const url = new URL(this.#wranglerOrigin);
-    // pathname is like `/r2_get/BINDING/encodeURIComponent(key)`
-    url.pathname = `/r2_put/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await this.#fetch(
+      "put",
+      [key, null, options],
+      // `null` is not a valid type for `BodyInit`.
+      // What actually happens when `null` is passed...?
+      value ?? undefined
+    );
 
-    const req = new Request(url, { method: "PUT", body: value });
-    if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
-
-    await fetch(req);
+    // TODO: return R2Object or null
+    const json = await res.json();
+    return json;
   }
 
   /**
    * @param {string} key
-   * @param {import("@cloudflare/workers-types").R2GetOptions} options
+   * @param {R2GetOptions} [options]
    */
   async get(key, options) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/r2_get/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await this.#fetch("get", [key, options]);
 
-    const req = new Request(url, { method: "GET" });
-    if (options) req.headers.set("CF-R2-OPTIONS", JSON.stringify(options));
+    // HeadResult ...?
+    class R2Object {
+      // readonly key: string;
+      // readonly version: string;
+      // readonly size: number;
+      // readonly etag: string;
+      // readonly httpEtag: string;
+      // readonly checksums: R2Checksums;
+      // readonly uploaded: Date;
+      // readonly httpMetadata?: R2HTTPMetadata;
+      // readonly customMetadata?: Record<string, string>;
+      // readonly range?: R2Range;
+      constructor() {}
+      writeHttpMetadata() {}
+    }
+    class R2ObjectBody extends R2Object {
+      // get body(): ReadableStream;
+      // get bodyUsed(): boolean;
+      constructor() {}
+      async arrayBuffer() {}
+      async text() {}
+      async json() {}
+      async blob() {}
+    }
 
-    const res = await fetch(req);
-
-    if (!res.ok && res.status === 404) return null;
-
-    const r2ObjectInHeader = JSON.parse(
-      res.headers.get("CF-R2-Object") ?? "null"
-    );
-
+    // TODO: return
+    // null
+    // R2Object: JSON
+    // R2ObjectBody: body: ReadableStream
     return new R2ObjectBody(
       res.body,
       null,
@@ -151,21 +196,17 @@ export class R2Bridge {
     );
   }
 
-  /**
-   * @param {string} key
-   */
+  /** @param {string} key */
   async head(key) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/r2_head/${this.#bindingName}/${encodeURIComponent(key)}`;
+    const res = await this.#fetch("head", [key]);
 
-    return await fetch(url);
+    // TODO: return R2Object or null
+    const json = await res.json();
+    return json;
   }
 
   /** @param {string} key */
   async delete(key) {
-    const url = new URL(this.#wranglerOrigin);
-    url.pathname = `/kv_delete/${this.#bindingName}/${encodeURIComponent(key)}`;
-
-    await fetch(url, { method: "DELETE" });
+    await this.#fetch("delete", [key]);
   }
 }

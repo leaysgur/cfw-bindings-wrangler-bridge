@@ -18,18 +18,20 @@ export class ServiceBridge {
   }
 
   /**
-   * @param {import("@cloudflare/workers-types").RequestInfo} requestOrUrl
-   * @param {import("@cloudflare/workers-types").RequestInit} [requestInit]
+   * @param {RequestInfo} requestOrUrl
+   * @param {RequestInit} [requestInit]
    */
   async fetch(requestOrUrl, requestInit) {
-    const url = new URL(this.#bridgeWranglerOrigin);
-    url.pathname = `/service_fetch/${this.#bindingName}`;
-
     const originalReq = new Request(requestOrUrl, requestInit);
 
-    // Route to bridge(worker) w/ original url
-    const req = new Request(url, originalReq);
-    req.headers.set("X-ServiceFetch-Original-Url", originalReq.url);
+    // Route to bridge(worker) w/ stashed original url
+    const req = new Request(this.#bridgeWranglerOrigin, originalReq);
+    req.headers.set("X-BRIDGE-BINDING-MODULE", "SERVICE");
+    req.headers.set("X-BRIDGE-BINDING-NAME", this.#bindingName);
+    req.headers.set("X-BRIDGE-SERVICE-REQUEST", JSON.stringify({
+      operation: "fetch",
+      parameters: [originalReq.url],
+    }));
 
     return fetch(req);
   }
@@ -45,20 +47,21 @@ export class ServiceBridgeDirect {
   }
 
   /**
-   * @param {import("@cloudflare/workers-types").RequestInfo} requestOrUrl
-   * @param {import("@cloudflare/workers-types").RequestInit} [requestInit]
+   * @param {RequestInfo} requestOrUrl
+   * @param {RequestInit} [requestInit]
    */
   async fetch(requestOrUrl, requestInit) {
-    const serviceWranglerUrl = new URL(this.#serviceWranglerOrigin);
     const originalReq = new Request(requestOrUrl, requestInit);
 
-    // Replace `origin` part for routing, others are kept as-is
-    // This may be problematic if service(worker) depends on incoming `origin` string
+    // Replace `origin` part for routing, others are kept as-is.
+    // This is crucial as bridge but may be problematic,
+    // if user's service(worker) depends on incoming `origin` string.
     const url = new URL(originalReq.url);
+    const serviceWranglerUrl = new URL(this.#serviceWranglerOrigin);
     url.protocol = serviceWranglerUrl.protocol;
     url.host = serviceWranglerUrl.host;
 
-    // Direct `fetch()` to service's `wrangler dev` process
-    return fetch(new Request(url, originalReq));
+    // Direct `fetch()` to user's service's `wrangler dev` process
+    return fetch(url, originalReq);
   }
 }
