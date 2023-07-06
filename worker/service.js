@@ -1,5 +1,11 @@
 // @ts-check
 
+/** @param {any} binding */
+export const isServiceBinding = (binding) =>
+  // This is true in remote but `Object` in local :(
+  // binding.constructor.name === "Fetcher"
+  typeof binding.fetch === "function";
+
 /**
  * @param {import("@cloudflare/workers-types").Fetcher} SERVICE
  * @param {string} OPERATION

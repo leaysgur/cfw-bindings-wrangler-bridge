@@ -1,5 +1,8 @@
 // @ts-check
 
+/** @param {any} binding */
+export const isR2Binding = (binding) => binding.constructor.name === "R2Bucket";
+
 /**
  * @param {import("@cloudflare/workers-types").R2Bucket} R2
  * @param {string} OPERATION

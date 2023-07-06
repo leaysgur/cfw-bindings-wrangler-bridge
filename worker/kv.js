@@ -1,5 +1,9 @@
 // @ts-check
 
+/** @param {any} binding */
+export const isKVBinding = (binding) =>
+  binding.constructor.name === "KvNamespace";
+
 /**
  * @param {import("@cloudflare/workers-types").KVNamespace} KV
  * @param {string} OPERATION

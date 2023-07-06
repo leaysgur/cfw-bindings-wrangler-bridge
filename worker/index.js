@@ -1,6 +1,6 @@
-import { kvHandle } from "./kv.js";
-import { r2Handle } from "./r2.js";
-import { serviceHandle } from "./service.js";
+import { isKVBinding, kvHandle } from "./kv.js";
+import { isServiceBinding, serviceHandle } from "./service.js";
+import { isR2Binding, r2Handle } from "./r2.js";
 
 export default {
   /** @type {import("@cloudflare/workers-types").ExportedHandlerFetchHandler} */
@@ -15,10 +15,7 @@ export default {
       );
 
     // KV ---
-    if (
-      OPERATION.startsWith("kv_") &&
-      env[BINDING].constructor.name === "KvNamespace"
-    )
+    if (OPERATION.startsWith("kv_") && isKVBinding(env[BINDING]))
       return kvHandle(env[BINDING], OPERATION, req).catch((err) =>
         Response.json(
           { error: `Failed in kvHandle(): ${err.message}` },
@@ -27,12 +24,7 @@ export default {
       );
 
     // Service ---
-    if (
-      OPERATION.startsWith("service_") &&
-      // This is `Object` in local :(
-      // env[BINDING].constructor.name === "Fetcher"
-      typeof env[BINDING].fetch === "function"
-    )
+    if (OPERATION.startsWith("service_") && isServiceBinding(env[BINDING]))
       return serviceHandle(env[BINDING], OPERATION, req).catch((err) =>
         Response.json(
           { error: `Failed in serviceHandle(): ${err.message}` },
@@ -41,7 +33,7 @@ export default {
       );
 
     // R2 ---
-    if (OPERATION.startsWith("r2_") && typeof env[BINDING].get === "function")
+    if (OPERATION.startsWith("r2_") && isR2Binding(env[BINDING]))
       return r2Handle(env[BINDING], OPERATION, req).catch((err) =>
         Response.json(
           { error: `Failed in r2Handle(): ${err.message}` },
@@ -50,7 +42,9 @@ export default {
       );
 
     return Response.json(
-      { error: `Not supported operation: ${OPERATION}.` },
+      {
+        error: `Not supported operation: ${OPERATION}. Or your binding: ${BINDING} is not compatible.`,
+      },
       { status: 404 }
     );
   },
