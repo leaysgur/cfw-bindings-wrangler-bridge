@@ -4,7 +4,9 @@ import { ServiceBridgeModule, ServiceBridgeModuleDirect } from "./service.js";
 import { R2BridgeModule } from "./r2.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
-export const createBridge = (bridgeWranglerOrigin = "http://127.0.0.1:8787") => ({
+export const createBridge = (
+  bridgeWranglerOrigin = "http://127.0.0.1:8787"
+) => ({
   /** @param {string} bindingName */
   KV: (bindingName) => new KVBridgeModule(bridgeWranglerOrigin, bindingName),
 

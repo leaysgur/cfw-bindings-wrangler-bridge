@@ -5,80 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-rpc.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
-
-class R2ObjectBody extends Response {
-  /** @type {string?} */
-  key;
-
-  /** @type {string?} */
-  version;
-
-  /** @type {number?} */
-  size;
-
-  /** @type {string?} */
-  etag;
-
-  /** @type {string?} */
-  httpEtag;
-
-  /** @type {import("@cloudflare/workers-types").R2Checksums?}*/
-  checksums;
-
-  /** @type {Date?} */
-  uploaded;
-
-  /** @type {import("@cloudflare/workers-types").R2HTTPMetadata?}*/
-  httpMetadata;
-
-  /** @type {Record<string, string>?} */
-  customMetadata;
-
-  /** @type {import("@cloudflare/workers-types").R2Range?}*/
-  range;
-
-  /**
-   * @param {BodyInit | null} body
-   * @param {ResponseInit?} init
-   * @param {string?} key
-   * @param {string?} version
-   * @param {number?} size
-   * @param {string?} etag
-   * @param {string?} httpEtag
-   * @param {R2Checksums?} checksums
-   * @param {Date?} uploaded
-   * @param {R2HTTPMetadata?} httpMetadata
-   * @param {Record<string, string>?} customMetadata
-   * @param {R2Range?} range
-   */
-  constructor(
-    body,
-    init,
-    key,
-    version,
-    size,
-    etag,
-    httpEtag,
-    checksums,
-    uploaded,
-    httpMetadata,
-    customMetadata,
-    range
-  ) {
-    super(body, init ?? undefined);
-
-    this.key = key;
-    this.version = version;
-    this.size = size;
-    this.etag = etag;
-    this.httpEtag = httpEtag;
-    this.checksums = checksums;
-    this.uploaded = uploaded;
-    this.httpMetadata = httpMetadata;
-    this.customMetadata = customMetadata;
-    this.range = range;
-  }
-}
+// https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
 // implements R2Bucket
 export class R2BridgeModule {
@@ -99,7 +26,7 @@ export class R2BridgeModule {
    * @param {any[]} parameters
    * @param {BodyInit} [body]
    */
-  async #fetch(operation, parameters, body) {
+  async #dispatch(operation, parameters, body) {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
@@ -120,13 +47,15 @@ export class R2BridgeModule {
 
   /** @param {R2ListOptions} [options] */
   async list(options) {
-    const res = await this.#fetch("list", [options]);
+    const res = await this.#dispatch("list", [options]);
 
-    class R2Objects {}
-
-    // TODO: return R2Objects or null
+    /** @type {R2ObjectsJSON} */
     const json = await res.json();
-    return json;
+
+    return {
+      ...json,
+      objects: json.objects.map((o) => new R2Object$(o)),
+    };
   }
 
   /**
@@ -135,17 +64,19 @@ export class R2BridgeModule {
    * @param {R2PutOptions} [options]
    */
   async put(key, value, options) {
-    const res = await this.#fetch(
+    const res = await this.#dispatch(
       "put",
       [key, null, options],
       // `null` is not a valid type for `BodyInit`.
-      // What actually happens when `null` is passed...?
+      // And it seems to have the same effect...
       value ?? undefined
     );
 
-    // TODO: return R2Object or null
+    /** @type {null | R2ObjectJSON} */
     const json = await res.json();
-    return json;
+
+    if (json === null) return null;
+    return new R2Object$(json);
   }
 
   /**
@@ -153,7 +84,7 @@ export class R2BridgeModule {
    * @param {R2GetOptions} [options]
    */
   async get(key, options) {
-    const res = await this.#fetch("get", [key, options]);
+    const res = await this.#dispatch("get", [key, options]);
 
     // HeadResult ...?
     class R2Object {
@@ -184,33 +115,129 @@ export class R2BridgeModule {
     // null
     // R2Object: JSON
     // R2ObjectBody: body: ReadableStream
-    return new R2ObjectBody(
-      res.body,
-      null,
-      r2ObjectInHeader?.key,
-      r2ObjectInHeader?.version,
-      r2ObjectInHeader?.size,
-      r2ObjectInHeader?.etag,
-      r2ObjectInHeader?.httpEtag,
-      r2ObjectInHeader?.checksums,
-      r2ObjectInHeader?.uploaded,
-      r2ObjectInHeader?.httpMetadata,
-      r2ObjectInHeader?.customMetadata,
-      r2ObjectInHeader?.range
-    );
   }
 
   /** @param {string} key */
   async head(key) {
-    const res = await this.#fetch("head", [key]);
+    const res = await this.#dispatch("head", [key]);
 
-    // TODO: return R2Object or null
+    /** @type {null | R2ObjectJSON} */
     const json = await res.json();
-    return json;
+
+    if (json === null) return null;
+    return new R2Object$(json);
   }
 
   /** @param {string | string[]} keys */
   async delete(keys) {
-    await this.#fetch("delete", [keys]);
+    await this.#dispatch("delete", [keys]);
   }
 }
+
+/** @param {string} hex */
+const hexToArrayBuffer = (hex) => {
+  const view = new Uint8Array(hex.length / 2);
+
+  for (let i = 0; i < hex.length; i += 2)
+    view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+
+  return view.buffer;
+};
+
+/**
+ * @typedef {(
+ *   Omit<R2Object, "checksums" | "writeHttpMetadata">
+ *   & { checksums: R2StringChecksums; }
+ * )} R2ObjectJSON
+ */
+
+class R2Checksums$ {
+  /** @type {R2StringChecksums} */
+  #checksums;
+
+  /** @param {R2StringChecksums} checksums */
+  constructor(checksums) {
+    this.#checksums = checksums;
+  }
+
+  get md5() {
+    if (this.#checksums.md5) return hexToArrayBuffer(this.#checksums.md5);
+    return undefined;
+  }
+  get sha1() {
+    if (this.#checksums.sha1) return hexToArrayBuffer(this.#checksums.sha1);
+    return undefined;
+  }
+  get sha256() {
+    if (this.#checksums.sha256) return hexToArrayBuffer(this.#checksums.sha256);
+    return undefined;
+  }
+  get sha384() {
+    if (this.#checksums.sha384) return hexToArrayBuffer(this.#checksums.sha384);
+    return undefined;
+  }
+  get sha512() {
+    if (this.#checksums.sha512) return hexToArrayBuffer(this.#checksums.sha512);
+    return undefined;
+  }
+
+  toJSON() {
+    return this.#checksums;
+  }
+}
+
+class R2Object$ {
+  /** @type {R2ObjectJSON} */
+  #metadata;
+
+  /** @param {R2ObjectJSON} metadata */
+  constructor(metadata) {
+    this.#metadata = metadata;
+  }
+
+  get key() {
+    return this.#metadata.key;
+  }
+  get version() {
+    return this.#metadata.version;
+  }
+  get size() {
+    return this.#metadata.size;
+  }
+  get etag() {
+    return this.#metadata.etag;
+  }
+  get httpEtag() {
+    return this.#metadata.httpEtag;
+  }
+  get checksums() {
+    return new R2Checksums$(this.#metadata.checksums);
+  }
+  get uploaded() {
+    return new Date(this.#metadata.uploaded);
+  }
+  get httpMetadata() {
+    return this.#metadata.httpMetadata;
+  }
+  get customMetadata() {
+    return this.#metadata.customMetadata;
+  }
+  get range() {
+    return this.#metadata.range;
+  }
+
+  /** @param {Headers} headers */
+  writeHttpMetadata(headers) {
+    for (const [key, value] of Object.entries(
+      this.#metadata.httpMetadata ?? {}
+    ))
+      headers.set(key, value);
+  }
+}
+
+/**
+ * @typedef {(
+ *   Omit<R2Objects, "objects">
+ *   & { objects: R2ObjectJSON[]; }
+ * )} R2ObjectsJSON
+ */

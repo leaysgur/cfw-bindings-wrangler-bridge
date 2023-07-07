@@ -29,10 +29,13 @@ export class ServiceBridgeModule {
     const req = new Request(this.#bridgeWranglerOrigin, originalReq);
     req.headers.set("X-BRIDGE-BINDING-MODULE", "SERVICE");
     req.headers.set("X-BRIDGE-BINDING-NAME", this.#bindingName);
-    req.headers.set("X-BRIDGE-SERVICE-REQUEST", JSON.stringify({
-      operation: "fetch",
-      parameters: [originalReq.url],
-    }));
+    req.headers.set(
+      "X-BRIDGE-SERVICE-REQUEST",
+      JSON.stringify({
+        operation: "fetch",
+        parameters: [originalReq.url],
+      })
+    );
 
     return fetch(req);
   }

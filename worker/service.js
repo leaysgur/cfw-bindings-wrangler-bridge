@@ -25,9 +25,9 @@ export const handleServiceDispatch = async (SERVICE, req) => {
     const originalReq = new Request(originalUrl, req);
 
     // Clean up our header
-    originalReq.headers.delete("X-BRIDGE-BINDING-MODULE")
-    originalReq.headers.delete("X-BRIDGE-BINDING-NAME")
-    originalReq.headers.delete("X-BRIDGE-SERVICE-REQUEST")
+    originalReq.headers.delete("X-BRIDGE-BINDING-MODULE");
+    originalReq.headers.delete("X-BRIDGE-BINDING-NAME");
+    originalReq.headers.delete("X-BRIDGE-SERVICE-REQUEST");
 
     return SERVICE.fetch(originalReq);
   }
