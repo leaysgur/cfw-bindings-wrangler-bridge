@@ -29,7 +29,7 @@ export class KVNamespace$ {
       headers: {
         "X-BRIDGE-BINDING-MODULE": "KV",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
-        "X-BRIDGE-KV-REQUEST": JSON.stringify({ operation, parameters }),
+        "X-BRIDGE-KV-Dispatch": JSON.stringify({ operation, parameters }),
       },
       body,
     });
@@ -65,23 +65,7 @@ export class KVNamespace$ {
    * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async get(key, typeOrOptions) {
-    const res = await this.#dispatch("get", [key, typeOrOptions]);
-
-    let type;
-    if (!typeOrOptions) {
-      type = "text";
-    } else if (typeof typeOrOptions === "string") {
-      type = typeOrOptions;
-    } else {
-      type = typeOrOptions.type;
-    }
-
-    let value;
-    if (type === "json") value = await res.json();
-    if (type === "text") value = await res.text();
-    if (type === "arrayBuffer") value = await res.arrayBuffer();
-    if (type === "stream") value = res.body;
-
+    const { value } = await this.getWithMetadata(key, typeOrOptions);
     return value;
   }
 
@@ -108,11 +92,11 @@ export class KVNamespace$ {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
-    const { metadata } = JSON.parse(
-      res.headers.get("X-BRIDGE-KV-RESPONSE") ?? "{}"
+    const metadata = JSON.parse(
+      res.headers.get("X-BRIDGE-KV-Metadata") ?? "null"
     );
 
-    return { value, metadata: metadata ?? null };
+    return { value, metadata };
   }
 
   /** @param {string} key */

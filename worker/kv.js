@@ -13,35 +13,15 @@ export const isKVBinding = (binding) =>
  */
 export const handleKVDispatch = async (KV, req) => {
   const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-KV-REQUEST") ?? "{}"
+    req.headers.get("X-BRIDGE-KV-Dispatch") ?? "{}"
   );
 
-  if (operation === "get") {
-    const [key, typeOrOptions] = parameters;
+  if (operation === "list") {
+    const [options] = parameters;
 
-    const value = await KV.get(key, {
-      ...typeOrOptions,
-      // Override it to respond over our bridge.
-      // `stream` is fastest and type conversion is done by bridge module.
-      type: "stream",
-    });
+    const result = await KV.list(options);
 
-    return new Response(value);
-  }
-
-  if (operation === "getWithMetadata") {
-    const [key, typeOrOptions] = parameters;
-
-    const { value, metadata } = await KV.getWithMetadata(key, {
-      ...typeOrOptions,
-      // Override it to respond over our bridge.
-      // `stream` is fastest and type conversion is done by bridge module.
-      type: "stream",
-    });
-
-    return new Response(value, {
-      headers: { "X-BRIDGE-KV-RESPONSE": JSON.stringify({ metadata }) },
-    });
+    return Response.json(result);
   }
 
   if (operation === "put") {
@@ -55,12 +35,19 @@ export const handleKVDispatch = async (KV, req) => {
     return new Response();
   }
 
-  if (operation === "list") {
-    const [options] = parameters;
+  if (operation === "getWithMetadata") {
+    const [key, typeOrOptions] = parameters;
 
-    const result = await KV.list(options);
+    const { value, metadata } = await KV.getWithMetadata(key, {
+      ...typeOrOptions,
+      // Override it to respond over our bridge.
+      // `stream` is fastest and type conversion is done by bridge module.
+      type: "stream",
+    });
 
-    return Response.json(result);
+    return new Response(value, {
+      headers: { "X-BRIDGE-KV-Metadata": JSON.stringify(metadata) },
+    });
   }
 
   if (operation === "delete") {

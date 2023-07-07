@@ -40,7 +40,7 @@ export default {
       );
 
     return new Response(
-      `Not supported binding: ${BINDING_MODULE} or binding: ${BINDING_NAME} is not compatible.`,
+      `Not supported binding: ${BINDING_MODULE} or ${BINDING_NAME} is not compatible.`,
       { status: 404 }
     );
   },
