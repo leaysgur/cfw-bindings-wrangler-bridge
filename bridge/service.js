@@ -29,7 +29,7 @@ export class Fetcher$ {
     req.headers.set("X-BRIDGE-BINDING-MODULE", "SERVICE");
     req.headers.set("X-BRIDGE-BINDING-NAME", this.#bindingName);
     req.headers.set(
-      "X-BRIDGE-SERVICE-REQUEST",
+      "X-BRIDGE-SERVICE-Dispatch",
       JSON.stringify({
         operation: "fetch",
         parameters: [originalReq.url],
@@ -56,7 +56,8 @@ export class DirectFetcher$ {
     const originalReq = new Request(requestOrUrl, requestInit);
 
     // Replace `origin` part for routing, others are kept as-is.
-    // This is crucial as bridge but may be problematic,
+    //
+    // This is crucial as bridge implementation but may be problematic,
     // if user's service(worker) depends on incoming `origin` string.
     const url = new URL(originalReq.url);
     const serviceWranglerUrl = new URL(this.#serviceWranglerOrigin);

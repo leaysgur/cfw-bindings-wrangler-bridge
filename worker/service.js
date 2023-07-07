@@ -15,7 +15,7 @@ export const isServiceBinding = (binding) =>
  */
 export const handleServiceDispatch = async (SERVICE, req) => {
   const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-SERVICE-REQUEST") ?? "{}"
+    req.headers.get("X-BRIDGE-SERVICE-Dispatch") ?? "{}"
   );
 
   if (operation === "fetch") {
@@ -27,7 +27,7 @@ export const handleServiceDispatch = async (SERVICE, req) => {
     // Clean up our header
     originalReq.headers.delete("X-BRIDGE-BINDING-MODULE");
     originalReq.headers.delete("X-BRIDGE-BINDING-NAME");
-    originalReq.headers.delete("X-BRIDGE-SERVICE-REQUEST");
+    originalReq.headers.delete("X-BRIDGE-SERVICE-Dispatch");
 
     return SERVICE.fetch(originalReq);
   }
