@@ -18,10 +18,13 @@ export const createBridge = (
     // Current `wrangler dev` cannot mix `--local` and `--remote` workers.
     // https://github.com/cloudflare/workers-sdk/issues/1182
     //
-    // If bride(worker) runs in `--local`, it calls service(worker) running in local.
-    // If bride(worker) runs in `--remote`, it calls service(worker) actually deployed.(NOT `dev --remote`!)
+    // If bridge(worker) runs in `--local`,
+    //   it is allowed to call service(worker) running in local.
+    // If bridge(worker) runs in `--remote`, 
+    //   it is allowed to call service(worker) actually deployed.
+    // (There is no ways to call service(worker) running with `dev --remote`.)
     //
-    // But our brige make it possible to mix them by calling service(worker) directly!
+    // But with our bridge, it is possible to mix them by calling service(worker) directly!
     serviceWranglerOrigin
       ? new DirectFetcher$(serviceWranglerOrigin)
       : new Fetcher$(bridgeWranglerOrigin, bindingName),
