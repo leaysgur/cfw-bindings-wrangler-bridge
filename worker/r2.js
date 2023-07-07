@@ -36,24 +36,18 @@ export const handleR2Dispatch = async (R2, req) => {
   if (operation === "get") {
     const [key, options] = parameters;
 
-    // Retrieves the `R2ObjectBody` for the given key
-    //   containing object metadata and the object body as a `ReadableStream`, if the key exists,
-    // and `null` if the key does not exist.
-    //
-    // In the event that a precondition specified in `options` fails,
-    //   `get()` returns an `R2Object` with body undefined.
     const result = await R2.get(key, options);
 
-    // `null`
+    // `null`: key does not exists
     if (result === null) return Response.json(null);
 
-    // `R2ObjectBody`
+    // `R2ObjectBody`: key exists and condition is met
     if ("body" in result)
       return new Response(result.body, {
         headers: { "X-BRIDGE-R2-R2ObjectJSON": JSON.stringify(result) },
       });
 
-    // `R2Object`
+    // `R2Object`: key exists but condition is not met
     return Response.json(result);
   }
 
