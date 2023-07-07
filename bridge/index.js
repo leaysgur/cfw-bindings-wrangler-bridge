@@ -20,7 +20,7 @@ export const createBridge = (
     //
     // If bridge(worker) runs in `--local`,
     //   it is allowed to call service(worker) running in local.
-    // If bridge(worker) runs in `--remote`, 
+    // If bridge(worker) runs in `--remote`,
     //   it is allowed to call service(worker) actually deployed.
     // (There is no ways to call service(worker) running with `dev --remote`.)
     //

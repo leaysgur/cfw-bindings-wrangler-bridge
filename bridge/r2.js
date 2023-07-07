@@ -7,6 +7,122 @@
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
+/**
+ * @typedef {(
+ *   Omit<R2Object, "checksums" | "writeHttpMetadata">
+ *   & { checksums: R2StringChecksums; }
+ * )} R2ObjectJSON
+ *
+ * @typedef {(
+ *   Omit<R2Objects, "objects">
+ *   & { objects: R2ObjectJSON[]; }
+ * )} R2ObjectsJSON
+ */
+
+/** @param {string} hex */
+const hexToArrayBuffer = (hex) => {
+  const view = new Uint8Array(hex.length / 2);
+
+  for (let i = 0; i < hex.length; i += 2)
+    view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+
+  return view.buffer;
+};
+
+class R2Checksums$ {
+  #checksums;
+  md5;
+  sha1;
+  sha256;
+  sha384;
+  sha512;
+
+  /** @param {R2StringChecksums} checksums */
+  constructor(checksums) {
+    this.#checksums = checksums;
+
+    this.md5 = checksums.md5 ? hexToArrayBuffer(checksums.md5) : undefined;
+    this.sha1 = checksums.sha1 ? hexToArrayBuffer(checksums.sha1) : undefined;
+    this.sha256 = checksums.sha256
+      ? hexToArrayBuffer(checksums.sha256)
+      : undefined;
+    this.sha384 = checksums.sha384
+      ? hexToArrayBuffer(checksums.sha384)
+      : undefined;
+    this.sha512 = checksums.sha512
+      ? hexToArrayBuffer(checksums.sha512)
+      : undefined;
+  }
+
+  toJSON() {
+    return this.#checksums;
+  }
+}
+
+class R2Object$ {
+  key;
+  version;
+  size;
+  etag;
+  httpEtag;
+  checksums;
+  uploaded;
+  httpMetadata;
+  customMetadata;
+  range;
+
+  /** @param {R2ObjectJSON} metadata */
+  constructor(metadata) {
+    this.key = metadata.key;
+    this.version = metadata.version;
+    this.size = metadata.size;
+    this.etag = metadata.etag;
+    this.httpEtag = metadata.httpEtag;
+    this.checksums = new R2Checksums$(metadata.checksums);
+    this.uploaded = new Date(metadata.uploaded);
+    this.httpMetadata = metadata.httpMetadata;
+    this.customMetadata = metadata.customMetadata;
+    this.range = metadata.range;
+  }
+
+  /** @param {Headers} headers */
+  writeHttpMetadata(headers) {
+    for (const [key, value] of Object.entries(this.httpMetadata ?? {}))
+      headers.set(key, value);
+  }
+}
+
+class R2ObjectBody$ extends R2Object$ {
+  #response;
+  body;
+  bodyUsed;
+
+  /**
+   * @param {R2ObjectJSON} metadata
+   * @param {Response} response
+   */
+  constructor(metadata, response) {
+    super(metadata);
+    this.#response = response;
+
+    this.body = response.body ?? new ReadableStream();
+    this.bodyUsed = response.bodyUsed;
+  }
+
+  async arrayBuffer() {
+    return this.#response.arrayBuffer();
+  }
+  async text() {
+    return this.#response.text();
+  }
+  async json() {
+    return this.#response.json();
+  }
+  async blob() {
+    return this.#response.blob();
+  }
+}
+
 export class R2Bucket$ {
   #bridgeWranglerOrigin;
   #bindingName;
@@ -31,7 +147,7 @@ export class R2Bucket$ {
       headers: {
         "X-BRIDGE-BINDING-MODULE": "KV",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
-        "X-BRIDGE-R2-REQUEST": JSON.stringify({ operation, parameters }),
+        "X-BRIDGE-R2-Dispatch": JSON.stringify({ operation, parameters }),
       },
       body,
     });
@@ -74,8 +190,7 @@ export class R2Bucket$ {
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
-    if (json === null) return null;
-    return new R2Object$(json);
+    return json === null ? null : new R2Object$(json);
   }
 
   /**
@@ -85,35 +200,16 @@ export class R2Bucket$ {
   async get(key, options) {
     const res = await this.#dispatch("get", [key, options]);
 
-    // HeadResult ...?
-    class R2Object {
-      // readonly key: string;
-      // readonly version: string;
-      // readonly size: number;
-      // readonly etag: string;
-      // readonly httpEtag: string;
-      // readonly checksums: R2Checksums;
-      // readonly uploaded: Date;
-      // readonly httpMetadata?: R2HTTPMetadata;
-      // readonly customMetadata?: Record<string, string>;
-      // readonly range?: R2Range;
-      constructor() {}
-      writeHttpMetadata() {}
-    }
-    class R2ObjectBody extends R2Object {
-      // get body(): ReadableStream;
-      // get bodyUsed(): boolean;
-      constructor() {}
-      async arrayBuffer() {}
-      async text() {}
-      async json() {}
-      async blob() {}
+    const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
+    if (headerForR2ObjectBody) {
+      const json = JSON.parse(headerForR2ObjectBody);
+      return new R2ObjectBody$(json, res);
     }
 
-    // TODO: return
-    // null
-    // R2Object: JSON
-    // R2ObjectBody: body: ReadableStream
+    /** @type {null | R2ObjectJSON} */
+    const json = await res.json();
+
+    return json === null ? null : new R2Object$(json);
   }
 
   /** @param {string} key */
@@ -123,8 +219,7 @@ export class R2Bucket$ {
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
-    if (json === null) return null;
-    return new R2Object$(json);
+    return json === null ? null : new R2Object$(json);
   }
 
   /** @param {string | string[]} keys */
@@ -132,111 +227,3 @@ export class R2Bucket$ {
     await this.#dispatch("delete", [keys]);
   }
 }
-
-/** @param {string} hex */
-const hexToArrayBuffer = (hex) => {
-  const view = new Uint8Array(hex.length / 2);
-
-  for (let i = 0; i < hex.length; i += 2)
-    view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-
-  return view.buffer;
-};
-
-/**
- * @typedef {(
- *   Omit<R2Object, "checksums" | "writeHttpMetadata">
- *   & { checksums: R2StringChecksums; }
- * )} R2ObjectJSON
- */
-
-class R2Checksums$ {
-  /** @type {R2StringChecksums} */
-  #checksums;
-
-  /** @param {R2StringChecksums} checksums */
-  constructor(checksums) {
-    this.#checksums = checksums;
-  }
-
-  get md5() {
-    if (this.#checksums.md5) return hexToArrayBuffer(this.#checksums.md5);
-    return undefined;
-  }
-  get sha1() {
-    if (this.#checksums.sha1) return hexToArrayBuffer(this.#checksums.sha1);
-    return undefined;
-  }
-  get sha256() {
-    if (this.#checksums.sha256) return hexToArrayBuffer(this.#checksums.sha256);
-    return undefined;
-  }
-  get sha384() {
-    if (this.#checksums.sha384) return hexToArrayBuffer(this.#checksums.sha384);
-    return undefined;
-  }
-  get sha512() {
-    if (this.#checksums.sha512) return hexToArrayBuffer(this.#checksums.sha512);
-    return undefined;
-  }
-
-  toJSON() {
-    return this.#checksums;
-  }
-}
-
-class R2Object$ {
-  /** @type {R2ObjectJSON} */
-  #metadata;
-
-  /** @param {R2ObjectJSON} metadata */
-  constructor(metadata) {
-    this.#metadata = metadata;
-  }
-
-  get key() {
-    return this.#metadata.key;
-  }
-  get version() {
-    return this.#metadata.version;
-  }
-  get size() {
-    return this.#metadata.size;
-  }
-  get etag() {
-    return this.#metadata.etag;
-  }
-  get httpEtag() {
-    return this.#metadata.httpEtag;
-  }
-  get checksums() {
-    return new R2Checksums$(this.#metadata.checksums);
-  }
-  get uploaded() {
-    return new Date(this.#metadata.uploaded);
-  }
-  get httpMetadata() {
-    return this.#metadata.httpMetadata;
-  }
-  get customMetadata() {
-    return this.#metadata.customMetadata;
-  }
-  get range() {
-    return this.#metadata.range;
-  }
-
-  /** @param {Headers} headers */
-  writeHttpMetadata(headers) {
-    for (const [key, value] of Object.entries(
-      this.#metadata.httpMetadata ?? {}
-    ))
-      headers.set(key, value);
-  }
-}
-
-/**
- * @typedef {(
- *   Omit<R2Objects, "objects">
- *   & { objects: R2ObjectJSON[]; }
- * )} R2ObjectsJSON
- */
