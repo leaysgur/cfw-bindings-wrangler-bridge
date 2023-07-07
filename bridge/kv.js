@@ -45,8 +45,8 @@ export class KVNamespace$ {
   /** @param {KVNamespaceListOptions} [options] */
   async list(options) {
     const res = await this.#dispatch("list", [options]);
-
     const json = await res.json();
+
     return json;
   }
 
