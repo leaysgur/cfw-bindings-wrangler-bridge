@@ -5,8 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
 // https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
 
-// implements KVNamespace
-export class KVBridgeModule {
+export class KVNamespace$ {
   #bridgeWranglerOrigin;
   #bindingName;
 

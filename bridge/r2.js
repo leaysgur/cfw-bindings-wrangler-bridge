@@ -7,8 +7,7 @@
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
-// implements R2Bucket
-export class R2BridgeModule {
+export class R2Bucket$ {
   #bridgeWranglerOrigin;
   #bindingName;
 
