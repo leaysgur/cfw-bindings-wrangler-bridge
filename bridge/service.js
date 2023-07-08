@@ -64,7 +64,7 @@ export class DirectFetcher$ {
     url.protocol = serviceWranglerUrl.protocol;
     url.host = serviceWranglerUrl.host;
 
-    // Direct `fetch()` to user's service's `wrangler dev` process
+    // Direct `fetch()` to user's service(worker)
     return fetch(url, originalReq);
   }
 }
