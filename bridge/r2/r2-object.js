@@ -50,6 +50,9 @@ class R2Checksums$ {
     this.sha512 = checksums.sha512
       ? hexToArrayBuffer(checksums.sha512)
       : undefined;
+
+    // JSG_LAZY_READONLY_INSTANCE_PROPERTY
+    Object.freeze(this);
   }
 
   toJSON() {
@@ -57,6 +60,7 @@ class R2Checksums$ {
   }
 }
 
+// a.k.a. `HeadResult`
 export class R2Object$ {
   key;
   version;
@@ -81,6 +85,9 @@ export class R2Object$ {
     this.httpMetadata = metadata.httpMetadata;
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
+
+    // JSG_LAZY_READONLY_INSTANCE_PROPERTY
+    Object.freeze(this);
   }
 
   /** @param {Headers} headers */
@@ -90,10 +97,9 @@ export class R2Object$ {
   }
 }
 
+// a.k.a. `GetResult`
 export class R2ObjectBody$ extends R2Object$ {
   #response;
-  body;
-  bodyUsed;
 
   /**
    * @param {R2ObjectJSON} metadata
@@ -102,10 +108,16 @@ export class R2ObjectBody$ extends R2Object$ {
   constructor(metadata, response) {
     super(metadata);
     this.#response = response;
-
-    this.body = response.body ?? new ReadableStream();
-    this.bodyUsed = response.bodyUsed;
   }
+
+  // JSG_READONLY_PROTOTYPE_PROPERTY ---
+  get body() {
+    return this.#response.body ?? new ReadableStream();
+  }
+  get bodyUsed() {
+    return this.#response.bodyUsed;
+  }
+  // --- JSG_READONLY_PROTOTYPE_PROPERTY
 
   async arrayBuffer() {
     return this.#response.arrayBuffer();
@@ -113,6 +125,10 @@ export class R2ObjectBody$ extends R2Object$ {
   async text() {
     return this.#response.text();
   }
+  /**
+   * @template T
+   * @returns {Promise<T>}
+   */
   async json() {
     return this.#response.json();
   }

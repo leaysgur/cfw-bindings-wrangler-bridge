@@ -89,7 +89,6 @@ export class R2Bucket$ {
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
       const json = JSON.parse(headerForR2ObjectBody);
-
       return new R2ObjectBody$(json, res);
     }
 
