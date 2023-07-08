@@ -41,13 +41,13 @@ export const handleR2Dispatch = async (R2, req) => {
     // `null`: key does not exists
     if (result === null) return Response.json(null);
 
-    // `R2ObjectBody`: key exists and condition is met
+    // `R2ObjectBody`: key exists and precondition is met
     if ("body" in result)
       return new Response(result.body, {
         headers: { "X-BRIDGE-R2-R2ObjectJSON": JSON.stringify(result) },
       });
 
-    // `R2Object`: key exists but condition is not met
+    // `R2Object`: key exists but precondition is not met
     return Response.json(result);
   }
 

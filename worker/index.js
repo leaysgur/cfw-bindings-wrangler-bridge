@@ -19,7 +19,7 @@ export default {
     const BINDING = env[BINDING_NAME];
     if (!BINDING)
       return new Response(
-        `Binding: ${BINDING_NAME} is not loaded. Check your wrangler.toml and reload.`,
+        `Failed to load env.${BINDING_NAME}. Check your wrangler.toml and reload.`,
         { status: 400 }
       );
 
@@ -40,7 +40,7 @@ export default {
       );
 
     return new Response(
-      `Not supported binding: ${BINDING_MODULE} or ${BINDING_NAME} is not compatible.`,
+      `Not supported binding: ${BINDING_MODULE} or ${BINDING_NAME} is not compatible for ${BINDING_MODULE} binding.`,
       { status: 404 }
     );
   },
