@@ -1,5 +1,20 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
+## 0.3.0
+
+- [#4](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/4) Internals rework
+
+### Breaking changes
+
+- Bridge worker file path has changed
+  - ❌ `./node_modules/cfw-bindings-wrangler-bridge/worker/index.js`
+  - ⭕ `./node_modules/cfw-bindings-wrangler-bridge/worker.js`
+
+### Other updates
+
+- `createBridge(bridgeWranglerOrigin?: string)` now defaults to `http://127.0.0.1:8787`  
+- Better R2 support
+
 ## 0.2.1
 
 - Fix some bugs of R2 bridge

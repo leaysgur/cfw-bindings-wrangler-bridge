@@ -4,7 +4,7 @@
   "type": "module",
   "exports": {
     "types": "./index.d.ts",
-    "default": "./bridge/index.js"
+    "default": "./module.js"
   },
   "scripts": {
     "format": "npx prettier -w ."
@@ -18,11 +18,12 @@
   "author": "Yuji Sugiura",
   "license": "MIT",
   "files": [
-    "bridge",
+    "module.js",
+    "worker.js",
     "index.d.ts",
-    "worker"
+    "src"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230518.0"
+    "@cloudflare/workers-types": "^4.20230628.0"
   }
 }

@@ -1,7 +1,7 @@
 // @ts-check
-import { KVNamespace$ } from "./kv.js";
-import { Fetcher$, DirectFetcher$ } from "./service.js";
-import { R2Bucket$ } from "./r2/index.js";
+import { KVNamespace$ } from "./src/kv/module.js";
+import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
+import { R2Bucket$ } from "./src/r2/module/index.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (

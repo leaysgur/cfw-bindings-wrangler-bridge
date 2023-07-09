@@ -1,7 +1,7 @@
 // @ts-check
-import { isKVBinding, handleKVDispatch } from "./kv.js";
-import { isServiceBinding, handleServiceDispatch } from "./service.js";
-import { isR2Binding, handleR2Dispatch } from "./r2.js";
+import { isKVBinding, handleKVDispatch } from "./src/kv/worker.js";
+import { isServiceBinding, handleServiceDispatch } from "./src/service/worker.js";
+import { isR2Binding, handleR2Dispatch } from "./src/r2/worker.js";
 
 export default {
   /** @type {ExportedHandlerFetchHandler<Record<string, unknown>>} */
