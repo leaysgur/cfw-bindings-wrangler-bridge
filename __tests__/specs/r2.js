@@ -39,7 +39,7 @@ const createRunner =
 const equalR2Checksums = (actual, expect) => {
   const [aKeys, eKeys] = [Object.keys(actual), Object.keys(expect)];
   deepStrictEqual(aKeys.sort(), eKeys.sort());
-  // `ArrayBuffer` is not supported by `deepStrictEqual()`
+  deepStrictEqual(actual.md5, expect.md5);
   deepStrictEqual(actual.toJSON(), expect.toJSON());
 };
 
