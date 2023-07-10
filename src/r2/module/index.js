@@ -33,7 +33,7 @@ export class R2Bucket$ {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
-        "X-BRIDGE-BINDING-MODULE": "KV",
+        "X-BRIDGE-BINDING-MODULE": "R2",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
         "X-BRIDGE-R2-Dispatch": JSON.stringify({ operation, parameters }),
       },
