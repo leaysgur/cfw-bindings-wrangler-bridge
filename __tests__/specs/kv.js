@@ -11,8 +11,8 @@ export const before = async (ACTUAL, EXPECT) => {
     EXPECT.list(),
   ]);
   await Promise.all([
-    aKeys.map((key) => ACTUAL.delete(key.name)),
-    eKeys.map((key) => EXPECT.delete(key.name)),
+    ...aKeys.map((key) => ACTUAL.delete(key.name)),
+    ...eKeys.map((key) => EXPECT.delete(key.name)),
   ])
 };
 
