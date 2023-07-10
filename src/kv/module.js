@@ -81,12 +81,12 @@ export class KVNamespace$ {
       return { value: null, metadata: null };
 
     let type;
-    if (!typeOrOptions) {
-      type = "text";
+    if (typeof typeOrOptions?.type === "string") {
+      type = typeOrOptions.type;
     } else if (typeof typeOrOptions === "string") {
       type = typeOrOptions;
     } else {
-      type = typeOrOptions.type;
+      type = "text";
     }
 
     let value;
