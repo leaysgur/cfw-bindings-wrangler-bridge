@@ -46,7 +46,10 @@ export const handleKVDispatch = async (KV, req) => {
     });
 
     return new Response(value, {
-      headers: { "X-BRIDGE-KV-Metadata": JSON.stringify(metadata) },
+      headers: { 
+        "X-BRIDGE-KV-ValueIsNull": `${value === null}`,
+        "X-BRIDGE-KV-Metadata": JSON.stringify(metadata),
+      },
     });
   }
 

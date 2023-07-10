@@ -77,6 +77,9 @@ export class KVNamespace$ {
   async getWithMetadata(key, typeOrOptions) {
     const res = await this.#dispatch("getWithMetadata", [key, typeOrOptions]);
 
+    if (res.headers.get("X-BRIDGE-KV-ValueIsNull") === "true")
+      return { value: null, metadata: null };
+
     let type;
     if (!typeOrOptions) {
       type = "text";
