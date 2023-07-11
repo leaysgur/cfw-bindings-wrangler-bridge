@@ -108,31 +108,28 @@ const equalR2Objects = (actual, expect) => {
  * @returns {[name: string, spec: () => Promise<void>][]}
  */
 export const createSpecs = (ACTUAL, EXPECT) => {
-  const [KEY1, KEY2, KEY3, KEY4] = ["R:1", "R:2", "R:3", "R:4"];
+  const [KEY1, KEY2, KEY3, KEY4] = ["R:1", "R:2", "R:3", "/key/#/4"];
   const run = createRunner([ACTUAL, EXPECT]);
 
   return [
     [
-      "R2.list()",
+      "R2.list() -> empty",
       async () => {
         const [actual, expect] = await run((R2) => R2.list());
-        // empty `objects`
         deepStrictEqual(actual, expect);
       },
     ],
     [
-      "R2.head(k)",
+      "R2.head(k) -> null",
       async () => {
         const [actual, expect] = await run((R2) => R2.head(KEY1));
-        // `null`
         deepStrictEqual(actual, expect);
       },
     ],
     [
-      "R2.get(k)",
+      "R2.get(k) -> null",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY1));
-        // `null`
         deepStrictEqual(actual, expect);
       },
     ],
@@ -145,7 +142,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
     ],
 
     [
-      "R2.put(k, v)",
+      "R2.put(k, v) -> R2Object",
       async () => {
         const [actual, expect] = await run((R2) => R2.put(KEY1, "OK"));
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -153,7 +150,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.head(k)",
+      "R2.head(k) -> R2Object",
       async () => {
         const [actual, expect] = await run((R2) => R2.head(KEY1));
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -161,7 +158,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.get(k)",
+      "R2.get(k) -> R2ObjectBody",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY1));
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -169,7 +166,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.get(k, {})",
+      "R2.get(k, {}) -> R2ObjectBody",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY1, {}));
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -177,7 +174,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.get(k, { range })",
+      "R2.get(k, { range }) -> R2ObjectBody",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { range: { offset: 1 } })
@@ -187,17 +184,16 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.get(k, { range })",
+      "R2.get(k, { range }) -> throws",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { range: { offset: 100 } })
         );
-        // `Error`
         deepStrictEqual(actual, expect);
       },
     ],
     [
-      "R2.get(k, { onlyIf: { uploadBefore } })",
+      "R2.get(k, { onlyIf: { uploadBefore } }) -> R2ObjectBody",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { onlyIf: { uploadedBefore: new Date() } })
@@ -207,7 +203,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.get(k, { onlyIf: { uploadAfter } })",
+      "R2.get(k, { onlyIf: { uploadAfter } }) -> R2Object",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { onlyIf: { uploadedAfter: new Date() } })
@@ -217,7 +213,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.list()",
+      "R2.list() -> list",
       async () => {
         const [actual, expect] = await run((R2) => R2.list());
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -257,20 +253,19 @@ export const createSpecs = (ACTUAL, EXPECT) => {
     ],
 
     [
-      "R2.put(k, v, { onlyIf })",
+      "R2.put(k, v, { onlyIf }) -> null",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.put(KEY3, "foo", {
             onlyIf: { etagMatches: "xxx" },
           })
         );
-        // `null`
         deepStrictEqual(actual, expect);
       },
     ],
 
     [
-      "R2.put(k, v, { sha1 })",
+      "R2.put(k, v, { sha1 }) -> R2Object",
       async () => {
         const [actual, expect] = await run((R2) =>
           R2.put(KEY4, "123", {
@@ -282,10 +277,12 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2ObjectBody.arrayBuffer()",
+      "R2ObjectBody.arrayBuffer() -> ArrayBuffer",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY4));
         if (actual.status === "fulfilled" && expect.status === "fulfilled") {
+          equalR2ObjectBody(actual.value, expect.value);
+
           const [aAB, eAB] = await Promise.all([
             actual.value.arrayBuffer(),
             expect.value.arrayBuffer(),
@@ -298,7 +295,7 @@ export const createSpecs = (ACTUAL, EXPECT) => {
     ],
 
     [
-      "R2.list({ limit })",
+      "R2.list({ limit }) -> list",
       async () => {
         const [actual, expect] = await run((R2) => R2.list({ limit: 2 }));
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
@@ -315,11 +312,20 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       },
     ],
     [
-      "R2.list()",
+      "R2.list() -> empty",
       async () => {
         const [actual, expect] = await run((R2) => R2.list());
         if (actual.status === "fulfilled" && expect.status === "fulfilled")
           equalR2Objects(actual.value, expect.value);
+      },
+    ],
+
+    [
+      "R2.head(non-ASCII) -> null",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.head("🐧"));
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          deepStrictEqual(actual.value, expect.value);
       },
     ],
   ];
