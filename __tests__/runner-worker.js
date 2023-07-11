@@ -1,6 +1,7 @@
 // @ts-check
 import { createBridge } from "../module.js";
 import { before as beforeKV, createSpecs as specsKV } from "./specs/kv.js";
+import { createSpecs as specsSERVICE } from "./specs/service.js";
 import { before as beforeR2, createSpecs as specsR2 } from "./specs/r2.js";
 
 export default {
@@ -8,6 +9,7 @@ export default {
    * @type {ExportedHandlerFetchHandler<{
    *   TEST_KV: KVNamespace;
    *   TEST_R2: R2Bucket;
+   *   TEST_SERVICE: Fetcher;
    * }>}
    */
   async fetch(req, env) {
@@ -18,6 +20,7 @@ export default {
      * @type {Map<string, [name: string, spec: () => Promise<void>][]>}
      */
     const suites = new Map();
+
     if (searchParams.has("kv")) {
       const ACTUAL = /** @type {KVNamespace} */ (
         /** @type {unknown} */ (bridge.KV("TEST_KV"))
@@ -27,6 +30,16 @@ export default {
       await beforeKV(ACTUAL, EXPECT);
       suites.set("KV", specsKV(ACTUAL, EXPECT));
     }
+
+    if (searchParams.has("service")) {
+      const ACTUAL = /** @type {Fetcher} */ (
+        /** @type {unknown} */ (bridge.SERVICE("TEST_SERVICE"))
+      );
+      const EXPECT = env.TEST_SERVICE;
+
+      suites.set("SERVICE", specsSERVICE(ACTUAL, EXPECT));
+    }
+
     if (searchParams.has("r2")) {
       const ACTUAL = /** @type {R2Bucket} */ (
         /** @type {unknown} */ (bridge.R2("TEST_R2"))
@@ -39,7 +52,7 @@ export default {
 
     if (suites.size === 0)
       return new Response(
-        "No specs to run. Add params like `?kv` or `?r2` to the URL to run specs."
+        "No specs to run. Add params like `?kv` or `?r2&service` to the URL to run specs."
       );
 
     const results = [];

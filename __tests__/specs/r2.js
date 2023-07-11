@@ -229,7 +229,6 @@ export const createSpecs = (ACTUAL, EXPECT) => {
             httpMetadata: {
               contentType: "text/plain",
               cacheControl: "max-age=3600",
-              // `workerd` throws `TypeError`...
               // https://github.com/cloudflare/workerd/issues/851
               // cacheExpiry: new Date(),
             },

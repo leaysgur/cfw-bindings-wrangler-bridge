@@ -4,3 +4,4 @@ compatibility_date = "2023-05-18"
 
 kv_namespaces = [ { binding = "TEST_KV", id = "kv", preview_id = "test-kv" } ]
 r2_buckets  = [ { binding = "TEST_R2", bucket_name = "r2", preview_bucket_name = "test-r2" } ]
+services = [ { binding = "TEST_SERVICE", service = "test-service" }, ]
