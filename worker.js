@@ -1,6 +1,9 @@
 // @ts-check
 import { isKVBinding, handleKVDispatch } from "./src/kv/worker.js";
-import { isServiceBinding, handleServiceDispatch } from "./src/service/worker.js";
+import {
+  isServiceBinding,
+  handleServiceDispatch,
+} from "./src/service/worker.js";
 import { isR2Binding, handleR2Dispatch } from "./src/r2/worker.js";
 
 export default {

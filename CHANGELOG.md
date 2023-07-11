@@ -12,7 +12,7 @@
 
 ### Other updates
 
-- `createBridge(bridgeWranglerOrigin?: string)` now defaults to `http://127.0.0.1:8787`  
+- `createBridge(bridgeWranglerOrigin?: string)` now defaults to `http://127.0.0.1:8787`
 - Better R2 support(`R2Objects` / `R2Object` / `R2ObjectBody` shims)
 
 ## 0.2.1

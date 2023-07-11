@@ -23,12 +23,12 @@ export const before = async (ACTUAL, EXPECT) => {
 /** @param {[R2Bucket, R2Bucket]} bindings */
 const createRunner =
   ([ACTUAL, EXPECT]) =>
-    /**
-     * @param {(R2: R2Bucket) => Promise<unknown>} spec
-     * @returns {Promise<PromiseSettledResult<any>[]>}
-     */
-    async (spec) =>
-      Promise.allSettled([spec(ACTUAL), spec(EXPECT)]);
+  /**
+   * @param {(R2: R2Bucket) => Promise<unknown>} spec
+   * @returns {Promise<PromiseSettledResult<any>[]>}
+   */
+  async (spec) =>
+    Promise.allSettled([spec(ACTUAL), spec(EXPECT)]);
 
 /**
  * @param {R2Checksums} actual

@@ -7,7 +7,8 @@
     "default": "./module.js"
   },
   "scripts": {
-    "format": "npx prettier -w ."
+    "format": "npx prettier -w .",
+    "test": "echo 'See ./__tests__ directory.'"
   },
   "keywords": [
     "cloudflare",
