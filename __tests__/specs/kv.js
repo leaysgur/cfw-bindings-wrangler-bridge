@@ -86,7 +86,6 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       ]);
 
       deepStrictEqual(actual.status, expect.status);
-
       if (actual.status === "fulfilled" && expect.status === "fulfilled") {
         deepStrictEqual(actual.value, expect.value);
       }
