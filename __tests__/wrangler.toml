@@ -2,5 +2,5 @@ name = "test"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2023-05-18"
 
-kv_namespaces = [ { binding = "TEST_KV", id = "test", preview_id = "test" } ]
-r2_buckets  = [ { binding = "TEST_R2", bucket_name = "test", preview_bucket_name = "test" } ]
+kv_namespaces = [ { binding = "TEST_KV", id = "kv", preview_id = "test-kv" } ]
+r2_buckets  = [ { binding = "TEST_R2", bucket_name = "r2", preview_bucket_name = "test-r2" } ]
