@@ -83,6 +83,8 @@ export class R2Object$ {
     this.checksums = new R2Checksums$(metadata.checksums);
     this.uploaded = new Date(metadata.uploaded);
     this.httpMetadata = metadata.httpMetadata;
+    if (this.httpMetadata?.cacheExpiry)
+      this.httpMetadata.cacheExpiry = new Date(this.httpMetadata.cacheExpiry);
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
 
