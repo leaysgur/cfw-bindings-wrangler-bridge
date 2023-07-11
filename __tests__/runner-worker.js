@@ -71,6 +71,7 @@ export default {
 
           console.error(name, err);
           console.error(JSON.stringify(err, null, 2));
+          break; // bail
         }
       }
 

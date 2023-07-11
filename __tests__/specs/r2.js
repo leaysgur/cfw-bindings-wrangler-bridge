@@ -45,7 +45,7 @@ const equalR2Checksums = (actual, expect) => {
  * @param {R2HTTPMetadata | undefined} actual
  * @param {R2HTTPMetadata | undefined} expect
  */
-const equalHttpMetadata = (actual, expect) => {
+const equalR2HttpMetadata = (actual, expect) => {
   if (actual === undefined || expect === undefined) {
     deepStrictEqual(actual, expect);
     return;
@@ -72,7 +72,7 @@ const equalR2Object = (actual, expect) => {
   deepStrictEqual(actual.httpEtag, expect.httpEtag);
   equalR2Checksums(actual.checksums, expect.checksums);
   deepStrictEqual(typeof actual.uploaded, typeof expect.uploaded);
-  equalHttpMetadata(actual.httpMetadata, expect.httpMetadata);
+  equalR2HttpMetadata(actual.httpMetadata, expect.httpMetadata);
   deepStrictEqual(actual.customMetadata, expect.customMetadata);
 };
 
