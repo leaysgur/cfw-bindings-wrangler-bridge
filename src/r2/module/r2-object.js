@@ -94,8 +94,18 @@ export class R2Object$ {
 
   /** @param {Headers} headers */
   writeHttpMetadata(headers) {
-    for (const [key, value] of Object.entries(this.httpMetadata ?? {}))
-      headers.set(key, value);
+    if (this.httpMetadata?.contentType)
+      headers.set("content-type", this.httpMetadata.contentType);
+    if (this.httpMetadata?.contentLanguage)
+      headers.set("content-language", this.httpMetadata.contentLanguage);
+    if (this.httpMetadata?.contentDisposition)
+      headers.set("content-disposition", this.httpMetadata.contentDisposition);
+    if (this.httpMetadata?.contentEncoding)
+      headers.set("content-encoding", this.httpMetadata.contentEncoding);
+    if (this.httpMetadata?.cacheControl)
+      headers.set("cache-control", this.httpMetadata.cacheControl);
+    if (this.httpMetadata?.cacheExpiry)
+      headers.set("expires", this.httpMetadata.cacheExpiry.toUTCString());
   }
 }
 
