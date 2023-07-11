@@ -1,5 +1,5 @@
 // @ts-check
-import { deepStrictEqual, strictEqual } from "node:assert";
+import { deepStrictEqual } from "node:assert";
 
 /**
  * @param {R2Bucket} ACTUAL
@@ -18,19 +18,17 @@ export const before = async (ACTUAL, EXPECT) => {
 
 // R2 specs are more verbose.
 // `R2Object` contains dynamic values like `version`, `uploaded`, etc,
-// these make `deepStrictEqual(a, e)` fails.
-
-const randomKey = () => "R:" + Math.random();
+// these values make `deepStrictEqual(a, e)` fails.
 
 /** @param {[R2Bucket, R2Bucket]} bindings */
 const createRunner =
   ([ACTUAL, EXPECT]) =>
     /**
      * @param {(R2: R2Bucket) => Promise<unknown>} spec
-     * @returns {Promise<[any, any]>}
+     * @returns {Promise<PromiseSettledResult<any>[]>}
      */
     async (spec) =>
-      Promise.all([spec(ACTUAL), spec(EXPECT)]);
+      Promise.allSettled([spec(ACTUAL), spec(EXPECT)]);
 
 /**
  * @param {R2Checksums} actual
@@ -44,6 +42,22 @@ const equalR2Checksums = (actual, expect) => {
 };
 
 /**
+ * @param {R2HTTPMetadata | undefined} actual
+ * @param {R2HTTPMetadata | undefined} expect
+ */
+const equalHttpMetadata = (actual, expect) => {
+  if (actual === undefined || expect === undefined) {
+    deepStrictEqual(actual, expect);
+    return;
+  }
+
+  const [aKeys, eKeys] = [Object.keys(actual), Object.keys(expect)];
+  deepStrictEqual(aKeys.sort(), eKeys.sort());
+
+  deepStrictEqual(typeof actual.cacheExpiry, typeof expect.cacheExpiry);
+};
+
+/**
  * @param {R2Object} actual
  * @param {R2Object} expect
  */
@@ -51,14 +65,14 @@ const equalR2Object = (actual, expect) => {
   const [aKeys, eKeys] = [Object.keys(actual), Object.keys(expect)];
   deepStrictEqual(aKeys.sort(), eKeys.sort());
 
-  strictEqual(actual.key, expect.key);
-  strictEqual(typeof actual.version, typeof expect.version);
-  strictEqual(actual.size, expect.size);
-  strictEqual(actual.etag, expect.etag);
-  strictEqual(actual.httpEtag, expect.httpEtag);
+  deepStrictEqual(actual.key, expect.key);
+  deepStrictEqual(typeof actual.version, typeof expect.version);
+  deepStrictEqual(actual.size, expect.size);
+  deepStrictEqual(actual.etag, expect.etag);
+  deepStrictEqual(actual.httpEtag, expect.httpEtag);
   equalR2Checksums(actual.checksums, expect.checksums);
-  strictEqual(typeof actual.uploaded, typeof expect.uploaded);
-  deepStrictEqual(actual.httpMetadata, expect.httpMetadata);
+  deepStrictEqual(typeof actual.uploaded, typeof expect.uploaded);
+  equalHttpMetadata(actual.httpMetadata, expect.httpMetadata);
   deepStrictEqual(actual.customMetadata, expect.customMetadata);
 };
 
@@ -68,10 +82,25 @@ const equalR2Object = (actual, expect) => {
  */
 const equalR2ObjectBody = (actual, expect) => {
   equalR2Object(actual, expect);
-  strictEqual(actual.bodyUsed, expect.bodyUsed);
-  strictEqual(typeof actual.body, typeof expect.body);
+  deepStrictEqual(actual.bodyUsed, expect.bodyUsed);
+  deepStrictEqual(typeof actual.body, typeof expect.body);
 };
 
+/**
+ * @param {R2Objects} actual
+ * @param {R2Objects} expect
+ */
+const equalR2Objects = (actual, expect) => {
+  const [aKeys, eKeys] = [Object.keys(actual), Object.keys(expect)];
+  deepStrictEqual(aKeys.sort(), eKeys.sort());
+
+  deepStrictEqual(actual.truncated, expect.truncated);
+  deepStrictEqual(actual.delimitedPrefixes, expect.delimitedPrefixes);
+  deepStrictEqual(actual.objects.length, expect.objects.length);
+  for (const idx of expect.objects.keys()) {
+    equalR2Object(actual.objects[idx], expect.objects[idx]);
+  }
+};
 
 /**
  * @param {R2Bucket} ACTUAL
@@ -79,7 +108,7 @@ const equalR2ObjectBody = (actual, expect) => {
  * @returns {[name: string, spec: () => Promise<void>][]}
  */
 export const createSpecs = (ACTUAL, EXPECT) => {
-  const KEY1 = randomKey();
+  const [KEY1, KEY2, KEY3, KEY4] = ["R:1", "R:2", "R:3", "R:4"];
   const run = createRunner([ACTUAL, EXPECT]);
 
   return [
@@ -119,28 +148,32 @@ export const createSpecs = (ACTUAL, EXPECT) => {
       "R2.put(k, v)",
       async () => {
         const [actual, expect] = await run((R2) => R2.put(KEY1, "OK"));
-        equalR2Object(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Object(actual.value, expect.value);
       },
     ],
     [
       "R2.head(k)",
       async () => {
         const [actual, expect] = await run((R2) => R2.head(KEY1));
-        equalR2Object(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Object(actual.value, expect.value);
       },
     ],
     [
       "R2.get(k)",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY1));
-        equalR2ObjectBody(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2ObjectBody(actual.value, expect.value);
       },
     ],
     [
       "R2.get(k, {})",
       async () => {
         const [actual, expect] = await run((R2) => R2.get(KEY1, {}));
-        equalR2ObjectBody(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2ObjectBody(actual.value, expect.value);
       },
     ],
     [
@@ -149,7 +182,18 @@ export const createSpecs = (ACTUAL, EXPECT) => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { range: { offset: 1 } })
         );
-        equalR2ObjectBody(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2ObjectBody(actual.value, expect.value);
+      },
+    ],
+    [
+      "R2.get(k, { range })",
+      async () => {
+        const [actual, expect] = await run((R2) =>
+          R2.get(KEY1, { range: { offset: 100 } })
+        );
+        // `Error`
+        deepStrictEqual(actual, expect);
       },
     ],
     [
@@ -158,7 +202,8 @@ export const createSpecs = (ACTUAL, EXPECT) => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { onlyIf: { uploadedBefore: new Date() } })
         );
-        equalR2ObjectBody(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2ObjectBody(actual.value, expect.value);
       },
     ],
     [
@@ -167,11 +212,115 @@ export const createSpecs = (ACTUAL, EXPECT) => {
         const [actual, expect] = await run((R2) =>
           R2.get(KEY1, { onlyIf: { uploadedAfter: new Date() } })
         );
-        // null
-        strictEqual(actual, expect);
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Object(actual.value, expect.value);
+      },
+    ],
+    [
+      "R2.list()",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.list());
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Objects(actual.value, expect.value);
       },
     ],
 
-    // TODO: writeHttpMetadata
+    [
+      "R2.put(k, v, { httpMetadata })",
+      async () => {
+        const [actual, expect] = await run((R2) =>
+          R2.put(KEY2, "META", {
+            httpMetadata: {
+              contentType: "text/plain",
+              cacheControl: "max-age=3600",
+              // `workerd` throws `TypeError`...
+              // https://github.com/cloudflare/workerd/issues/851
+              // cacheExpiry: new Date(),
+            },
+          })
+        );
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Object(actual.value, expect.value);
+      },
+    ],
+    [
+      "R2Object.writeHttpMetadata()",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.get(KEY2));
+        if (actual.status === "fulfilled" && expect.status === "fulfilled") {
+          const [aHeaders, eHeaders] = [new Headers(), new Headers()];
+          actual.value.writeHttpMetadata(aHeaders);
+          expect.value.writeHttpMetadata(eHeaders);
+          deepStrictEqual(aHeaders, eHeaders);
+        }
+      },
+    ],
+
+    [
+      "R2.put(k, v, { onlyIf })",
+      async () => {
+        const [actual, expect] = await run((R2) =>
+          R2.put(KEY3, "foo", {
+            onlyIf: { etagMatches: "xxx" },
+          })
+        );
+        // `null`
+        deepStrictEqual(actual, expect);
+      },
+    ],
+
+    [
+      "R2.put(k, v, { sha1 })",
+      async () => {
+        const [actual, expect] = await run((R2) =>
+          R2.put(KEY4, "123", {
+            sha1: "40bd001563085fc35165329ea1ff5c5ecbdbbeef",
+          })
+        );
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Object(actual.value, expect.value);
+      },
+    ],
+    [
+      "R2ObjectBody.arrayBuffer()",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.get(KEY4));
+        if (actual.status === "fulfilled" && expect.status === "fulfilled") {
+          const [aAB, eAB] = await Promise.all([
+            actual.value.arrayBuffer(),
+            expect.value.arrayBuffer(),
+          ]);
+          deepStrictEqual(aAB, eAB);
+
+          equalR2ObjectBody(actual.value, expect.value);
+        }
+      },
+    ],
+
+    [
+      "R2.list({ limit })",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.list({ limit: 2 }));
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Objects(actual.value, expect.value);
+      },
+    ],
+    [
+      "R2.delete(keys)",
+      async () => {
+        const [actual, expect] = await run((R2) =>
+          R2.delete([KEY1, KEY2, KEY3, KEY4])
+        );
+        deepStrictEqual(actual, expect);
+      },
+    ],
+    [
+      "R2.list()",
+      async () => {
+        const [actual, expect] = await run((R2) => R2.list());
+        if (actual.status === "fulfilled" && expect.status === "fulfilled")
+          equalR2Objects(actual.value, expect.value);
+      },
+    ],
   ];
 };

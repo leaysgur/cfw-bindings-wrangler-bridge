@@ -69,7 +69,10 @@ export const createSpecs = (ACTUAL, EXPECT) => {
   return specs.map(([name, spec]) => [
     name,
     async () => {
-      const [actual, expect] = await Promise.all([spec(ACTUAL), spec(EXPECT)]);
+      const [actual, expect] = await Promise.allSettled([
+        spec(ACTUAL),
+        spec(EXPECT),
+      ]);
       deepStrictEqual(actual, expect);
     },
   ]);
