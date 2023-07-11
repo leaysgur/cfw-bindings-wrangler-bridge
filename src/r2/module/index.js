@@ -6,6 +6,7 @@
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 
 import { R2Object$, R2ObjectBody$ } from "./r2-object.js";
+import { arrayBufferToHex } from "./utils.js";
 /**
  * @typedef {import("./r2-object.js").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./r2-object.js").R2ObjectsJSON} R2ObjectsJSON
@@ -66,6 +67,18 @@ export class R2Bucket$ {
    * @param {R2PutOptions} [options]
    */
   async put(key, value, options) {
+    // `ArrayBuffer` is not serializable, but `string` is also valid type
+    if (options?.md5 instanceof ArrayBuffer)
+      options.md5 = arrayBufferToHex(options.md5);
+    if (options?.sha1 instanceof ArrayBuffer)
+      options.sha1 = arrayBufferToHex(options.sha1);
+    if (options?.sha256 instanceof ArrayBuffer)
+      options.sha256 = arrayBufferToHex(options.sha256);
+    if (options?.sha384 instanceof ArrayBuffer)
+      options.sha384 = arrayBufferToHex(options.sha384);
+    if (options?.sha512 instanceof ArrayBuffer)
+      options.sha512 = arrayBufferToHex(options.sha512);
+
     const res = await this.#dispatch(
       "put",
       [key, null, options],

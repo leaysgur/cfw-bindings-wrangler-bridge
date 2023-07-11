@@ -5,6 +5,7 @@
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2objectbody-definition
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
+import { hexToArrayBuffer } from "./utils.js";
 /**
  * @typedef {(
  *   Omit<R2Object, "checksums" | "writeHttpMetadata">
@@ -16,16 +17,6 @@
  *   & { objects: R2ObjectJSON[]; }
  * )} R2ObjectsJSON
  */
-
-/** @param {string} hex */
-const hexToArrayBuffer = (hex) => {
-  const view = new Uint8Array(hex.length / 2);
-
-  for (let i = 0; i < hex.length; i += 2)
-    view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-
-  return view.buffer;
-};
 
 class R2Checksums$ {
   #checksums;
