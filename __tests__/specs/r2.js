@@ -6,14 +6,6 @@ import {
   sleepAfterRejectedResult,
 } from "./utils.js";
 
-// /** @param {string} hex */
-// const hexToArrayBuffer = (hex) => {
-//   const view = new Uint8Array(hex.length / 2);
-//   for (let i = 0; i < hex.length; i += 2)
-//     view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
-//   return view.buffer;
-// };
-
 /**
  * @param {R2Checksums} actual
  * @param {R2Checksums} expect
