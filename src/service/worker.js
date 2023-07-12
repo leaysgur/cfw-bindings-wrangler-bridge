@@ -15,7 +15,7 @@ export const isServiceBinding = (binding) =>
  */
 export const handleServiceDispatch = async (SERVICE, req) => {
   const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-SERVICE-Dispatch") ?? "{}"
+    req.headers.get("X-BRIDGE-SERVICE-Dispatch") ?? "{}",
   );
 
   if (operation === "fetch") {

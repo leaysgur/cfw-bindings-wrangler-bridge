@@ -13,7 +13,7 @@ export const isKVBinding = (binding) =>
  */
 export const handleKVDispatch = async (KV, req) => {
   const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-KV-Dispatch") ?? "{}"
+    req.headers.get("X-BRIDGE-KV-Dispatch") ?? "{}",
   );
 
   if (operation === "list") {

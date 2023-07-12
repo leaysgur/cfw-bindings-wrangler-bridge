@@ -33,7 +33,7 @@ export class Fetcher$ {
       JSON.stringify({
         operation: "fetch",
         parameters: [originalReq.url],
-      })
+      }),
     );
 
     return fetch(req);

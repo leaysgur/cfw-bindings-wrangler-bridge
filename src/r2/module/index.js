@@ -84,7 +84,7 @@ export class R2Bucket$ {
       [key, null, options],
       // `null` is not a valid type for `BodyInit`.
       // And it seems to have the same effect...
-      value ?? undefined
+      value ?? undefined,
     );
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();

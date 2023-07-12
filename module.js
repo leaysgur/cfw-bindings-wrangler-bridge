@@ -5,7 +5,7 @@ import { R2Bucket$ } from "./src/r2/module/index.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
-  bridgeWranglerOrigin = "http://127.0.0.1:8787"
+  bridgeWranglerOrigin = "http://127.0.0.1:8787",
 ) => ({
   /** @param {string} bindingName */
   KV: (bindingName) => new KVNamespace$(bridgeWranglerOrigin, bindingName),

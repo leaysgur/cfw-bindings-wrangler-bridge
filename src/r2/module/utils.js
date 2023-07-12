@@ -19,4 +19,4 @@ export const arrayBufferToHex = (arrayBuffer) => {
   }
 
   return result;
-}
+};

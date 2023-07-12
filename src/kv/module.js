@@ -96,7 +96,7 @@ export class KVNamespace$ {
     if (type === "stream") value = res.body;
 
     const metadata = JSON.parse(
-      res.headers.get("X-BRIDGE-KV-Metadata") ?? "null"
+      res.headers.get("X-BRIDGE-KV-Metadata") ?? "null",
     );
 
     return { value, metadata };
