@@ -39,7 +39,7 @@ export const handleKVDispatch = async (KV, req) => {
     const [key, typeOrOptions] = parameters;
 
     const { value, metadata } = await KV.getWithMetadata(key, {
-      ...typeOrOptions,
+      ...(typeof typeOrOptions !== "string" ? typeOrOptions : {}),
       // Override it to respond over our bridge.
       // `stream` is fastest and type conversion is done by bridge module.
       type: "stream",

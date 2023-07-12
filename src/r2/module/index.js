@@ -27,7 +27,7 @@ export class R2Bucket$ {
 
   /**
    * @param {string} operation
-   * @param {any[]} parameters
+   * @param {unknown[]} parameters
    * @param {BodyInit} [body]
    */
   async #dispatch(operation, parameters, body) {

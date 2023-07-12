@@ -20,7 +20,7 @@ export class KVNamespace$ {
 
   /**
    * @param {string} operation
-   * @param {any[]} parameters
+   * @param {unknown[]} parameters
    * @param {BodyInit} [body]
    */
   async #dispatch(operation, parameters, body) {
