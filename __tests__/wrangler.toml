@@ -11,6 +11,6 @@ r2_buckets  = [
   { binding = "EXPECT_R2", bucket_name = "e-r2", preview_bucket_name = "e-r2" },
 ]
 services = [ 
-  { binding = "ACTUAL_SERVICE", service = "a-service" },
-  { binding = "EXPECT_SERVICE", service = "e-service" },
+  { binding = "ACTUAL_SERVICE", service = "test-service" },
+  { binding = "EXPECT_SERVICE", service = "test-service" },
 ]

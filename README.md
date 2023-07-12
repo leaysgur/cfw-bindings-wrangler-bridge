@@ -23,9 +23,11 @@ This problem also occurs when developing APIs using only Pages Functions via `wr
 That is where this bridge 🌉 comes in!
 This bridge(module + worker) allows you to access the real data even from your local development environment, via the `wrangler dev --remote` command.
 
+In addition, this module makes it possible to manipulate data in the production environment, without the need to prepare a Worker! It is really convenient. 🤞
+
 ## Install
 
-```
+```sh
 npm install -D cfw-bindings-wrangler-bridge
 ```
 
@@ -33,7 +35,7 @@ npm install -D cfw-bindings-wrangler-bridge
 
 1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process.
 
-```
+```sh
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker.js --remote
 ```
 
@@ -46,7 +48,7 @@ import { createBridge } from "cfw-bindings-wrangler-bridge";
 
 // Default origin is `http://127.0.0.1:8787`
 const bridge = createBridge();
-// Or manually
+// Or
 // const bridge = createBridge("http://localhost:3000");
 
 /** @type {import("@cloduflare/workers-types").KVNamespace} */
@@ -57,7 +59,7 @@ await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
 
-Currently type definitions should be handled by yourself. 😅
+Type definitions should be handled by yourself. 😅
 
 ## Supported bindings
 
@@ -97,6 +99,8 @@ At this time, however, the value of `request.origin` will be different from the 
 - [x] `.delete()`
 - [ ] `.createMultipartUpload()`
 - [ ] `.resumeMultipartUpload()`
+
+⚠️ The `Headers` types are not supported now. (e.g. `R2.get(k, v, { onlyIf: headers })`)
 
 ## Usage examples
 
@@ -147,6 +151,20 @@ export const handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 ```
+
+## Known limitations
+
+The values available from this module are not 100% compatible.
+
+For example,
+
+- The class constructor for `KVNamespace`, `R2Object`(aka `HeadResult`), etc are not publicly exposed.
+  - It is impossible to implement...
+- Read-only properties are emulated by simple implementation.
+- If an exception is thrown, it is not a specific error like `TypeError`, but just an `Error`
+- etc...
+
+Please be aware of these subtle differences. But I don't think there are any problems in practical use.
 
 ## Notes
 
