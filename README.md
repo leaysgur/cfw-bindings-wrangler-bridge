@@ -102,9 +102,24 @@ At this time, however, the value of `request.origin` will be different from the 
 
 ⚠️ The `Headers` types are not supported now. (e.g. `R2.get(k, v, { onlyIf: headers })`)
 
+## Known limitations
+
+The instances and values available from this module are not 100% compatible.
+
+For example,
+
+- The class constructor for `KVNamespace`, `R2Object`(aka `HeadResult`), etc are not publicly exposed.
+  - It is impossible to implement...
+- Read-only properties are emulated by simple implementation.
+- If an exception is thrown, it is not a specific error like `TypeError`, but just an `Error`
+- etc...
+
+But I don't think there are any problems in practical use.
+
 ## Usage examples
 
-### CLI tool
+<details>
+<summary>CLI</summary>
 
 If you are using REST API in your CLI, now you can replace it.
 
@@ -128,7 +143,10 @@ If you are using REST API in your CLI, now you can replace it.
 +};
 ```
 
-### SvelteKit
+</details>
+
+<details>
+<summary>SvelteKit</summary>
 
 ```js
 // server.hooks.js
@@ -152,19 +170,7 @@ export const handle = async ({ event, resolve }) => {
 };
 ```
 
-## Known limitations
-
-The values available from this module are not 100% compatible.
-
-For example,
-
-- The class constructor for `KVNamespace`, `R2Object`(aka `HeadResult`), etc are not publicly exposed.
-  - It is impossible to implement...
-- Read-only properties are emulated by simple implementation.
-- If an exception is thrown, it is not a specific error like `TypeError`, but just an `Error`
-- etc...
-
-Please be aware of these subtle differences. But I don't think there are any problems in practical use.
+</details>
 
 ## Notes
 
