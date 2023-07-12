@@ -2,6 +2,15 @@ name = "test-runner"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2023-05-18"
 
-kv_namespaces = [ { binding = "TEST_KV", id = "kv", preview_id = "test-kv" } ]
-r2_buckets  = [ { binding = "TEST_R2", bucket_name = "r2", preview_bucket_name = "test-r2" } ]
-services = [ { binding = "TEST_SERVICE", service = "test-service" }, ]
+kv_namespaces = [ 
+  { binding = "ACTUAL_KV", id = "a-kv", preview_id = "a-kv" },
+  { binding = "EXPECT_KV", id = "e-kv", preview_id = "e-kv" },
+]
+r2_buckets  = [
+  { binding = "ACTUAL_R2", bucket_name = "a-r2", preview_bucket_name = "a-r2" },
+  { binding = "EXPECT_R2", bucket_name = "e-r2", preview_bucket_name = "e-r2" },
+]
+services = [ 
+  { binding = "ACTUAL_SERVICE", service = "a-service" },
+  { binding = "EXPECT_SERVICE", service = "e-service" },
+]

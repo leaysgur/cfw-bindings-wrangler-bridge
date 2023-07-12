@@ -1,23 +1,31 @@
 // @ts-check
 import { deepStrictEqual } from "node:assert";
+import { createRunner } from "./utils.js";
 
-/**
- * @param {Fetcher} ACTUAL
- * @param {Fetcher} EXPECT
- * @returns {[name: string, spec: () => Promise<void>][]}
- */
-export const createSpecs = (ACTUAL, EXPECT) => {
-  return [
-    [
-      "SERVICE.fetch() -> v",
-      async () => {
-        const [actual, expect] = await Promise.allSettled([
-          ACTUAL.fetch("https://example.com").then((r) => r.text()),
-          EXPECT.fetch("https://example.com").then((r) => r.text()),
-        ]);
+/** @param {[Fetcher, Fetcher]} bindings */
+export const createSpecs = ([ACTUAL, EXPECT]) => {
+  const beforeEach = async () => {};
 
-        deepStrictEqual(actual, expect);
-      },
-    ],
-  ];
+  /** @type {[name: string, spec: () => Promise<void>][]} */
+  const specs = [];
+  const run = createRunner([ACTUAL, EXPECT]);
+
+  specs.push([
+    "SERVICE.fetch()",
+    async () => {
+      let fetchRes = await run(async (SERVICE) => {
+        const res = await SERVICE.fetch("https://example.com");
+        return res.text();
+      });
+      deepStrictEqual(fetchRes[0], fetchRes[1]);
+
+      fetchRes = await run(async (SERVICE) => {
+        const res = await SERVICE.fetch(new Request("https://example.com"));
+        return res.text();
+      });
+      deepStrictEqual(fetchRes[0], fetchRes[1]);
+    },
+  ]);
+
+  return { beforeEach, specs };
 };

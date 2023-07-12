@@ -1,5 +1,11 @@
 # Tests
 
+## Latest tested `wrangler` version
+
+v3.2.0
+
+## How to run
+
 Follow steps below.
 
 ```sh
@@ -15,10 +21,10 @@ wrangler dev ../worker.js
 wrangler dev ./runner-worker.js --persist-to .wrangler/_state --port 8686
 
 # Run all specs
-curl -s 'http://127.0.0.1:8686?kv&r2&service'
+curl -sN 'http://127.0.0.1:8686?t=kv&t=r2&t=service'
 # Or specify which specs to run
-curl -s 'http://127.0.0.1:8686?kv'
-curl -s 'http://127.0.0.1:8686?r2'
+curl -sN 'http://127.0.0.1:8686?t=kv'
+curl -sN 'http://127.0.0.1:8686?t=r2'
 ```
 
 If you test SERVICE bindings, extra steps are required in advance.
@@ -27,3 +33,19 @@ If you test SERVICE bindings, extra steps are required in advance.
 cd ./test-service
 wrangler dev ./service.js --port 8585
 ```
+
+## Testing plan
+
+What should be tested is
+
+- ACTUAL bindings: by our bridge implementation
+
+and
+
+- EXPECT bindings: by `wrangler dev`
+
+accept the same inputs and return the same outputs.
+
+The results(e.g. `delete()` surely delete entry) is not our concern.
+
+And support only the latest version of `wrangler`.

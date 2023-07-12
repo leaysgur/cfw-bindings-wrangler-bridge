@@ -1,83 +1,122 @@
 // @ts-check
+import { AssertionError } from "node:assert";
 import { createBridge } from "../module.js";
-import { before as beforeKV, createSpecs as specsKV } from "./specs/kv.js";
-import { createSpecs as specsSERVICE } from "./specs/service.js";
-import { before as beforeR2, createSpecs as specsR2 } from "./specs/r2.js";
+import { createSpecs as createKVSpecs } from "./specs/kv.js";
+import { createSpecs as specsSERVICESpecs } from "./specs/service.js";
+import { createSpecs as createR2Specs } from "./specs/r2.js";
 
-export default {
+/**
+ * @typedef {{
+ *   ACTUAL_KV: KVNamespace;
+ *   EXPECT_KV: KVNamespace;
+ *   ACTUAL_SERVICE: Fetcher;
+ *   EXPECT_SERVICE: Fetcher;
+ *   ACTUAL_R2: R2Bucket;
+ *   EXPECT_R2: R2Bucket;
+ * }} Env
+ */
+
+/**
+ * @param {URLSearchParams} searchParams
+ * @param {Env} env
+ * @param {WritableStreamDefaultWriter} writer
+ * */
+const runSpecs = async (searchParams, env, writer) => {
+  const targets = searchParams.getAll("t");
+
+  const encoder = new TextEncoder();
+  /** @param {string} line */
+  const write = (line) => writer.write(encoder.encode(line + "\n"));
+  /** @param {string} line */
+  const finish = (line) => {
+    write(line);
+    writer.close();
+  };
+
   /**
-   * @type {ExportedHandlerFetchHandler<{
-   *   TEST_KV: KVNamespace;
-   *   TEST_R2: R2Bucket;
-   *   TEST_SERVICE: Fetcher;
+   * @type {Map<string, {
+   *   beforeEach: () => Promise<void>;
+   *   specs: [name: string, spec: () => Promise<void>][]
    * }>}
    */
-  async fetch(req, env) {
-    const { searchParams } = new URL(req.url);
-    const bridge = createBridge();
+  const suites = new Map();
+  const bridge = createBridge();
 
-    /**
-     * @type {Map<string, [name: string, spec: () => Promise<void>][]>}
-     */
-    const suites = new Map();
+  if (targets.includes("kv")) {
+    const ACTUAL = /** @type {KVNamespace} */ (
+      /** @type {unknown} */ (bridge.KV("ACTUAL_KV"))
+    );
+    const EXPECT = env.EXPECT_KV;
+    suites.set("KV", createKVSpecs([ACTUAL, EXPECT]));
+  }
 
-    if (searchParams.has("kv")) {
-      const ACTUAL = /** @type {KVNamespace} */ (
-        /** @type {unknown} */ (bridge.KV("TEST_KV"))
-      );
-      const EXPECT = env.TEST_KV;
+  if (targets.includes("service")) {
+    const ACTUAL = /** @type {Fetcher} */ (
+      /** @type {unknown} */ (bridge.SERVICE("ACTUAL_SERVICE"))
+    );
+    const EXPECT = env.EXPECT_SERVICE;
+    suites.set("SERVICE", specsSERVICESpecs([ACTUAL, EXPECT]));
+  }
 
-      await beforeKV(ACTUAL, EXPECT);
-      suites.set("KV", specsKV(ACTUAL, EXPECT));
-    }
+  if (targets.includes("r2")) {
+    const ACTUAL = /** @type {R2Bucket} */ (
+      /** @type {unknown} */ (bridge.R2("ACTUAL_R2"))
+    );
+    const EXPECT = env.EXPECT_R2;
+    suites.set("R2", createR2Specs([ACTUAL, EXPECT]));
+  }
 
-    if (searchParams.has("service")) {
-      const ACTUAL = /** @type {Fetcher} */ (
-        /** @type {unknown} */ (bridge.SERVICE("TEST_SERVICE"))
-      );
-      const EXPECT = env.TEST_SERVICE;
+  if (suites.size === 0) {
+    return finish(
+      "No suites to run. Add params like `?t=kv` or `?t=r2&t=service` to the URL to run specs.",
+    );
+  }
 
-      suites.set("SERVICE", specsSERVICE(ACTUAL, EXPECT));
-    }
+  for (const [key, { beforeEach, specs }] of suites) {
+    write(`👾 Running "${key}" specs`);
+    write("----------------------");
 
-    if (searchParams.has("r2")) {
-      const ACTUAL = /** @type {R2Bucket} */ (
-        /** @type {unknown} */ (bridge.R2("TEST_R2"))
-      );
-      const EXPECT = env.TEST_R2;
+    // Order is important.
+    for (const [name, spec] of specs) {
+      try {
+        await beforeEach();
+        await spec();
+        write(`✅ ${name}`);
+      } catch (_err) {
+        const err = /** @type {Error} */ (_err);
 
-      await beforeR2(ACTUAL, EXPECT);
-      suites.set("R2", specsR2(ACTUAL, EXPECT));
-    }
-
-    if (suites.size === 0)
-      return new Response(
-        "No specs to run. Add params like `?kv` or `?r2&service` to the URL to run specs."
-      );
-
-    const results = [];
-    for (const [key, suite] of suites) {
-      results.push(`## ${key}`);
-
-      // Order is important.
-      for (const [name, test] of suite) {
-        try {
-          await test();
-          results.push(`✅ ${name}`);
-        } catch (err) {
-          results.push(`💥 ${name}`);
-          // @ts-expect-error: `err` is `unknown`
-          results.push(err.message);
-
-          console.error(name, err);
-          console.error(JSON.stringify(err, null, 2));
-          break; // bail
+        console.error("💥", `Failed spec: ${name}`);
+        console.error(err);
+        if (err instanceof AssertionError) {
+          console.error("actual", JSON.stringify(err.actual, null, 2));
+          console.error("expect", JSON.stringify(err.expected, null, 2));
         }
-      }
 
-      results.push("");
+        write(`💥 ${name}`);
+        write(err.message);
+        // bail
+        finish("Some specs are failed 😭");
+        break;
+      }
     }
 
-    return new Response(results.join("\n"));
+    write("----------------------");
+    write("");
+  }
+
+  finish("All specs are passed ✨");
+};
+
+export default {
+  /** @type {ExportedHandlerFetchHandler<Env>} */
+  async fetch(req, env, ctx) {
+    const { searchParams } = new URL(req.url);
+
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+
+    ctx.waitUntil(runSpecs(searchParams, env, writer));
+
+    return new Response(readable);
   },
 };
