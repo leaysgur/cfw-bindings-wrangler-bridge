@@ -9,6 +9,8 @@
 - Bridge worker file path has changed
   - ❌ `./node_modules/cfw-bindings-wrangler-bridge/worker/index.js`
   - ⭕ `./node_modules/cfw-bindings-wrangler-bridge/worker.js`
+- Default TypeScript definitions for each bridges are changed from `any` to `unknown`
+  - You need to add type like `bridge.KV<KVNamespace>()`
 
 ### Other updates
 
