@@ -1,12 +1,12 @@
-# 🌉 cfw-bindings-wrangler-bridge
+# cfw-bindings-wrangler-bridge
 
-Bridge between local development code and Cloudflare Workers bindings, via `wrangler dev --remote` command.
+Bridge between **local environment in development** 🌉 **Cloudflare Workers bindings in production**, via `wrangler dev --remote` command.
 
 ## Motivation
 
 Imagine you want to deploy your application to Cloudflare Pages using a framework like SvelteKit.
 
-`vite dev` is fast and DX is very good. Deployment is no problem either, with adapters available. GitHub connected auto CI, preview branches are really nice. 🥳
+`vite dev` has nice DX. Deployment is no problem either, with adapters available. GitHub connected auto CI, preview branches are really cool. 🥳
 
 However, as soon as you try to use features specific to the Cloudflare Workers platform (like KV, D1, etc.), you run into problems...
 
@@ -18,12 +18,12 @@ Some frameworks offer to use the `wrangler pages dev` command for local developm
 
 Some frameworks also have implementations using `@cloudflare/miniflare` in their adapters. But even in this case, you can only access locally closed data.
 
-This problem also occurs when developing APIs using only Pages Functions via `wrangler pages dev`.
+This problem also occurs when developing APIs using only Pages Functions(via `wrangler pages dev`).
 
-That is where this bridge 🌉 comes in!
-This bridge(module + worker) allows you to access the real data even from your local development environment, via the `wrangler dev --remote` command.
+That is where this bridge comes in!
+This bridge(module + worker) allows you to access the real data even from your local development environment through the `wrangler dev --remote` command.
 
-In addition, this module makes it possible to manipulate data in the production environment, without the need to prepare a Worker! It is really convenient. 🤞
+In addition, this module makes it possible to use the Workers runtime APIs on everywhere. It's really convenient. 🤞
 
 ## Install
 
@@ -53,6 +53,8 @@ const bridge = createBridge();
 
 /** @type {import("@cloduflare/workers-types").KVNamespace} */
 const MY_KV = bridge.KV("MY_KV");
+// For TypeScript
+// const MY_KV = bridge.KV<KVNamespace>("MY_KV");
 
 // ✌️ This is real KV!
 await MY_KV.put("foo", "bar");
@@ -63,7 +65,7 @@ Type definitions should be handled by yourself. 😅
 
 ## Supported bindings
 
-### KV
+### [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
 
 - [x] `.list()`
 - [x] `.get()`
@@ -71,7 +73,7 @@ Type definitions should be handled by yourself. 😅
 - [x] `.put()`
 - [x] `.delete()`
 
-### SERVICE
+### [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
 
 - [x] `.fetch()`
 
@@ -90,7 +92,7 @@ At this time, however, the value of `request.origin` will be different from the 
 
 > See also https://github.com/cloudflare/workers-sdk/issues/1182
 
-### R2
+### [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
 
 - [x] `.list()`
 - [x] `.head()`
@@ -100,7 +102,7 @@ At this time, however, the value of `request.origin` will be different from the 
 - [ ] `.createMultipartUpload()`
 - [ ] `.resumeMultipartUpload()`
 
-⚠️ The `Headers` types are not supported now. (e.g. `R2.get(k, v, { onlyIf: headers })`)
+⚠️ The `Headers` type values are not supported now. (e.g. `R2.get(k, v, { onlyIf: headers })`)
 
 ## Known limitations
 
@@ -185,5 +187,5 @@ export const handle = async ({ event, resolve }) => {
   - Maybe? but it is literally unstable
   - I'm not sure how to ensure `await worker.stop()` on Vite process exit
     - Side-effect should be avoided...
-  - Performance may suffer if repeating start/stop on every call
+    - Performance may suffer if repeating start/stop on every call
   - Someone may use a fixed version of `wrangler` for some reason
