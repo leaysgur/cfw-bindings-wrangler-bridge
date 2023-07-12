@@ -12,7 +12,7 @@ export const isR2Binding = (binding) => binding.constructor.name === "R2Bucket";
  */
 export const handleR2Dispatch = async (R2, req) => {
   const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-R2-Dispatch") ?? "{}"
+    req.headers.get("X-BRIDGE-R2-Dispatch") ?? "{}",
   );
 
   if (operation === "list") {
@@ -29,8 +29,12 @@ export const handleR2Dispatch = async (R2, req) => {
 
     if (options?.httpMetadata?.cacheExpiry)
       options.httpMetadata.cacheExpiry = new Date(
-        options.httpMetadata.cacheExpiry
+        options.httpMetadata.cacheExpiry,
       );
+    if (options?.onlyIf?.uploadedBefore)
+      options.onlyIf.uploadedBefore = new Date(options.onlyIf.uploadedBefore);
+    if (options?.onlyIf?.uploadedAfter)
+      options.onlyIf.uploadedAfter = new Date(options.onlyIf.uploadedAfter);
 
     // Need to await here, otherwise already sent error
     const result = await R2.put(key, value, options);
