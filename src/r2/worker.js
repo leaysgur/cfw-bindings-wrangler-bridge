@@ -56,7 +56,7 @@ export const handleR2Dispatch = async (R2, req) => {
     if (result === null) return Response.json(null);
 
     // `R2ObjectBody`: key exists and precondition is met
-    if ("body" in result)
+    if ("body" in result && result.constructor.name === "GetResult")
       return new Response(result.body, {
         headers: { "X-BRIDGE-R2-R2ObjectJSON": JSON.stringify(result) },
       });

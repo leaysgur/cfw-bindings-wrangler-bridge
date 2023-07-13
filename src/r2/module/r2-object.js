@@ -18,7 +18,8 @@ import { hexToArrayBuffer } from "./utils.js";
  * )} R2ObjectsJSON
  */
 
-class R2Checksums$ {
+// implements R2Checksums
+class Checksums$ {
   #checksums;
   md5;
   sha1;
@@ -51,8 +52,8 @@ class R2Checksums$ {
   }
 }
 
-// a.k.a. `HeadResult`
-export class R2Object$ {
+// implements `R2Object`
+export class HeadResult$ {
   key;
   version;
   size;
@@ -71,7 +72,7 @@ export class R2Object$ {
     this.size = metadata.size;
     this.etag = metadata.etag;
     this.httpEtag = metadata.httpEtag;
-    this.checksums = new R2Checksums$(metadata.checksums);
+    this.checksums = new Checksums$(metadata.checksums);
     this.uploaded = new Date(metadata.uploaded);
     this.httpMetadata = metadata.httpMetadata;
     if (this.httpMetadata?.cacheExpiry)
@@ -100,8 +101,8 @@ export class R2Object$ {
   }
 }
 
-// a.k.a. `GetResult`
-export class R2ObjectBody$ extends R2Object$ {
+// implements `R2ObjectBody`
+export class GetResult$ extends HeadResult$ {
   #response;
 
   /**
@@ -139,3 +140,5 @@ export class R2ObjectBody$ extends R2Object$ {
     return this.#response.blob();
   }
 }
+
+// `R2Objects` is not implemented as class, just an `Object`

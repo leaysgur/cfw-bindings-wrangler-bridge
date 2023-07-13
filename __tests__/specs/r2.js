@@ -97,7 +97,7 @@ const _equalR2Objects = (actual, expect) => {
 const equalR2ObjectResult = (aRes, eRes) => {
   if (aRes.status === "fulfilled" && eRes.status === "fulfilled") {
     // @ts-expect-error: `aRes|eRes` is type `unknown`
-    // This extra check is needed sinse `R2ObjectBody` inherits `R2Object`
+    // This extra check is needed since `R2ObjectBody` inherits `R2Object`
     if ("body" in aRes.value === false && "body" in eRes.value === false)
       return _equalR2Object(
         /** @type {R2Object} */ (aRes.value),

@@ -5,7 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 
-import { R2Object$, R2ObjectBody$ } from "./r2-object.js";
+import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { arrayBufferToHex } from "./utils.js";
 /**
  * @typedef {import("./r2-object.js").R2ObjectJSON} R2ObjectJSON
@@ -57,7 +57,7 @@ export class R2Bucket$ {
 
     return {
       ...json,
-      objects: json.objects.map((o) => new R2Object$(o)),
+      objects: json.objects.map((o) => new HeadResult$(o)),
     };
   }
 
@@ -89,7 +89,7 @@ export class R2Bucket$ {
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
-    return json === null ? null : new R2Object$(json);
+    return json === null ? null : new HeadResult$(json);
   }
 
   /**
@@ -102,12 +102,12 @@ export class R2Bucket$ {
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
       const json = JSON.parse(headerForR2ObjectBody);
-      return new R2ObjectBody$(json, res);
+      return new GetResult$(json, res);
     }
 
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
-    return json === null ? null : new R2Object$(json);
+    return json === null ? null : new HeadResult$(json);
   }
 
   /** @param {string} key */
@@ -116,7 +116,7 @@ export class R2Bucket$ {
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
-    return json === null ? null : new R2Object$(json);
+    return json === null ? null : new HeadResult$(json);
   }
 
   /** @param {string | string[]} keys */
