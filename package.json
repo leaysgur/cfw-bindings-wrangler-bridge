@@ -29,5 +29,8 @@
     "@cloudflare/workers-types": "^4.20230710.0",
     "@types/node": "^20.4.1",
     "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "devalue": "^4.3.2"
   }
 }

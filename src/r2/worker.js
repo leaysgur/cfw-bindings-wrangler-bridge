@@ -1,4 +1,6 @@
 // @ts-check
+import { parse } from "devalue";
+import { hexStringToArrayBuffer } from "./shared.js";
 
 /**
  * @param {any} binding
@@ -11,8 +13,12 @@ export const isR2Binding = (binding) => binding.constructor.name === "R2Bucket";
  * @param {Request} req
  */
 export const handleR2Dispatch = async (R2, req) => {
-  const { operation, parameters } = JSON.parse(
+  const { operation, parameters } = parse(
     req.headers.get("X-BRIDGE-R2-Dispatch") ?? "{}",
+    {
+      Headers: (v) => new Headers(v),
+      ArrayBuffer: (v) => hexStringToArrayBuffer(v),
+    },
   );
 
   if (operation === "list") {
@@ -27,15 +33,6 @@ export const handleR2Dispatch = async (R2, req) => {
     const [key, , options] = parameters;
     const value = req.body;
 
-    if (options?.httpMetadata?.cacheExpiry)
-      options.httpMetadata.cacheExpiry = new Date(
-        options.httpMetadata.cacheExpiry,
-      );
-    if (options?.onlyIf?.uploadedBefore)
-      options.onlyIf.uploadedBefore = new Date(options.onlyIf.uploadedBefore);
-    if (options?.onlyIf?.uploadedAfter)
-      options.onlyIf.uploadedAfter = new Date(options.onlyIf.uploadedAfter);
-
     // Need to await here, otherwise already sent error
     const result = await R2.put(key, value, options);
 
@@ -44,11 +41,6 @@ export const handleR2Dispatch = async (R2, req) => {
 
   if (operation === "get") {
     const [key, options] = parameters;
-
-    if (options?.onlyIf?.uploadedBefore)
-      options.onlyIf.uploadedBefore = new Date(options.onlyIf.uploadedBefore);
-    if (options?.onlyIf?.uploadedAfter)
-      options.onlyIf.uploadedAfter = new Date(options.onlyIf.uploadedAfter);
 
     const result = await R2.get(key, options);
 
