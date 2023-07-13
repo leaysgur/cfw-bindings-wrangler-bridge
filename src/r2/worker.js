@@ -14,6 +14,7 @@ const parseDispatchHeader = (t) =>
 const stringifyR2Objects = (t) => JSON.stringify(t);
 /** @param {R2Object} t */
 const stringifyR2Object = (t) => JSON.stringify(t);
+const stringifyNull = () => "null";
 
 /**
  * @param {any} binding
@@ -54,7 +55,7 @@ export const handleR2Dispatch = async (R2, req) => {
     const result = await R2.get(key, options);
 
     // `null`: key does not exists
-    if (result === null) return new Response(JSON.stringify(null));
+    if (result === null) return new Response(stringifyNull());
 
     // `R2ObjectBody`: key exists and precondition is met
     if ("body" in result && result.constructor.name === "GetResult")
@@ -71,7 +72,7 @@ export const handleR2Dispatch = async (R2, req) => {
 
     const result = await R2.head(key);
 
-    if (result === null) return new Response(JSON.stringify(null));
+    if (result === null) return new Response(stringifyNull());
 
     return new Response(stringifyR2Object(result));
   }

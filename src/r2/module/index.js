@@ -27,7 +27,7 @@ const stringifyDispatchHeader = (t) =>
 const parseR2ObjectsJSON = (t) => JSON.parse(t);
 /**
  * @param {string} t
- * @returns {R2ObjectJSON | null}
+ * @returns {R2ObjectJSON}
  */
 const parseR2ObjectJSON = (t) => JSON.parse(t);
 
@@ -95,9 +95,10 @@ export class R2Bucket$ {
       // And it seems to have the same effect...
       value ?? undefined,
     );
-    const json = await res.text().then((t) => parseR2ObjectJSON(t));
+    const json = await res.text();
 
-    return json === null ? null : new HeadResult$(json);
+    if (json === "null") return null;
+    return new HeadResult$(parseR2ObjectJSON(json));
   }
 
   /**
@@ -110,20 +111,21 @@ export class R2Bucket$ {
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
       const json = parseR2ObjectJSON(headerForR2ObjectBody);
-      // @ts-ignore: `json` is not `null` here
       return new GetResult$(json, res);
     }
 
-    const json = await res.text().then((t) => parseR2ObjectJSON(t));
-    return json === null ? null : new HeadResult$(json);
+    const json = await res.text();
+    if (json === "null") return null;
+    return new HeadResult$(parseR2ObjectJSON(json));
   }
 
   /** @param {string} key */
   async head(key) {
     const res = await this.#dispatch("head", [key]);
-    const json = await res.text().then((t) => parseR2ObjectJSON(t));
+    const json = await res.text();
 
-    return json === null ? null : new HeadResult$(json);
+    if (json === "null") return null;
+    return new HeadResult$(parseR2ObjectJSON(json));
   }
 
   /** @param {string | string[]} keys */
