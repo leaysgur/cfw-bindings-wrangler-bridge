@@ -66,6 +66,7 @@ const _equalR2ObjectBody = (actual, expect) => {
 
   deepStrictEqual(actual.bodyUsed, expect.bodyUsed);
   deepStrictEqual(typeof actual.body, typeof expect.body);
+  deepStrictEqual(typeof actual.body, typeof expect.body);
 
   deepStrictEqual(typeof actual.arrayBuffer, typeof expect.arrayBuffer);
   deepStrictEqual(typeof actual.text, typeof expect.text);
@@ -94,11 +95,15 @@ const _equalR2Objects = (actual, expect) => {
  * @param {PromiseSettledResult<unknown>} eRes
  */
 const equalR2ObjectResult = (aRes, eRes) => {
-  if (aRes.status === "fulfilled" && eRes.status === "fulfilled")
-    return _equalR2Object(
-      /** @type {R2Object} */ (aRes.value),
-      /** @type {R2Object} */ (eRes.value),
-    );
+  if (aRes.status === "fulfilled" && eRes.status === "fulfilled") {
+    // @ts-expect-error: `aRes|eRes` is type `unknown`
+    // This extra check is needed sinse `R2ObjectBody` inherits `R2Object`
+    if ("body" in aRes.value === false && "body" in eRes.value === false)
+      return _equalR2Object(
+        /** @type {R2Object} */ (aRes.value),
+        /** @type {R2Object} */ (eRes.value),
+      );
+  }
 
   deepStrictEqual(aRes, eRes);
 };
@@ -323,6 +328,13 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       //   onlyIf?: {...} | Headers;
       //   range?: {...} | Headers;
       // }
+      // await run((R2) => R2.put("K3", "yoyoyo"));
+      // let getRes3 = await run((R2) =>
+      //   R2.get("K3", {
+      //     onlyIf: new Headers([["If-Match", '"0000"']]),
+      //   }),
+      // );
+      // equalR2ObjectResult(getRes3[0], getRes3[1]);
     },
   ]);
 
