@@ -1,5 +1,24 @@
 # 🌉 cfw-bindings-wrangler-bridge
 
+## 0.3.0
+
+- [#4](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/4) Internals rework
+
+### Breaking changes
+
+- Bridge worker file path has changed
+  - ❌ `./node_modules/cfw-bindings-wrangler-bridge/worker/index.js`
+  - ⭕ `./node_modules/cfw-bindings-wrangler-bridge/worker.js`
+- Default TypeScript definitions for each bridges are changed from `any` to `unknown`
+  - You need to add type like `bridge.KV<KVNamespace>()`
+
+### Other updates
+
+- `createBridge(bridgeWranglerOrigin?: string)` now defaults to `http://127.0.0.1:8787`
+- Better R2 support(`R2Objects` / `R2Object` / `R2ObjectBody` shims)
+- Basic tests are added
+- Several small bug fixes
+
 ## 0.2.1
 
 - Fix some bugs of R2 bridge
