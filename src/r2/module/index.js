@@ -7,7 +7,7 @@
 
 import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
-import { arrayBufferToHex } from "../utils.js";
+import { arrayBufferToHexString } from "../utils.js";
 /**
  * @typedef {import("./r2-object.js").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./r2-object.js").R2ObjectsJSON} R2ObjectsJSON
@@ -17,7 +17,7 @@ import { arrayBufferToHex } from "../utils.js";
 const stringifyDispatchHeader = (t) =>
   stringify(t, {
     Headers: (v) => v instanceof Headers && Array.from(v),
-    ArrayBuffer: (v) => v instanceof ArrayBuffer && arrayBufferToHex(v),
+    ArrayBuffer: (v) => v instanceof ArrayBuffer && arrayBufferToHexString(v),
   });
 
 /**

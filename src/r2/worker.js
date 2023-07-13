@@ -1,13 +1,13 @@
 // @ts-check
 import { parse } from "devalue";
-import { hexToArrayBuffer } from "./utils.js";
+import { hexStringToArrayBuffer } from "./utils.js";
 
 /** @param {string} t */
 const parseDispatchHeader = (t) =>
   parse(t, {
     // v: [string, string][]
     Headers: (v) => new Headers(v),
-    ArrayBuffer: (v) => hexToArrayBuffer(v),
+    ArrayBuffer: (v) => hexStringToArrayBuffer(v),
   });
 
 /** @param {R2Objects} t */

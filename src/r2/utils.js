@@ -1,5 +1,5 @@
 /** @param {string} hex */
-export const hexToArrayBuffer = (hex) => {
+export const hexStringToArrayBuffer = (hex) => {
   const view = new Uint8Array(hex.length / 2);
 
   for (let i = 0; i < hex.length; i += 2)
@@ -9,7 +9,7 @@ export const hexToArrayBuffer = (hex) => {
 };
 
 /** @param {ArrayBuffer} arrayBuffer */
-export const arrayBufferToHex = (arrayBuffer) => {
+export const arrayBufferToHexString = (arrayBuffer) => {
   const view = new Uint8Array(arrayBuffer);
 
   let result = "";
