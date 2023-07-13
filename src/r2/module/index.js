@@ -14,7 +14,9 @@ import { arrayBufferToHex } from "./utils.js";
  */
 
 /** @param {unknown} t */
-const stringifyDispatchHeader = (t) => stringify(t);
+const stringifyDispatchHeader = (t) => stringify(t, {
+  Headers: (v) => v instanceof Headers && Array.from(v),
+});
 
 /**
  * @param {string} t

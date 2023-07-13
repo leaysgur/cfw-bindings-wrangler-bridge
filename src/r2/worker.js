@@ -2,7 +2,10 @@
 import { parse } from "devalue";
 
 /** @param {string} t */
-const parseDispatchHeader = (t) => parse(t);
+const parseDispatchHeader = (t) => parse(t, {
+  // v: [string, string][]
+  Headers: (v) => new Headers(v),
+});
 
 /** @param {R2Objects} t */
 const stringifyR2Objects = (t) => JSON.stringify(t);
