@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.3.1
+
+- [#10](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values
+
 ## 0.3.0
 
 - [#4](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/4) Internals rework
