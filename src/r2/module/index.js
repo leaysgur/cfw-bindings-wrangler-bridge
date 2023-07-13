@@ -95,10 +95,10 @@ export class R2Bucket$ {
       // And it seems to have the same effect...
       value ?? undefined,
     );
-    const json = await res.text();
+    const stringified = await res.text();
 
-    if (json === "null") return null;
-    return new HeadResult$(parseR2ObjectJSON(json));
+    if (stringified === "Null") return null;
+    return new HeadResult$(parseR2ObjectJSON(stringified));
   }
 
   /**
@@ -110,22 +110,21 @@ export class R2Bucket$ {
 
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
-      const json = parseR2ObjectJSON(headerForR2ObjectBody);
-      return new GetResult$(json, res);
+      return new GetResult$(parseR2ObjectJSON(headerForR2ObjectBody), res);
     }
 
-    const json = await res.text();
-    if (json === "null") return null;
-    return new HeadResult$(parseR2ObjectJSON(json));
+    const stringified = await res.text();
+    if (stringified === "Null") return null;
+    return new HeadResult$(parseR2ObjectJSON(stringified));
   }
 
   /** @param {string} key */
   async head(key) {
     const res = await this.#dispatch("head", [key]);
-    const json = await res.text();
+    const stringified = await res.text();
 
-    if (json === "null") return null;
-    return new HeadResult$(parseR2ObjectJSON(json));
+    if (stringified === "Null") return null;
+    return new HeadResult$(parseR2ObjectJSON(stringified));
   }
 
   /** @param {string | string[]} keys */

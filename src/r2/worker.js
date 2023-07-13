@@ -14,7 +14,7 @@ const parseDispatchHeader = (t) =>
 const stringifyR2Objects = (t) => JSON.stringify(t);
 /** @param {R2Object} t */
 const stringifyR2Object = (t) => JSON.stringify(t);
-const stringifyNull = () => "null";
+const stringifyNull = () => "Null";
 
 /**
  * @param {any} binding
