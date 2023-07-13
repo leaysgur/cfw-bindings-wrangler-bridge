@@ -73,10 +73,13 @@ export class HeadResult$ {
     this.uploaded = new Date(metadata.uploaded);
     this.httpMetadata = {
       ...metadata.httpMetadata,
-      cacheExpiry: metadata.httpMetadata?.cacheExpiry
+      cacheExpiry: metadata.httpMetadata.cacheExpiry
         ? new Date(metadata.httpMetadata.cacheExpiry)
         : undefined,
     };
+    // If value was `undefined`, should drop key
+    if (!metadata.httpMetadata.cacheExpiry)
+      delete this.httpMetadata.cacheExpiry;
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
 
