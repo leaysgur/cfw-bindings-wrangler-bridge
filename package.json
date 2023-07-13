@@ -1,6 +1,6 @@
 {
   "name": "cfw-bindings-wrangler-bridge",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "type": "module",
   "exports": {
     "types": "./index.d.ts",
