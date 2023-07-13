@@ -1,4 +1,13 @@
 // @ts-check
+import { parse } from "devalue";
+
+/** @param {string} t */
+const parseDispatchHeader = (t) => parse(t);
+
+/** @param {R2Objects} t */
+const stringifyR2Objects = (t) => JSON.stringify(t);
+/** @param {R2Object} t */
+const stringifyR2Object = (t) => JSON.stringify(t);
 
 /**
  * @param {any} binding
@@ -11,7 +20,7 @@ export const isR2Binding = (binding) => binding.constructor.name === "R2Bucket";
  * @param {Request} req
  */
 export const handleR2Dispatch = async (R2, req) => {
-  const { operation, parameters } = JSON.parse(
+  const { operation, parameters } = parseDispatchHeader(
     req.headers.get("X-BRIDGE-R2-Dispatch") ?? "{}",
   );
 
@@ -20,49 +29,35 @@ export const handleR2Dispatch = async (R2, req) => {
 
     const result = await R2.list(options);
 
-    return Response.json(result);
+    return new Response(stringifyR2Objects(result));
   }
 
   if (operation === "put") {
     const [key, , options] = parameters;
     const value = req.body;
 
-    if (options?.httpMetadata?.cacheExpiry)
-      options.httpMetadata.cacheExpiry = new Date(
-        options.httpMetadata.cacheExpiry,
-      );
-    if (options?.onlyIf?.uploadedBefore)
-      options.onlyIf.uploadedBefore = new Date(options.onlyIf.uploadedBefore);
-    if (options?.onlyIf?.uploadedAfter)
-      options.onlyIf.uploadedAfter = new Date(options.onlyIf.uploadedAfter);
-
     // Need to await here, otherwise already sent error
     const result = await R2.put(key, value, options);
 
-    return Response.json(result);
+    return new Response(stringifyR2Object(result));
   }
 
   if (operation === "get") {
     const [key, options] = parameters;
 
-    if (options?.onlyIf?.uploadedBefore)
-      options.onlyIf.uploadedBefore = new Date(options.onlyIf.uploadedBefore);
-    if (options?.onlyIf?.uploadedAfter)
-      options.onlyIf.uploadedAfter = new Date(options.onlyIf.uploadedAfter);
-
     const result = await R2.get(key, options);
 
     // `null`: key does not exists
-    if (result === null) return Response.json(null);
+    if (result === null) return new Response(JSON.stringify(null));
 
     // `R2ObjectBody`: key exists and precondition is met
     if ("body" in result && result.constructor.name === "GetResult")
       return new Response(result.body, {
-        headers: { "X-BRIDGE-R2-R2ObjectJSON": JSON.stringify(result) },
+        headers: { "X-BRIDGE-R2-R2ObjectJSON": stringifyR2Object(result) },
       });
 
     // `R2Object`: key exists but precondition is not met
-    return Response.json(result);
+    return new Response(stringifyR2Object(result));
   }
 
   if (operation === "head") {
@@ -70,7 +65,9 @@ export const handleR2Dispatch = async (R2, req) => {
 
     const result = await R2.head(key);
 
-    return Response.json(result);
+    if (result === null) return new Response(JSON.stringify(null));
+
+    return new Response(stringifyR2Object(result));
   }
 
   if (operation === "delete") {

@@ -5,12 +5,27 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 
+import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { arrayBufferToHex } from "./utils.js";
 /**
  * @typedef {import("./r2-object.js").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./r2-object.js").R2ObjectsJSON} R2ObjectsJSON
  */
+
+/** @param {unknown} t */
+const stringifyDispatchHeader = (t) => stringify(t);
+
+/**
+ * @param {string} t
+ * @returns {R2ObjectsJSON}
+ */
+const parseR2ObjectsJSON = (t) => JSON.parse(t);
+/**
+ * @param {string} t
+ * @returns {R2ObjectJSON | null}
+ */
+const parseR2ObjectJSON = (t) => JSON.parse(t);
 
 export class R2Bucket$ {
   #bridgeWranglerOrigin;
@@ -36,7 +51,10 @@ export class R2Bucket$ {
       headers: {
         "X-BRIDGE-BINDING-MODULE": "R2",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
-        "X-BRIDGE-R2-Dispatch": JSON.stringify({ operation, parameters }),
+        "X-BRIDGE-R2-Dispatch": stringifyDispatchHeader({
+          operation,
+          parameters,
+        }),
       },
       body,
     });
@@ -52,8 +70,7 @@ export class R2Bucket$ {
   /** @param {R2ListOptions} [options] */
   async list(options) {
     const res = await this.#dispatch("list", [options]);
-    /** @type {R2ObjectsJSON} */
-    const json = await res.json();
+    const json = await res.text().then((t) => parseR2ObjectsJSON(t));
 
     return {
       ...json,
@@ -86,8 +103,7 @@ export class R2Bucket$ {
       // And it seems to have the same effect...
       value ?? undefined,
     );
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = await res.text().then((t) => parseR2ObjectJSON(t));
 
     return json === null ? null : new HeadResult$(json);
   }
@@ -101,20 +117,19 @@ export class R2Bucket$ {
 
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
-      const json = JSON.parse(headerForR2ObjectBody);
+      const json = parseR2ObjectJSON(headerForR2ObjectBody);
+      // @ts-ignore: `json` is not `null` here
       return new GetResult$(json, res);
     }
 
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = await res.text().then((t) => parseR2ObjectJSON(t));
     return json === null ? null : new HeadResult$(json);
   }
 
   /** @param {string} key */
   async head(key) {
     const res = await this.#dispatch("head", [key]);
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = await res.text().then((t) => parseR2ObjectJSON(t));
 
     return json === null ? null : new HeadResult$(json);
   }
