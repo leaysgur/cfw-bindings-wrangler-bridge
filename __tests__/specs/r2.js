@@ -251,6 +251,12 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         }),
       );
       equalR2ObjectResult(putRes[0], putRes[1]);
+      const sha512 = await crypto.subtle.digest(
+        "SHA-512",
+        new TextEncoder().encode("123"),
+      );
+      putRes = await run((R2) => R2.put("K1", "123", { sha512 }));
+      equalR2ObjectResult(putRes[0], putRes[1]);
 
       putRes = await run((R2) =>
         R2.put("K2", "456", { onlyIf: { secondsGranularity: true } }),

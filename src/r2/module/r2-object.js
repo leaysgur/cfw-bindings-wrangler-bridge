@@ -5,7 +5,7 @@
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2objectbody-definition
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
-import { hexToArrayBuffer } from "./utils.js";
+import { hexToArrayBuffer } from "../utils.js";
 /**
  * @typedef {(
  *   Omit<R2Object, "checksums" | "writeHttpMetadata">
