@@ -94,6 +94,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
         write(`💥 ${name}`);
         write(err.message);
+        write("");
         // bail
         finish("Some specs are failed 😭");
         break;
