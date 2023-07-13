@@ -16,6 +16,7 @@ export const handleR2Dispatch = async (R2, req) => {
   const { operation, parameters } = parse(
     req.headers.get("X-BRIDGE-R2-Dispatch") ?? "{}",
     {
+      // Date: Handled by default
       Headers: (v) => new Headers(v),
       ArrayBuffer: (v) => hexStringToArrayBuffer(v),
     },
@@ -62,6 +63,10 @@ export const handleR2Dispatch = async (R2, req) => {
 
     const result = await R2.head(key);
 
+    // `null`: key does not exists
+    if (result === null) return Response.json(null);
+
+    // `R2Object`: key exists
     return Response.json(result);
   }
 

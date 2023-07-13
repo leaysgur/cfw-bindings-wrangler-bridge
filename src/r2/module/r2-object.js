@@ -7,15 +7,9 @@
 
 import { hexStringToArrayBuffer } from "../shared.js";
 /**
- * @typedef {(
- *   Omit<R2Object, "checksums" | "writeHttpMetadata">
- *   & { checksums: R2StringChecksums; }
- * )} R2ObjectJSON
- *
- * @typedef {(
- *   Omit<R2Objects, "objects">
- *   & { objects: R2ObjectJSON[]; }
- * )} R2ObjectsJSON
+ * @typedef {import("./types.d.ts").R2HTTPMetadataJSON} R2HTTPMetadataJSON
+ * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
+ * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
  */
 
 // implements R2Checksums
@@ -31,8 +25,12 @@ class Checksums$ {
   constructor(checksums) {
     this.#checksums = checksums;
 
-    this.md5 = checksums.md5 ? hexStringToArrayBuffer(checksums.md5) : undefined;
-    this.sha1 = checksums.sha1 ? hexStringToArrayBuffer(checksums.sha1) : undefined;
+    this.md5 = checksums.md5
+      ? hexStringToArrayBuffer(checksums.md5)
+      : undefined;
+    this.sha1 = checksums.sha1
+      ? hexStringToArrayBuffer(checksums.sha1)
+      : undefined;
     this.sha256 = checksums.sha256
       ? hexStringToArrayBuffer(checksums.sha256)
       : undefined;
@@ -74,9 +72,12 @@ export class HeadResult$ {
     this.httpEtag = metadata.httpEtag;
     this.checksums = new Checksums$(metadata.checksums);
     this.uploaded = new Date(metadata.uploaded);
-    this.httpMetadata = metadata.httpMetadata;
-    if (this.httpMetadata?.cacheExpiry)
-      this.httpMetadata.cacheExpiry = new Date(this.httpMetadata.cacheExpiry);
+    this.httpMetadata = {
+      ...metadata.httpMetadata,
+      cacheExpiry: metadata.httpMetadata?.cacheExpiry
+        ? new Date(metadata.httpMetadata.cacheExpiry)
+        : undefined,
+    };
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
 
