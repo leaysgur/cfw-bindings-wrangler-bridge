@@ -4,7 +4,7 @@ import {
   createRunner,
   equalRejectedResult,
   sleepAfterRejectedResult,
-} from "./utils.js";
+} from "../test-utils.js";
 
 /**
  * @param {R2Checksums} actual

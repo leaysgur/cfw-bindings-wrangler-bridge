@@ -1,6 +1,6 @@
 // @ts-check
 import { deepStrictEqual } from "node:assert";
-import { createRunner } from "./utils.js";
+import { createRunner } from "../test-utils.js";
 
 /** @param {[Fetcher, Fetcher]} bindings */
 export const createSpecs = ([ACTUAL, EXPECT]) => {

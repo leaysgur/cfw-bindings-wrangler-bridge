@@ -4,7 +4,7 @@ import {
   createRunner,
   equalRejectedResult,
   sleepAfterRejectedResult,
-} from "./utils.js";
+} from "../test-utils.js";
 
 /** @param {[KVNamespace, KVNamespace]} bindings */
 export const createSpecs = ([ACTUAL, EXPECT]) => {
