@@ -34,7 +34,6 @@ export const handleR2Dispatch = async (R2, req) => {
     const [key, , options] = parameters;
     const value = req.body;
 
-    // Need to await here, otherwise already sent error
     const result = await R2.put(key, value, options);
 
     return Response.json(result);

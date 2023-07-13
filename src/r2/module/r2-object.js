@@ -7,7 +7,6 @@
 
 import { hexStringToArrayBuffer } from "../shared.js";
 /**
- * @typedef {import("./types.d.ts").R2HTTPMetadataJSON} R2HTTPMetadataJSON
  * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
  */

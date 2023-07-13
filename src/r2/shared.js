@@ -1,9 +1,9 @@
-/** @param {string} hex */
-export const hexStringToArrayBuffer = (hex) => {
-  const view = new Uint8Array(hex.length / 2);
+/** @param {string} hexString */
+export const hexStringToArrayBuffer = (hexString) => {
+  const view = new Uint8Array(hexString.length / 2);
 
-  for (let i = 0; i < hex.length; i += 2)
-    view[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+  for (let i = 0; i < hexString.length; i += 2)
+    view[i / 2] = parseInt(hexString.substring(i, i + 2), 16);
 
   return view.buffer;
 };
@@ -12,11 +12,11 @@ export const hexStringToArrayBuffer = (hex) => {
 export const arrayBufferToHexString = (arrayBuffer) => {
   const view = new Uint8Array(arrayBuffer);
 
-  let result = "";
+  let hexString = "";
   for (let i = 0; i < view.length; i++) {
     const value = view[i].toString(16);
-    result += value.length === 1 ? "0" + value : value;
+    hexString += value.length === 1 ? "0" + value : value;
   }
 
-  return result;
+  return hexString;
 };

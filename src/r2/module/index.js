@@ -5,6 +5,11 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
 
+// Notes:
+// `devalue` is only used for `dispatch()` payload.
+// Use it for all I/Os may be ideal but it's not easy.
+// `R2Object` and `R2ObjectBody` hold too many non-POJO values.
+
 import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { arrayBufferToHexString } from "../shared.js";
