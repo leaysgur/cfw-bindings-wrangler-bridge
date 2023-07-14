@@ -2,7 +2,8 @@
 
 ## 0.3.1
 
-- [#10](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values
+- [#10](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values for R2
+- [#11](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/11) Handle non-ASCII keys
 
 ## 0.3.0
 
