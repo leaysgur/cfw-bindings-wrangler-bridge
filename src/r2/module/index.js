@@ -8,7 +8,9 @@
 // Notes:
 // `devalue` is only used for `dispatch()` payload.
 // Use it for all I/Os may be ideal but it's not easy.
-// `R2Object` and `R2ObjectBody` hold too many non-POJO values.
+// `R2Object` and `R2ObjectBody` hold too many non-POJO values...
+// But `R2Object(Body)` can be `JSON.stringify()` at no cost.
+// See `R2ObjectJSON` type for that conversion.
 
 import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
