@@ -1,6 +1,6 @@
 export type Dispatch = (
   operation: string,
-  paramters: unknown[],
+  parameters: unknown[],
   body?: BodyInit,
 ) => Promise<Response>;
 
