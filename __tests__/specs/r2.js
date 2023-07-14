@@ -341,13 +341,13 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
   ]);
 
   specs.push([
-    "R2 key can be any string, but get(Non-ASCII key) returns null",
+    "R2 key can be any string",
     async () => {
       const validKeys = [
         "",
         ".",
         "..",
-        "key/needs#to+be&encoded?but:ok",
+        "key/needs#to+be&encoded?but:ok!",
         "key/with/./and/..",
       ];
       for (const K of validKeys) {
@@ -360,8 +360,12 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         let deleteRes = await run((R2) => R2.delete(K));
         deepStrictEqual(deleteRes[0], deleteRes[1]);
       }
-
-      const K = "🐣"; // Non-ASCII
+    },
+  ]);
+  specs.push([
+    "R2 key can include non-ASCII, but `get()` returns `null`",
+    async () => {
+      const K = "🐣";
       // Can put
       let putRes = await run((R2) => R2.put(K, "text"));
       equalR2ObjectResult(putRes[0], putRes[1]);

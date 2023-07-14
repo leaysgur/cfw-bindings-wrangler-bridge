@@ -132,7 +132,28 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
   ]);
 
   specs.push([
-    'KV key can be any string, but "", "." and ".." are reserved',
+    "KV key can be any string including non-ASCII characters",
+    async () => {
+      const validKeys = [
+        "a/b/c",
+        "key/needs#to+be&encoded?but:ok!",
+        "key/with/./and/..",
+        "🐧", // Non-ASCII
+      ];
+
+      for (const K of validKeys) {
+        let putRes = await run((KV) => KV.put(K, "text"));
+        deepStrictEqual(putRes[0], putRes[1]);
+        let getRes = await run((KV) => KV.get(K));
+        deepStrictEqual(getRes[0], getRes[1]);
+        let deleteRes = await run((KV) => KV.delete(K));
+        deepStrictEqual(deleteRes[0], deleteRes[1]);
+      }
+    },
+  ]);
+
+  specs.push([
+    'KV key can not be "", "." and ".."',
     async () => {
       const invalidKeys = ["", ".", ".."];
       for (const K of invalidKeys) {
@@ -147,22 +168,6 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         let deleteRes = await run((KV) => KV.delete(K));
         equalRejectedResult(deleteRes[0], deleteRes[1]);
         await sleepAfterRejectedResult();
-      }
-
-      const validKeys = [
-        "key/needs#to+be&encoded?but:ok",
-        // XXX: This spec passes but warning is displayed
-        "🐧", // Non-ASCII
-        "key/with/./and/..",
-      ];
-
-      for (const K of validKeys) {
-        let putRes = await run((KV) => KV.put(K, "text"));
-        deepStrictEqual(putRes[0], putRes[1]);
-        let getRes = await run((KV) => KV.get(K));
-        deepStrictEqual(getRes[0], getRes[1]);
-        let deleteRes = await run((KV) => KV.delete(K));
-        deepStrictEqual(deleteRes[0], deleteRes[1]);
       }
     },
   ]);
