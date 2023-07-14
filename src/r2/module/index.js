@@ -14,14 +14,14 @@
 
 import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
-import { arrayBufferToHexString } from "../shared.js";
+import { R2MultipartUpload$ } from "./multipart.js";
+import { arrayBufferToHexString, encodeKey } from "../shared.js";
 /**
+ * @typedef {import("./types.d.ts").Dispatch} Dispatch
  * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
+ * @typedef {import("./types.d.ts").R2MultipartUploadJSON} R2MultipartUploadJSON
  */
-
-/** @param {string} key */
-const encodeKey = (key) => encodeURIComponent(key);
 
 export class R2Bucket$ {
   #bridgeWranglerOrigin;
@@ -36,11 +36,7 @@ export class R2Bucket$ {
     this.#bindingName = bindingName;
   }
 
-  /**
-   * @param {string} operation
-   * @param {unknown[]} parameters
-   * @param {BodyInit} [body]
-   */
+  /** @type {Dispatch} */
   async #dispatch(operation, parameters, body) {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
@@ -133,5 +129,28 @@ export class R2Bucket$ {
         ? encodeKey(keys)
         : keys.map((key) => encodeKey(key));
     await this.#dispatch("delete", [keys]);
+  }
+
+  /**
+   * @param {string} key
+   * @param {R2MultipartOptions} [options]
+   */
+  async createMultipartUpload(key, options) {
+    const res = await this.#dispatch("createMultipartUpload", [
+      encodeKey(key),
+      options,
+    ]);
+    /** @type {R2MultipartUploadJSON} */
+    const json = await res.json();
+
+    return new R2MultipartUpload$(json, this.#dispatch.bind(this));
+  }
+
+  /**
+   * @param {string} key
+   * @param {string} uploadId
+   */
+  resumeMultipartUpload(key, uploadId) {
+    return new R2MultipartUpload$({ key, uploadId }, this.#dispatch.bind(this));
   }
 }

@@ -1,9 +1,6 @@
 // @ts-check
 import { parse } from "devalue";
-import { hexStringToArrayBuffer } from "./shared.js";
-
-/** @param {string} key */
-const decodeKey = (key) => decodeURIComponent(key);
+import { hexStringToArrayBuffer, decodeKey } from "./shared.js";
 
 /**
  * @param {any} binding
@@ -85,6 +82,46 @@ export const handleR2Dispatch = async (R2, req) => {
     await R2.delete(keys);
 
     return new Response();
+  }
+
+  if (operation === "createMultipartUpload") {
+    const [encodedKey, options] = parameters;
+    const key = decodeKey(encodedKey);
+
+    const result = await R2.createMultipartUpload(key, options);
+
+    return Response.json(result);
+  }
+
+  if (operation === "uploadPart") {
+    const [encodedKey, uploadId, partNumber] = parameters;
+    const key = decodeKey(encodedKey);
+    const value = req.body ?? "Only for TS, never happens";
+
+    const multipartUpload = R2.resumeMultipartUpload(key, uploadId);
+    const result = await multipartUpload.uploadPart(partNumber, value);
+
+    return Response.json(result);
+  }
+
+  if (operation === "abort") {
+    const [encodedKey, uploadId] = parameters;
+    const key = decodeKey(encodedKey);
+
+    const multipartUpload = R2.resumeMultipartUpload(key, uploadId);
+    await multipartUpload.abort();
+
+    return new Response();
+  }
+
+  if (operation === "complete") {
+    const [encodedKey, uploadId, uploadedParts] = parameters;
+    const key = decodeKey(encodedKey);
+
+    const multipartUpload = R2.resumeMultipartUpload(key, uploadId);
+    const result = await multipartUpload.complete(uploadedParts);
+
+    return Response.json(result);
   }
 
   throw new Error(`R2.${operation}() is not supported.`);

@@ -7,6 +7,29 @@ import {
 } from "../test-utils.js";
 
 /**
+ * @param {R2MultipartUpload} actual
+ * @param {R2MultipartUpload} expect
+ */
+const _equalR2MultipartUpload = (actual, expect) => {
+  deepStrictEqual(actual.key, expect.key);
+  deepStrictEqual(typeof actual.uploadId, typeof expect.uploadId);
+
+  deepStrictEqual(typeof actual.uploadPart, typeof expect.uploadPart);
+  deepStrictEqual(typeof actual.abort, typeof expect.abort);
+  deepStrictEqual(typeof actual.complete, typeof expect.complete);
+};
+
+/**
+ * @param {R2UploadedPart} actual
+ * @param {R2UploadedPart} expect
+ */
+const _equalR2UploadedPart = (actual, expect) => {
+  deepStrictEqual(actual.partNumber, expect.partNumber);
+  // `etag` is different even if contents is the same
+  deepStrictEqual(typeof actual.etag, typeof expect.etag);
+};
+
+/**
  * @param {R2Checksums} actual
  * @param {R2Checksums} expect
  */
@@ -131,6 +154,34 @@ const equalR2ObjectsResult = (aRes, eRes) => {
     return _equalR2Objects(
       /** @type {R2Objects} */ (aRes.value),
       /** @type {R2Objects} */ (eRes.value),
+    );
+
+  deepStrictEqual(aRes, eRes);
+};
+
+/**
+ * @param {PromiseSettledResult<unknown>} aRes
+ * @param {PromiseSettledResult<unknown>} eRes
+ */
+const equalR2MultipartUploadResult = (aRes, eRes) => {
+  if (aRes.status === "fulfilled" && eRes.status === "fulfilled")
+    return _equalR2MultipartUpload(
+      /** @type {R2MultipartUpload} */ (aRes.value),
+      /** @type {R2MultipartUpload} */ (eRes.value),
+    );
+
+  deepStrictEqual(aRes, eRes);
+};
+
+/**
+ * @param {PromiseSettledResult<unknown>} aRes
+ * @param {PromiseSettledResult<unknown>} eRes
+ */
+const equalR2UploadedPart = (aRes, eRes) => {
+  if (aRes.status === "fulfilled" && eRes.status === "fulfilled")
+    return _equalR2UploadedPart(
+      /** @type {R2UploadedPart} */ (aRes.value),
+      /** @type {R2UploadedPart} */ (eRes.value),
     );
 
   deepStrictEqual(aRes, eRes);
@@ -377,6 +428,106 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       // But can delete
       let deleteRes = await run((R2) => R2.delete(K));
       deepStrictEqual(deleteRes[0], deleteRes[1]);
+    },
+  ]);
+
+  specs.push([
+    "R2.createMultipartUpload(key)/ R2.createMultipartUpload(key, options)",
+    async () => {
+      let createRes = await run((R2) => R2.createMultipartUpload("K1-1"));
+      equalR2MultipartUploadResult(createRes[0], createRes[1]);
+      // Same key again works
+      createRes = await run((R2) => R2.createMultipartUpload("K1-1"));
+      equalR2MultipartUploadResult(createRes[0], createRes[1]);
+
+      createRes = await run((R2) =>
+        R2.createMultipartUpload("K1-2", {
+          httpMetadata: { contentType: "image/webp" },
+          customMetadata: { foo: "bar" },
+        }),
+      );
+      equalR2MultipartUploadResult(createRes[0], createRes[1]);
+    },
+  ]);
+
+  specs.push([
+    "R2.resumeMultipartUpload(key, uploadId)",
+    async () => {
+      let resumeRes = await run((R2) =>
+        R2.createMultipartUpload("K2-1").then((m) =>
+          R2.resumeMultipartUpload(m.key, m.uploadId),
+        ),
+      );
+      equalR2MultipartUploadResult(resumeRes[0], resumeRes[1]);
+
+      resumeRes = await run((R2) =>
+        R2.resumeMultipartUpload("K2-2", "invalid"),
+      );
+      equalR2MultipartUploadResult(resumeRes[0], resumeRes[1]);
+    },
+  ]);
+
+  specs.push([
+    "R2MultipartUpload.uploadPart(partNumber, value)",
+    async () => {
+      let partRes = await run((R2) =>
+        R2.createMultipartUpload("K3-1").then((m) => m.uploadPart(1, "P1")),
+      );
+      equalR2UploadedPart(partRes[0], partRes[1]);
+
+      partRes = await run((R2) =>
+        R2.createMultipartUpload("K3-2").then((m) =>
+          m.uploadPart(2, new ArrayBuffer(512)),
+        ),
+      );
+      equalR2UploadedPart(partRes[0], partRes[1]);
+
+      partRes = await run((R2) =>
+        R2.resumeMultipartUpload("K3-3", "invalid").uploadPart(1, "P1"),
+      );
+      equalRejectedResult(partRes[0], partRes[1]);
+      await sleepAfterRejectedResult();
+    },
+  ]);
+
+  specs.push([
+    "R2MultipartUpload.abort()",
+    async () => {
+      let abortRes = await run((R2) =>
+        R2.createMultipartUpload("K4-1").then((m) => m.abort()),
+      );
+      deepStrictEqual(abortRes[0], abortRes[1]);
+
+      abortRes = await run((R2) =>
+        R2.resumeMultipartUpload("K4-2", "invalid").abort(),
+      );
+      equalRejectedResult(abortRes[0], abortRes[1]);
+      await sleepAfterRejectedResult();
+    },
+  ]);
+
+  specs.push([
+    "R2MultipartUpload.complete(uploadedParts)",
+    async () => {
+      let completeRes = await run((R2) =>
+        R2.createMultipartUpload("K5-1").then((m) => m.complete([])),
+      );
+      equalR2ObjectResult(completeRes[0], completeRes[1]);
+
+      completeRes = await run((R2) =>
+        R2.createMultipartUpload("K5-2").then(async (m) => {
+          const p1 = await m.uploadPart(1, "P1");
+          const p2 = await m.uploadPart(2, "P2");
+          return m.complete([p1, p2]);
+        }),
+      );
+      equalR2ObjectResult(completeRes[0], completeRes[1]);
+
+      completeRes = await run((R2) =>
+        R2.resumeMultipartUpload("K5-3", "invalid").complete([]),
+      );
+      equalRejectedResult(completeRes[0], completeRes[1]);
+      await sleepAfterRejectedResult();
     },
   ]);
 

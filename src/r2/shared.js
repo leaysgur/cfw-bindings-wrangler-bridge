@@ -20,3 +20,9 @@ export const arrayBufferToHexString = (arrayBuffer) => {
 
   return hexString;
 };
+
+/** @param {string} key */
+export const encodeKey = (key) => encodeURIComponent(key);
+
+/** @param {string} key */
+export const decodeKey = (key) => decodeURIComponent(key);

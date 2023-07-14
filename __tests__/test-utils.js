@@ -9,7 +9,7 @@ export const createRunner =
   ([ACTUAL, EXPECT]) =>
   /**
    * @template Result
-   * @param {(b: Binding) => Promise<Result>} spec
+   * @param {(b: Binding) => Promise<Result> | Result} spec
    * @returns {Promise<PromiseSettledResult<Result>[]>}
    */
   async (spec) => {
