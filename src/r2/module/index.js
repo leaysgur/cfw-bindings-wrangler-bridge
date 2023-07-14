@@ -20,6 +20,9 @@ import { arrayBufferToHexString } from "../shared.js";
  * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
  */
 
+/** @param {string} key */
+const encodeKey = (key) => encodeURIComponent(key);
+
 export class R2Bucket$ {
   #bridgeWranglerOrigin;
   #bindingName;
@@ -85,7 +88,7 @@ export class R2Bucket$ {
   async put(key, value, options) {
     const res = await this.#dispatch(
       "put",
-      [key, null, options],
+      [encodeKey(key), null, options],
       // `null` is not a valid type for `BodyInit`.
       // And it seems to have the same effect...
       value ?? undefined,
@@ -101,7 +104,7 @@ export class R2Bucket$ {
    * @param {R2GetOptions} [options]
    */
   async get(key, options) {
-    const res = await this.#dispatch("get", [key, options]);
+    const res = await this.#dispatch("get", [encodeKey(key), options]);
 
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
@@ -116,7 +119,7 @@ export class R2Bucket$ {
 
   /** @param {string} key */
   async head(key) {
-    const res = await this.#dispatch("head", [key]);
+    const res = await this.#dispatch("head", [encodeKey(key)]);
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
@@ -125,6 +128,10 @@ export class R2Bucket$ {
 
   /** @param {string | string[]} keys */
   async delete(keys) {
+    keys =
+      typeof keys === "string"
+        ? encodeKey(keys)
+        : keys.map((key) => encodeKey(key));
     await this.#dispatch("delete", [keys]);
   }
 }

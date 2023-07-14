@@ -5,6 +5,9 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
 // https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
 
+/** @param {string} key */
+const encodeKey = (key) => encodeURIComponent(key);
+
 export class KVNamespace$ {
   #bridgeWranglerOrigin;
   #bindingName;
@@ -56,7 +59,7 @@ export class KVNamespace$ {
    * @param {KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
-    await this.#dispatch("put", [key, null, options], value);
+    await this.#dispatch("put", [encodeKey(key), null, options], value);
   }
 
   /**
@@ -75,7 +78,10 @@ export class KVNamespace$ {
    * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async getWithMetadata(key, typeOrOptions) {
-    const res = await this.#dispatch("getWithMetadata", [key, typeOrOptions]);
+    const res = await this.#dispatch("getWithMetadata", [
+      encodeKey(key),
+      typeOrOptions,
+    ]);
 
     if (res.headers.get("X-BRIDGE-KV-ValueIsNull") === "true")
       return { value: null, metadata: null };
@@ -104,6 +110,6 @@ export class KVNamespace$ {
 
   /** @param {string} key */
   async delete(key) {
-    await this.#dispatch("delete", [key]);
+    await this.#dispatch("delete", [encodeKey(key)]);
   }
 }
