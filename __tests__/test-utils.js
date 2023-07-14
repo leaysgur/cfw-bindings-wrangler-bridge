@@ -12,8 +12,10 @@ export const createRunner =
    * @param {(b: Binding) => Promise<Result>} spec
    * @returns {Promise<PromiseSettledResult<Result>[]>}
    */
-  async (spec) =>
-    Promise.allSettled([spec(ACTUAL), spec(EXPECT)]);
+  async (spec) => {
+    console.log("Run:", spec.toString());
+    return Promise.allSettled([spec(ACTUAL), spec(EXPECT)]);
+  };
 
 /**
  * @param {PromiseSettledResult<unknown>} actual

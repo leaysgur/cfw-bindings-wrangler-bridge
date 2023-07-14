@@ -78,6 +78,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
     // Order is important.
     for (const [name, spec] of specs) {
+      console.log("Spec:", name);
       try {
         await beforeEach();
         await spec();
@@ -99,6 +100,8 @@ const runSpecs = async (searchParams, env, writer) => {
         finish("Some specs are failed 😭");
         break;
       }
+
+      console.log("");
     }
 
     write("----------------------");
