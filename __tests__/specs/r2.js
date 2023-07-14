@@ -89,7 +89,6 @@ const _equalR2ObjectBody = (actual, expect) => {
 
   deepStrictEqual(actual.bodyUsed, expect.bodyUsed);
   deepStrictEqual(typeof actual.body, typeof expect.body);
-  deepStrictEqual(typeof actual.body, typeof expect.body);
 
   deepStrictEqual(typeof actual.arrayBuffer, typeof expect.arrayBuffer);
   deepStrictEqual(typeof actual.text, typeof expect.text);
