@@ -251,6 +251,12 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         }),
       );
       equalR2ObjectResult(putRes[0], putRes[1]);
+      const sha512 = await crypto.subtle.digest(
+        "SHA-512",
+        new TextEncoder().encode("123"),
+      );
+      putRes = await run((R2) => R2.put("K1", "123", { sha512 }));
+      equalR2ObjectResult(putRes[0], putRes[1]);
 
       putRes = await run((R2) =>
         R2.put("K2", "456", { onlyIf: { secondsGranularity: true } }),
@@ -266,17 +272,20 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         }),
       );
       equalR2ObjectResult(putRes[0], putRes[1]);
+      putRes = await run((R2) =>
+        R2.put("K3", '{ "x": 42 }', {
+          httpMetadata: new Headers([
+            ["content-type", "application/json"],
+            ["expires", new Date(Date.now() + 10000).toUTCString()],
+          ]),
+        }),
+      );
+      equalR2ObjectResult(putRes[0], putRes[1]);
 
       putRes = await run((R2) =>
         R2.put("K4", "xxx", { customMetadata: { x: "1", y: "2" } }),
       );
       equalR2ObjectResult(putRes[0], putRes[1]);
-
-      // TODO: Support `Headers`
-      // declare interface R2PutOptions {
-      //   onlyIf?: {...} | Headers;
-      //   httpMetadata?: {...} | Headers;
-      // }
     },
   ]);
 
@@ -323,18 +332,11 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       );
       equalR2ObjectResult(getRes2[0], getRes2[1]);
 
-      // TODO: Support `Headers`
-      // declare interface R2GetOptions {
-      //   onlyIf?: {...} | Headers;
-      //   range?: {...} | Headers;
-      // }
-      // await run((R2) => R2.put("K3", "yoyoyo"));
-      // let getRes3 = await run((R2) =>
-      //   R2.get("K3", {
-      //     onlyIf: new Headers([["If-Match", '"0000"']]),
-      //   }),
-      // );
-      // equalR2ObjectResult(getRes3[0], getRes3[1]);
+      await run((R2) => R2.put("K3", "yoyoyo"));
+      let getRes3 = await run((R2) =>
+        R2.get("K3", { onlyIf: new Headers([["If-Match", '"0000"']]) }),
+      );
+      equalR2ObjectResult(getRes3[0], getRes3[1]);
     },
   ]);
 

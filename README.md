@@ -102,8 +102,6 @@ At this time, however, the value of `request.origin` will be different from the 
 - [ ] `.createMultipartUpload()`
 - [ ] `.resumeMultipartUpload()`
 
-⚠️ The `Headers` type values are not supported now. (e.g. `R2.get(k, v, { onlyIf: headers })`)
-
 ## Known limitations
 
 The instances and values available from this module are not 100% compatible.

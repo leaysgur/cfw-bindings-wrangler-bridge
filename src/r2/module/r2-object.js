@@ -5,17 +5,10 @@
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2objectbody-definition
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
 
-import { hexToArrayBuffer } from "./utils.js";
+import { hexStringToArrayBuffer } from "../shared.js";
 /**
- * @typedef {(
- *   Omit<R2Object, "checksums" | "writeHttpMetadata">
- *   & { checksums: R2StringChecksums; }
- * )} R2ObjectJSON
- *
- * @typedef {(
- *   Omit<R2Objects, "objects">
- *   & { objects: R2ObjectJSON[]; }
- * )} R2ObjectsJSON
+ * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
+ * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
  */
 
 // implements R2Checksums
@@ -31,16 +24,20 @@ class Checksums$ {
   constructor(checksums) {
     this.#checksums = checksums;
 
-    this.md5 = checksums.md5 ? hexToArrayBuffer(checksums.md5) : undefined;
-    this.sha1 = checksums.sha1 ? hexToArrayBuffer(checksums.sha1) : undefined;
+    this.md5 = checksums.md5
+      ? hexStringToArrayBuffer(checksums.md5)
+      : undefined;
+    this.sha1 = checksums.sha1
+      ? hexStringToArrayBuffer(checksums.sha1)
+      : undefined;
     this.sha256 = checksums.sha256
-      ? hexToArrayBuffer(checksums.sha256)
+      ? hexStringToArrayBuffer(checksums.sha256)
       : undefined;
     this.sha384 = checksums.sha384
-      ? hexToArrayBuffer(checksums.sha384)
+      ? hexStringToArrayBuffer(checksums.sha384)
       : undefined;
     this.sha512 = checksums.sha512
-      ? hexToArrayBuffer(checksums.sha512)
+      ? hexStringToArrayBuffer(checksums.sha512)
       : undefined;
 
     // JSG_LAZY_READONLY_INSTANCE_PROPERTY
@@ -74,9 +71,15 @@ export class HeadResult$ {
     this.httpEtag = metadata.httpEtag;
     this.checksums = new Checksums$(metadata.checksums);
     this.uploaded = new Date(metadata.uploaded);
-    this.httpMetadata = metadata.httpMetadata;
-    if (this.httpMetadata?.cacheExpiry)
-      this.httpMetadata.cacheExpiry = new Date(this.httpMetadata.cacheExpiry);
+    this.httpMetadata = {
+      ...metadata.httpMetadata,
+      cacheExpiry: metadata.httpMetadata.cacheExpiry
+        ? new Date(metadata.httpMetadata.cacheExpiry)
+        : undefined,
+    };
+    // If value was `undefined`, should drop key
+    if (!metadata.httpMetadata.cacheExpiry)
+      delete this.httpMetadata.cacheExpiry;
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
 
