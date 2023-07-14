@@ -67,15 +67,15 @@ Type definitions should be handled by yourself. 😅
 
 ### [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
 
-- [x] `.list()`
-- [x] `.get()`
-- [x] `.getWithMetadata()`
-- [x] `.put()`
-- [x] `.delete()`
+- [x] `KVNamespace.list()`
+- [x] `KVNamespace.get()`
+- [x] `KVNamespace.getWithMetadata()`
+- [x] `KVNamespace.put()`
+- [x] `KVNamespace.delete()`
 
 ### [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
 
-- [x] `.fetch()`
+- [x] `Fetcher.fetch()`
 
 📝 Service bindings bridge can be used in 2 modes.
 
@@ -94,13 +94,16 @@ At this time, however, the value of `request.origin` will be different from the 
 
 ### [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
 
-- [x] `.list()`
-- [x] `.head()`
-- [x] `.get()`
-- [x] `.put()`
-- [x] `.delete()`
-- [ ] `.createMultipartUpload()`
-- [ ] `.resumeMultipartUpload()`
+- [x] `R2Bucket.list()`
+- [x] `R2Bucket.head()`
+- [x] `R2Bucket.get()`
+- [x] `R2Bucket.put()`
+- [x] `R2Bucket.delete()`
+- [x] `R2Bucket.createMultipartUpload()`
+- [x] `R2Bucket.resumeMultipartUpload()`
+- [x] `R2MultipartUpload.uploadPart()`
+- [x] `R2MultipartUpload.abort()`
+- [x] `R2MultipartUpload.complete()`
 
 ## Known limitations
 
