@@ -2,6 +2,9 @@
 import { parse } from "devalue";
 import { hexStringToArrayBuffer } from "./shared.js";
 
+/** @param {string} key */
+const decodeKey = (key) => decodeURIComponent(key);
+
 /**
  * @param {any} binding
  * @returns {binding is R2Bucket}
@@ -31,7 +34,8 @@ export const handleR2Dispatch = async (R2, req) => {
   }
 
   if (operation === "put") {
-    const [key, , options] = parameters;
+    const [encodedKey, , options] = parameters;
+    const key = decodeKey(encodedKey);
     const value = req.body;
 
     const result = await R2.put(key, value, options);
@@ -40,7 +44,8 @@ export const handleR2Dispatch = async (R2, req) => {
   }
 
   if (operation === "get") {
-    const [key, options] = parameters;
+    const [encodedKey, options] = parameters;
+    const key = decodeKey(encodedKey);
 
     const result = await R2.get(key, options);
 
@@ -58,7 +63,8 @@ export const handleR2Dispatch = async (R2, req) => {
   }
 
   if (operation === "head") {
-    const [key] = parameters;
+    const [encodedKey] = parameters;
+    const key = decodeKey(encodedKey);
 
     const result = await R2.head(key);
 
@@ -70,7 +76,11 @@ export const handleR2Dispatch = async (R2, req) => {
   }
 
   if (operation === "delete") {
-    const [keys] = parameters;
+    const [encodedKeys] = parameters;
+    const keys =
+      typeof encodedKeys === "string"
+        ? decodeKey(encodedKeys)
+        : encodedKeys.map(/** @param {string} key */ (key) => decodeKey(key));
 
     await R2.delete(keys);
 

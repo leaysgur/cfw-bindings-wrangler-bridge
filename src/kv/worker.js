@@ -1,5 +1,8 @@
 // @ts-check
 
+/** @param {string} key */
+const decodeKey = (key) => decodeURIComponent(key);
+
 /**
  * @param {any} binding
  * @returns {binding is KVNamespace}
@@ -25,7 +28,8 @@ export const handleKVDispatch = async (KV, req) => {
   }
 
   if (operation === "put") {
-    const [key, , options] = parameters;
+    const [encodedKey, , options] = parameters;
+    const key = decodeKey(encodedKey);
     // XXX: For TS...
     const value = req.body ?? "";
 
@@ -36,7 +40,8 @@ export const handleKVDispatch = async (KV, req) => {
   }
 
   if (operation === "getWithMetadata") {
-    const [key, typeOrOptions] = parameters;
+    const [encodedKey, typeOrOptions] = parameters;
+    const key = decodeKey(encodedKey);
 
     const { value, metadata } = await KV.getWithMetadata(key, {
       ...(typeof typeOrOptions !== "string" ? typeOrOptions : {}),
@@ -54,7 +59,8 @@ export const handleKVDispatch = async (KV, req) => {
   }
 
   if (operation === "delete") {
-    const [key] = parameters;
+    const [encodedKey] = parameters;
+    const key = decodeKey(encodedKey);
 
     await KV.delete(key);
 
