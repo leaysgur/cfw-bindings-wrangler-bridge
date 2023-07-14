@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.4.0
+
+- [#12](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/12) Support R2 multipart
+
 ## 0.3.1
 
 - [#10](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values for R2
