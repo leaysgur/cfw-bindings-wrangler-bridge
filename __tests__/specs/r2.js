@@ -25,6 +25,7 @@ const _equalR2MultipartUpload = (actual, expect) => {
  */
 const _equalR2UploadedPart = (actual, expect) => {
   deepStrictEqual(actual.partNumber, expect.partNumber);
+  // `etag` is different even if contents is the same
   deepStrictEqual(typeof actual.etag, typeof expect.etag);
 };
 
@@ -482,9 +483,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       equalR2UploadedPart(partRes[0], partRes[1]);
 
       partRes = await run((R2) =>
-        Promise.resolve(R2.resumeMultipartUpload("K3-3", "invalid")).then((m) =>
-          m.uploadPart(1, "P1"),
-        ),
+        R2.resumeMultipartUpload("K3-3", "invalid").uploadPart(1, "P1"),
       );
       equalRejectedResult(partRes[0], partRes[1]);
       await sleepAfterRejectedResult();
@@ -500,9 +499,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       deepStrictEqual(abortRes[0], abortRes[1]);
 
       abortRes = await run((R2) =>
-        Promise.resolve(R2.resumeMultipartUpload("K4-2", "invalid")).then((m) =>
-          m.abort(),
-        ),
+        R2.resumeMultipartUpload("K4-2", "invalid").abort(),
       );
       equalRejectedResult(abortRes[0], abortRes[1]);
       await sleepAfterRejectedResult();
