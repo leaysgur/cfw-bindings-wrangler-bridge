@@ -47,7 +47,7 @@ export class KVNamespace$ {
 
   /** @param {KVNamespaceListOptions} [options] */
   async list(options) {
-    const res = await this.#dispatch("list", [options]);
+    const res = await this.#dispatch("KVNamespace.list", [options]);
     const json = await res.json();
 
     return json;
@@ -59,7 +59,7 @@ export class KVNamespace$ {
    * @param {KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
-    await this.#dispatch("put", [encodeKey(key), null, options], value);
+    await this.#dispatch("KVNamespace.put", [encodeKey(key), options], value);
   }
 
   /**
@@ -78,7 +78,7 @@ export class KVNamespace$ {
    * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async getWithMetadata(key, typeOrOptions) {
-    const res = await this.#dispatch("getWithMetadata", [
+    const res = await this.#dispatch("KVNamespace.getWithMetadata", [
       encodeKey(key),
       typeOrOptions,
     ]);
@@ -110,6 +110,6 @@ export class KVNamespace$ {
 
   /** @param {string} key */
   async delete(key) {
-    await this.#dispatch("delete", [encodeKey(key)]);
+    await this.#dispatch("KVNamespace.delete", [encodeKey(key)]);
   }
 }

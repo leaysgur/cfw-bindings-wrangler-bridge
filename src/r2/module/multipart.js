@@ -39,7 +39,7 @@ export class R2MultipartUpload$ {
    */
   async uploadPart(partNumber, value) {
     const res = await this.#dispatch(
-      "uploadPart",
+      "R2MultipartUpload.uploadPart",
       [encodeKey(this.key), this.uploadId, partNumber],
       value,
     );
@@ -50,12 +50,15 @@ export class R2MultipartUpload$ {
   }
 
   async abort() {
-    await this.#dispatch("abort", [encodeKey(this.key), this.uploadId]);
+    await this.#dispatch("R2MultipartUpload.abort", [
+      encodeKey(this.key),
+      this.uploadId,
+    ]);
   }
 
   /** @param {R2UploadedPart[]} uploadedParts */
   async complete(uploadedParts) {
-    const res = await this.#dispatch("complete", [
+    const res = await this.#dispatch("R2MultipartUpload.complete", [
       encodeKey(this.key),
       this.uploadId,
       uploadedParts,

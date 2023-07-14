@@ -19,7 +19,7 @@ export const handleKVDispatch = async (KV, req) => {
     req.headers.get("X-BRIDGE-KV-Dispatch") ?? "{}",
   );
 
-  if (operation === "list") {
+  if (operation === "KVNamespace.list") {
     const [options] = parameters;
 
     const result = await KV.list(options);
@@ -27,11 +27,10 @@ export const handleKVDispatch = async (KV, req) => {
     return Response.json(result);
   }
 
-  if (operation === "put") {
-    const [encodedKey, , options] = parameters;
+  if (operation === "KVNamespace.put") {
+    const [encodedKey, options] = parameters;
     const key = decodeKey(encodedKey);
-    // XXX: For TS...
-    const value = req.body ?? "";
+    const value = req.body ?? "Only for TS, never happens";
 
     // Need to await here, otherwise already sent error
     await KV.put(key, value, options);
@@ -39,7 +38,7 @@ export const handleKVDispatch = async (KV, req) => {
     return new Response();
   }
 
-  if (operation === "getWithMetadata") {
+  if (operation === "KVNamespace.getWithMetadata") {
     const [encodedKey, typeOrOptions] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -58,7 +57,7 @@ export const handleKVDispatch = async (KV, req) => {
     });
   }
 
-  if (operation === "delete") {
+  if (operation === "KVNamespace.delete") {
     const [encodedKey] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -67,5 +66,5 @@ export const handleKVDispatch = async (KV, req) => {
     return new Response();
   }
 
-  throw new Error(`KV.${operation}() is not supported.`);
+  throw new Error(`${operation}() is not supported.`);
 };

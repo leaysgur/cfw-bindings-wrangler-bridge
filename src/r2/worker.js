@@ -22,7 +22,7 @@ export const handleR2Dispatch = async (R2, req) => {
     },
   );
 
-  if (operation === "list") {
+  if (operation === "R2Bucket.list") {
     const [options] = parameters;
 
     const result = await R2.list(options);
@@ -30,7 +30,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "put") {
+  if (operation === "R2Bucket.put") {
     const [encodedKey, , options] = parameters;
     const key = decodeKey(encodedKey);
     const value = req.body;
@@ -40,7 +40,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "get") {
+  if (operation === "R2Bucket.get") {
     const [encodedKey, options] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -59,7 +59,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "head") {
+  if (operation === "R2Bucket.head") {
     const [encodedKey] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -72,7 +72,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "delete") {
+  if (operation === "R2Bucket.delete") {
     const [encodedKeys] = parameters;
     const keys =
       typeof encodedKeys === "string"
@@ -84,7 +84,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return new Response();
   }
 
-  if (operation === "createMultipartUpload") {
+  if (operation === "R2Bucket.createMultipartUpload") {
     const [encodedKey, options] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -93,7 +93,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "uploadPart") {
+  if (operation === "R2MultipartUpload.uploadPart") {
     const [encodedKey, uploadId, partNumber] = parameters;
     const key = decodeKey(encodedKey);
     const value = req.body ?? "Only for TS, never happens";
@@ -104,7 +104,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  if (operation === "abort") {
+  if (operation === "R2MultipartUpload.abort") {
     const [encodedKey, uploadId] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -114,7 +114,7 @@ export const handleR2Dispatch = async (R2, req) => {
     return new Response();
   }
 
-  if (operation === "complete") {
+  if (operation === "R2MultipartUpload.complete") {
     const [encodedKey, uploadId, uploadedParts] = parameters;
     const key = decodeKey(encodedKey);
 
@@ -124,5 +124,5 @@ export const handleR2Dispatch = async (R2, req) => {
     return Response.json(result);
   }
 
-  throw new Error(`R2.${operation}() is not supported.`);
+  throw new Error(`${operation}() is not supported.`);
 };

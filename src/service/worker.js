@@ -18,7 +18,7 @@ export const handleServiceDispatch = async (SERVICE, req) => {
     req.headers.get("X-BRIDGE-SERVICE-Dispatch") ?? "{}",
   );
 
-  if (operation === "fetch") {
+  if (operation === "Fetcher.fetch") {
     const [originalUrl] = parameters;
 
     // Route to original service(worker)
@@ -32,5 +32,5 @@ export const handleServiceDispatch = async (SERVICE, req) => {
     return SERVICE.fetch(originalReq);
   }
 
-  throw new Error(`SERVICE.${operation}() is not supported.`);
+  throw new Error(`${operation}() is not supported.`);
 };

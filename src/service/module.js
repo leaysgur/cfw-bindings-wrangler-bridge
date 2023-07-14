@@ -31,7 +31,7 @@ export class Fetcher$ {
     req.headers.set(
       "X-BRIDGE-SERVICE-Dispatch",
       JSON.stringify({
-        operation: "fetch",
+        operation: "Fetcher.fetch",
         parameters: [originalReq.url],
       }),
     );

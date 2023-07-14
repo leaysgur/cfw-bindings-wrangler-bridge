@@ -66,7 +66,7 @@ export class R2Bucket$ {
 
   /** @param {R2ListOptions} [options] */
   async list(options) {
-    const res = await this.#dispatch("list", [options]);
+    const res = await this.#dispatch("R2Bucket.list", [options]);
     /** @type {R2ObjectsJSON} */
     const json = await res.json();
 
@@ -83,7 +83,7 @@ export class R2Bucket$ {
    */
   async put(key, value, options) {
     const res = await this.#dispatch(
-      "put",
+      "R2Bucket.put",
       [encodeKey(key), null, options],
       // `null` is not a valid type for `BodyInit`.
       // And it seems to have the same effect...
@@ -100,7 +100,7 @@ export class R2Bucket$ {
    * @param {R2GetOptions} [options]
    */
   async get(key, options) {
-    const res = await this.#dispatch("get", [encodeKey(key), options]);
+    const res = await this.#dispatch("R2Bucket.get", [encodeKey(key), options]);
 
     const headerForR2ObjectBody = res.headers.get("X-BRIDGE-R2-R2ObjectJSON");
     if (headerForR2ObjectBody) {
@@ -115,7 +115,7 @@ export class R2Bucket$ {
 
   /** @param {string} key */
   async head(key) {
-    const res = await this.#dispatch("head", [encodeKey(key)]);
+    const res = await this.#dispatch("R2Bucket.head", [encodeKey(key)]);
     /** @type {null | R2ObjectJSON} */
     const json = await res.json();
 
@@ -128,7 +128,7 @@ export class R2Bucket$ {
       typeof keys === "string"
         ? encodeKey(keys)
         : keys.map((key) => encodeKey(key));
-    await this.#dispatch("delete", [keys]);
+    await this.#dispatch("R2Bucket.delete", [keys]);
   }
 
   /**
@@ -136,7 +136,7 @@ export class R2Bucket$ {
    * @param {R2MultipartOptions} [options]
    */
   async createMultipartUpload(key, options) {
-    const res = await this.#dispatch("createMultipartUpload", [
+    const res = await this.#dispatch("R2Bucket.createMultipartUpload", [
       encodeKey(key),
       options,
     ]);
