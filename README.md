@@ -25,6 +25,8 @@ This bridge(module + worker) allows you to access the real data even from your l
 
 In addition, this module makes it possible to use the Workers runtime APIs on everywhere. It's really convenient. 🤞
 
+And more, you can also use acutual data at build-time(e.g. SSG, prerendering) with the same APIs at run-time.
+
 ## Install
 
 ```sh
