@@ -64,7 +64,9 @@ export class D1Database$ {
 
   /** @param {string} query */
   async exec(query) {
-    query;
-    // D1ExecResult
+    const res = await this.#dispatch("D1Database.exec", [query]);
+    const json = await res.json();
+
+    return json;
   }
 }
