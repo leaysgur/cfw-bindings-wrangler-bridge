@@ -55,7 +55,7 @@ export class D1Database$ {
   /** @param {D1PreparedStatement[]} statements */
   async batch(statements) {
     statements;
-    // D1Result[]
+    // TODO: D1Result[]
   }
 
   /** @param {string} query */

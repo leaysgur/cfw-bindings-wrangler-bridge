@@ -39,13 +39,45 @@ export class D1PreparedStatement$ {
     );
   }
 
-  async first() {}
-  async run() {}
-  async all() {
-    const res = await this.#dispatch("D1PreparedStatement.all", [this.#statement, this.#params]);
+  /** @param {string} [column] */
+  async first(column) {
+    const res = await this.#dispatch("D1PreparedStatement.first", [
+      this.#statement,
+      this.#params,
+      column,
+    ]);
     const json = await res.json();
 
     return json;
   }
-  async raw() {}
+
+  async run() {
+    const res = await this.#dispatch("D1PreparedStatement.run", [
+      this.#statement,
+      this.#params,
+    ]);
+    const json = await res.json();
+
+    return json;
+  }
+
+  async all() {
+    const res = await this.#dispatch("D1PreparedStatement.all", [
+      this.#statement,
+      this.#params,
+    ]);
+    const json = await res.json();
+
+    return json;
+  }
+
+  async raw() {
+    const res = await this.#dispatch("D1PreparedStatement.raw", [
+      this.#statement,
+      this.#params,
+    ]);
+    const json = await res.json();
+
+    return json;
+  }
 }

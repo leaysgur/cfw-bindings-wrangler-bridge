@@ -29,9 +29,35 @@ export const handleD1Dispatch = async (D1, req) => {
     return Response.json(result);
   }
 
+  if (operation === "D1Database.batch") {
+    // TODO
+    return Response.json([]);
+  }
+
+  if (operation === "D1PreparedStatement.first") {
+    const [statement, params, column] = parameters;
+    const result = await D1.prepare(statement).bind(params).first(column);
+
+    return Response.json(result);
+  }
+
   if (operation === "D1PreparedStatement.all") {
     const [statement, params] = parameters;
     const result = await D1.prepare(statement).bind(params).all();
+
+    return Response.json(result);
+  }
+
+  if (operation === "D1PreparedStatement.run") {
+    const [statement, params] = parameters;
+    const result = await D1.prepare(statement).bind(params).run();
+
+    return Response.json(result);
+  }
+
+  if (operation === "D1PreparedStatement.raw") {
+    const [statement, params] = parameters;
+    const result = await D1.prepare(statement).bind(params).raw();
 
     return Response.json(result);
   }
