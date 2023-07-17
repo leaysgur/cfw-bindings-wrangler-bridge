@@ -20,11 +20,7 @@ export class D1Database$ {
     this.#bindingName = bindingName;
   }
 
-  /**
-   * @param {string} operation
-   * @param {unknown[]} parameters
-   * @param {BodyInit} [body]
-   */
+  /** @type {import("./types.d.ts").Dispatch} */
   async #dispatch(operation, parameters, body) {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
@@ -46,7 +42,7 @@ export class D1Database$ {
 
   /** @param {string} query */
   prepare(query) {
-    return new D1PreparedStatement$(query);
+    return new D1PreparedStatement$(query, [], this.#dispatch.bind(this));
   }
 
   async dump() {

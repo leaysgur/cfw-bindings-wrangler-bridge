@@ -29,5 +29,12 @@ export const handleD1Dispatch = async (D1, req) => {
     return Response.json(result);
   }
 
+  if (operation === "D1PreparedStatement.all") {
+    const [statement, params] = parameters;
+    const result = await D1.prepare(statement).bind(params).all();
+
+    return Response.json(result);
+  }
+
   throw new Error(`${operation}() is not supported.`);
 };
