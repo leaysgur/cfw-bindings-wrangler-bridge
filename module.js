@@ -2,6 +2,7 @@
 import { KVNamespace$ } from "./src/kv/module.js";
 import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
 import { R2Bucket$ } from "./src/r2/module/index.js";
+import { D1Database$ } from "./src/d1/module/index.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
@@ -31,4 +32,7 @@ export const createBridge = (
 
   /** @param {string} bindingName */
   R2: (bindingName) => new R2Bucket$(bridgeWranglerOrigin, bindingName),
+
+  /** @param {string} bindingName */
+  D1: (bindingName) => new D1Database$(bridgeWranglerOrigin, bindingName),
 });
