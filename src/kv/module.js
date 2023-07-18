@@ -5,6 +5,8 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
 // https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
 
+import { stringify } from "devalue";
+
 /** @param {string} key */
 const encodeKey = (key) => encodeURIComponent(key);
 
@@ -32,7 +34,7 @@ export class KVNamespace$ {
       headers: {
         "X-BRIDGE-BINDING-MODULE": "KV",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
-        "X-BRIDGE-KV-Dispatch": JSON.stringify({ operation, parameters }),
+        "X-BRIDGE-KV-Dispatch": stringify({ operation, parameters }),
       },
       body,
     });

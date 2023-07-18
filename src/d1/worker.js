@@ -1,12 +1,11 @@
 // @ts-check
+import { parse } from "devalue";
 
 /** @param {unknown[]} values */
 const decodeBindValues = (values) =>
-  values.map((v) => {
-    // In encoding side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
-    // But here we do not decode them, because current D1 implementation also treats them as `Array`.
-    return v;
-  });
+  // In encoding side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
+  // But here we do not decode them, because current D1 implementation also treats them as `Array`.
+  values;
 
 /**
  * @param {any} binding
@@ -20,7 +19,7 @@ export const isD1Binding = (binding) =>
  * @param {Request} req
  */
 export const handleD1Dispatch = async (D1, req) => {
-  const { operation, parameters } = await req.json();
+  const { operation, parameters } = await req.text().then((t) => parse(t));
 
   if (operation === "D1Database.dump") {
     const result = await D1.dump();
@@ -43,6 +42,7 @@ export const handleD1Dispatch = async (D1, req) => {
           D1.prepare(statement).bind(...decodeBindValues(params)),
       ),
     );
+
     return Response.json(result);
   }
 
@@ -50,9 +50,7 @@ export const handleD1Dispatch = async (D1, req) => {
     const [statement, params, column] = parameters;
     const result = await D1.prepare(statement)
       .bind(...decodeBindValues(params))
-      // FIXME: `JSON.parse(JSON.stringify([undefined]))` -> `null`!!
-      // Consider using `devalue` everywhere.
-      .first(column ?? undefined);
+      .first(column);
 
     return Response.json(result);
   }

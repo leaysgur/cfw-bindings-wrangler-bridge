@@ -2,6 +2,7 @@
 
 // Refs:
 // https://developers.cloudflare.com/d1/platform/client-api/#query-statement-methods
+// https://github.com/cloudflare/workerd/blob/main/src/cloudflare/internal/d1-api.ts
 
 /** @typedef {import("./types.d.ts").Dispatch} Dispatch */
 
@@ -80,6 +81,9 @@ export class D1PreparedStatement$ {
       this.#params,
       parameters,
     ]);
+    // It's OK to return values as-is.
+    // `ArrayBuffer` and `ArrayBufferView` are converted into `Array` on insertion.
+    // (I'm not sure this behavior is intended or NOT...)
     const json = await res.json();
 
     return json;

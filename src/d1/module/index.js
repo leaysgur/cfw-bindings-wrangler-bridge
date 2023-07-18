@@ -3,8 +3,8 @@
 // Refs:
 // https://developers.cloudflare.com/d1/platform/client-api/
 // https://github.com/cloudflare/workerd/blob/main/src/cloudflare/internal/d1-api.ts
-// https://github.com/cloudflare/miniflare/blob/master/packages/d1/src/d1js.ts
 
+import { stringify } from "devalue";
 import { D1PreparedStatement$ } from "./d1-prepared-statement.js";
 
 export class D1Database$ {
@@ -28,7 +28,7 @@ export class D1Database$ {
         "X-BRIDGE-BINDING-MODULE": "D1",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
       },
-      body: JSON.stringify({ operation, parameters }),
+      body: stringify({ operation, parameters }),
     });
 
     if (!res.ok) {

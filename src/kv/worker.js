@@ -1,4 +1,5 @@
 // @ts-check
+import { parse } from "devalue";
 
 /** @param {string} key */
 const decodeKey = (key) => decodeURIComponent(key);
@@ -15,7 +16,7 @@ export const isKVBinding = (binding) =>
  * @param {Request} req
  */
 export const handleKVDispatch = async (KV, req) => {
-  const { operation, parameters } = JSON.parse(
+  const { operation, parameters } = parse(
     req.headers.get("X-BRIDGE-KV-Dispatch") ?? "{}",
   );
 
