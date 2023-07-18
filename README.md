@@ -23,9 +23,8 @@ This problem also occurs when developing APIs using only Pages Functions(via `wr
 That is where this bridge comes in!
 This bridge(module + worker) allows you to access the real data even from your local development environment through the `wrangler dev --remote` command.
 
-In addition, this module makes it possible to use the Workers runtime APIs on everywhere. It's really convenient. 🤞
-
-And more, you can also use acutual data at build-time(e.g. SSG, prerendering) with the same APIs at run-time.
+In addition, this module makes it possible to use the Workers runtime APIs from **everywhere(Node, Bun, Browser, ..etc)** you want. It's really convenient. 🤞
+This means that you can use acutual data at build-time(e.g. SSG, prerendering) too.
 
 ## Install
 
@@ -69,15 +68,11 @@ Type definitions should be handled by yourself. 😅
 
 ### [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
 
-- [x] `KVNamespace.list()`
-- [x] `KVNamespace.get()`
-- [x] `KVNamespace.getWithMetadata()`
-- [x] `KVNamespace.put()`
-- [x] `KVNamespace.delete()`
+All operations are supported. 💯
 
 ### [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
 
-- [x] `Fetcher.fetch()`
+All operations are supported. 💯
 
 📝 Service bindings bridge can be used in 2 modes.
 
@@ -96,28 +91,11 @@ At this time, however, the value of `request.origin` will be different from the 
 
 ### [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
 
-- [x] `R2Bucket.list()`
-- [x] `R2Bucket.head()`
-- [x] `R2Bucket.get()`
-- [x] `R2Bucket.put()`
-- [x] `R2Bucket.delete()`
-- [x] `R2Bucket.createMultipartUpload()`
-- [x] `R2Bucket.resumeMultipartUpload()`
-- [x] `R2MultipartUpload.uploadPart()`
-- [x] `R2MultipartUpload.abort()`
-- [x] `R2MultipartUpload.complete()`
+All operations are supported. 💯
 
 ### [D1](https://developers.cloudflare.com/d1/platform/client-api/)
 
-- [x] `D1Database.prepare()`
-- [x] `D1Database.dump()`
-- [x] `D1Database.batch()`
-- [x] `D1Database.exec()`
-- [x] `D1PreparedStatement.bind()`
-- [x] `D1PreparedStatement.first()`
-- [x] `D1PreparedStatement.all()`
-- [x] `D1PreparedStatement.run()`
-- [x] `D1PreparedStatement.raw()`
+All operations are supported. 💯
 
 ## Known limitations
 
@@ -126,7 +104,7 @@ The instances and values available from this module are not 100% compatible.
 For example,
 
 - The class constructor for `KVNamespace`, `R2Object`(aka `HeadResult`), etc are not publicly exposed.
-  - It is impossible to implement...
+  - It is impossible to implement the exact same instance...
 - Read-only properties are emulated by simple implementation.
 - If an exception is thrown, it is not a specific error like `TypeError`, but just an `Error`
 - etc...
@@ -135,8 +113,9 @@ But I don't think there are any problems in practical use.
 
 ## Usage examples
 
+### CLI
+
 <details>
-<summary>CLI</summary>
 
 If you are using REST API in your CLI, now you can replace it.
 
@@ -162,8 +141,9 @@ If you are using REST API in your CLI, now you can replace it.
 
 </details>
 
+### SvelteKit
+
 <details>
-<summary>SvelteKit</summary>
 
 ```js
 // server.hooks.js
@@ -204,3 +184,4 @@ export const handle = async ({ event, resolve }) => {
     - Side-effect should be avoided...
     - Performance may suffer if repeating start/stop on every call
   - Someone may use a fixed version of `wrangler` for some reason
+  - Should I care which version of `wrangler` to be used?
