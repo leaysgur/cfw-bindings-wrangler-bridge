@@ -68,6 +68,8 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       deepStrictEqual(putRes[0], putRes[1]);
       putRes = await run((KV) => KV.put("K3", new ArrayBuffer(8)));
       deepStrictEqual(putRes[0], putRes[1]);
+      putRes = await run((KV) => KV.put("K3", new Int32Array(128)));
+      deepStrictEqual(putRes[0], putRes[1]);
     },
   ]);
   specs.push([
