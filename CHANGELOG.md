@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.5.1
+
+- Refactoring internals
+
 ## 0.5.0
 
 - [#14](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/14) Support D1
