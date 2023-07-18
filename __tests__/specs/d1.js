@@ -325,5 +325,48 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     },
   ]);
 
+  specs.push([
+    "Column type conversion",
+    async () => {
+      await run((D1) =>
+        D1.exec(
+          `CREATE TABLE items (${[
+            "id INTEGER PRIMARY KEY",
+            "num REAL",
+            "str TEXT",
+            "ab BLOB",
+            "null NULL",
+          ].join(", ")});`,
+        ),
+      );
+
+      let runRes = await run((D1) =>
+        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+          .bind(1, 10, "foo", [0, 1, 2, 3], null)
+          .run(),
+      );
+      equalD1Result(runRes[0], runRes[1]);
+      const sha512 = await crypto.subtle.digest(
+        "SHA-512",
+        new TextEncoder().encode("dummy"),
+      );
+      runRes = await run((D1) =>
+        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+          .bind(2, 99, "🐱", sha512, null)
+          .run(),
+      );
+      equalD1Result(runRes[0], runRes[1]);
+      runRes = await run((D1) =>
+        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+          .bind(2, 99, "xxx", new Uint32Array(4), null)
+          .run(),
+      );
+      equalD1Result(runRes[0], runRes[1]);
+
+      let rawRes = await run((D1) => D1.prepare("SELECT * from items").raw());
+      deepStrictEqual(rawRes[0], rawRes[1]);
+    },
+  ]);
+
   return { beforeEach, specs };
 };
