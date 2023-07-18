@@ -63,10 +63,8 @@ const equalD1ResultArray = (aRes, eRes) => {
       /** @type {D1Result[]} */ (aRes.value),
       /** @type {D1Result[]} */ (eRes.value),
     ];
-
-    for (const idx of eValues.keys()) {
+    for (const idx of eValues.keys())
       _equalD1Result(aValues[idx], eValues[idx]);
-    }
     return;
   }
 
