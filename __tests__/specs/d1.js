@@ -116,6 +116,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         .map((r) => r.name),
     ];
 
+    // May throw if there is no tables to drop
     await Promise.all([
       ACTUAL.exec(
         aTableNames.map((n) => `DROP TABLE IF EXISTS ${n};`).join("\n"),
@@ -200,15 +201,15 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       );
 
       let firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM points").first(),
+        D1.prepare("SELECT COUNT(*) AS total FROM todos").first(),
       );
       deepStrictEqual(firstRes[0], firstRes[1]);
       firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM points").first("total"),
+        D1.prepare("SELECT COUNT(*) AS total FROM todos").first("total"),
       );
       deepStrictEqual(firstRes[0], firstRes[1]);
       firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM points").first("typo"),
+        D1.prepare("SELECT COUNT(*) AS total FROM todos").first("typo"),
       );
       equalRejectedResult(firstRes[0], firstRes[1]);
       await sleepAfterRejectedResult();
@@ -255,20 +256,15 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     "D1PreparedStatement.run()",
     async () => {
       await run((D1) =>
-        D1.exec(
-          [
-            "CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
-            "INSERT INTO todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
-          ].join("\n"),
-        ),
+        D1.exec("CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);"),
       );
 
       let runRes = await run((D1) =>
-        D1.prepare("INSERT INTO todos VALUES (3, 'Learn SQL')").run(),
+        D1.prepare("INSERT INTO todos VALUES (1, 'Learn SQL')").run(),
       );
       equalD1Result(runRes[0], runRes[1]);
       runRes = await run((D1) =>
-        D1.prepare("INSERT INTO todos VALUES (3, 'DUPLICATE')").run(),
+        D1.prepare("INSERT INTO todos VALUES (1, 'DUPLICATE')").run(),
       );
       equalRejectedResult(runRes[0], runRes[1]);
       await sleepAfterRejectedResult();

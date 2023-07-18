@@ -50,7 +50,9 @@ export const handleD1Dispatch = async (D1, req) => {
     const [statement, params, column] = parameters;
     const result = await D1.prepare(statement)
       .bind(...decodeBindValues(params))
-      .first(column);
+      // FIXME: `JSON.parse(JSON.stringify([undefined]))` -> `null`!!
+      // Consider using `devalue` everywhere.
+      .first(column ?? undefined);
 
     return Response.json(result);
   }
