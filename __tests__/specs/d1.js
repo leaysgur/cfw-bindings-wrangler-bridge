@@ -109,10 +109,10 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     ]);
     const [aTableNames, eTableNames] = [
       aResults
-        .filter((r) => r.type === "table" && !r.name.startsWith("sqlite_"))
+        .filter((r) => r.type === "table" && r.name.startsWith("spec_"))
         .map((r) => r.name),
       eResults
-        .filter((r) => r.type === "table" && !r.name.startsWith("sqlite_"))
+        .filter((r) => r.type === "table" && r.name.startsWith("spec_"))
         .map((r) => r.name),
     ];
 
@@ -163,24 +163,26 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       await run((D1) =>
         D1.exec(
           [
-            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
-            "INSERT INTO users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
+            "CREATE TABLE spec_users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
+            "INSERT INTO spec_users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
           ].join("\n"),
         ),
       );
 
       let allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM users WHERE name = ?").bind("John").all(),
+        D1.prepare("SELECT * FROM spec_users WHERE name = ?")
+          .bind("John")
+          .all(),
       );
       equalD1Result(allRes[0], allRes[1]);
       allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM users WHERE name = ? AND age = ?")
+        D1.prepare("SELECT * FROM spec_users WHERE name = ? AND age = ?")
           .bind("John", 3)
           .all(),
       );
       equalD1Result(allRes[0], allRes[1]);
       allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM users WHERE name = ?2 AND age = ?1")
+        D1.prepare("SELECT * FROM spec_users WHERE name = ?2 AND age = ?1")
           .bind(2, "John")
           .all(),
       );
@@ -194,22 +196,22 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       await run((D1) =>
         D1.exec(
           [
-            "CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
-            "INSERT INTO todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
+            "CREATE TABLE spec_todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
+            "INSERT INTO spec_todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
           ].join("\n"),
         ),
       );
 
       let firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM todos").first(),
+        D1.prepare("SELECT COUNT(*) AS total FROM spec_todos").first(),
       );
       deepStrictEqual(firstRes[0], firstRes[1]);
       firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM todos").first("total"),
+        D1.prepare("SELECT COUNT(*) AS total FROM spec_todos").first("total"),
       );
       deepStrictEqual(firstRes[0], firstRes[1]);
       firstRes = await run((D1) =>
-        D1.prepare("SELECT COUNT(*) AS total FROM todos").first("typo"),
+        D1.prepare("SELECT COUNT(*) AS total FROM spec_todos").first("typo"),
       );
       equalRejectedResult(firstRes[0], firstRes[1]);
       await sleepAfterRejectedResult();
@@ -222,13 +224,15 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       await run((D1) =>
         D1.exec(
           [
-            "CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
-            "INSERT INTO todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
+            "CREATE TABLE spec_todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
+            "INSERT INTO spec_todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
           ].join("\n"),
         ),
       );
 
-      let allRes = await run((D1) => D1.prepare("SELECT * FROM todos;").all());
+      let allRes = await run((D1) =>
+        D1.prepare("SELECT * FROM spec_todos;").all(),
+      );
       equalD1Result(allRes[0], allRes[1]);
     },
   ]);
@@ -239,14 +243,14 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       await run((D1) =>
         D1.exec(
           [
-            "CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
-            "INSERT INTO todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
+            "CREATE TABLE spec_todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
+            "INSERT INTO spec_todos VALUES (1, 'Buy coffee'), (2, 'Play the guitar');",
           ].join("\n"),
         ),
       );
 
       let rawRes = await run((D1) =>
-        D1.prepare("SELECT * FROM todos LIMIT 1;").raw(),
+        D1.prepare("SELECT * FROM spec_todos LIMIT 1;").raw(),
       );
       deepStrictEqual(rawRes[0], rawRes[1]);
     },
@@ -256,15 +260,17 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     "D1PreparedStatement.run()",
     async () => {
       await run((D1) =>
-        D1.exec("CREATE TABLE todos (TodoId INTEGER PRIMARY KEY, Name TEXT);"),
+        D1.exec(
+          "CREATE TABLE spec_todos (TodoId INTEGER PRIMARY KEY, Name TEXT);",
+        ),
       );
 
       let runRes = await run((D1) =>
-        D1.prepare("INSERT INTO todos VALUES (1, 'Learn SQL')").run(),
+        D1.prepare("INSERT INTO spec_todos VALUES (1, 'Learn SQL')").run(),
       );
       equalD1Result(runRes[0], runRes[1]);
       runRes = await run((D1) =>
-        D1.prepare("INSERT INTO todos VALUES (1, 'DUPLICATE')").run(),
+        D1.prepare("INSERT INTO spec_todos VALUES (1, 'DUPLICATE')").run(),
       );
       equalRejectedResult(runRes[0], runRes[1]);
       await sleepAfterRejectedResult();
@@ -285,34 +291,40 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       await run((D1) =>
         D1.exec(
           [
-            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
-            "INSERT INTO users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
+            "CREATE TABLE spec_users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
+            "INSERT INTO spec_users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
           ].join("\n"),
         ),
       );
 
       let batchRes = await run((D1) =>
         D1.batch([
-          D1.prepare("UPDATE users SET name = ?1 WHERE id = ?2").bind("Bob", 2),
-          D1.prepare("UPDATE users SET age = ?1 WHERE id = ?2").bind(17, 3),
+          D1.prepare("UPDATE spec_users SET name = ?1 WHERE id = ?2").bind(
+            "Bob",
+            2,
+          ),
+          D1.prepare("UPDATE spec_users SET age = ?1 WHERE id = ?2").bind(
+            17,
+            3,
+          ),
         ]),
       );
       equalD1ResultArray(batchRes[0], batchRes[1]);
 
       await run((D1) =>
         D1.exec(
-          "CREATE TABLE blobs (id INTEGER PRIMARY KEY, b1 BLOB, b2 BLOB);",
+          "CREATE TABLE spec_blobs (id INTEGER PRIMARY KEY, b1 BLOB, b2 BLOB);",
         ),
       );
 
       batchRes = await run((D1) =>
         D1.batch([
-          D1.prepare("INSERT INTO blobs VALUES (?1, ?2, ?3);").bind(
+          D1.prepare("INSERT INTO spec_blobs VALUES (?1, ?2, ?3);").bind(
             1,
             [1, 2, 3, 4],
             new ArrayBuffer(10),
           ),
-          D1.prepare("INSERT INTO blobs VALUES (?1, ?2, ?3);").bind(
+          D1.prepare("INSERT INTO spec_blobs VALUES (?1, ?2, ?3);").bind(
             2,
             [],
             new Int16Array(16),
@@ -333,9 +345,9 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       execRes = await run((D1) =>
         D1.exec(
           [
-            "DROP TABLE IF EXISTS Customers;",
-            "CREATE TABLE Customers (CustomerId INTEGER PRIMARY KEY, CompanyName TEXT, ContactName TEXT);",
-            "INSERT INTO Customers VALUES (1, 'Alfreds Futterkiste', 'Maria Anders');",
+            "DROP TABLE IF EXISTS spec_customers;",
+            "CREATE TABLE spec_customers (CustomerId INTEGER PRIMARY KEY, CompanyName TEXT, ContactName TEXT);",
+            "INSERT INTO spec_customers VALUES (1, 'Alfreds Futterkiste', 'Maria Anders');",
           ].join("\n"),
         ),
       );
@@ -348,7 +360,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     async () => {
       await run((D1) =>
         D1.exec(
-          `CREATE TABLE items (${[
+          `CREATE TABLE spec_items (${[
             "id INTEGER PRIMARY KEY",
             "num REAL",
             "str TEXT",
@@ -359,7 +371,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       );
 
       let runRes = await run((D1) =>
-        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+        D1.prepare("INSERT INTO spec_items VALUES (?, ?, ?, ?, ?)")
           .bind(1, 10, "foo", [0, 1, 2, 3], null)
           .run(),
       );
@@ -369,19 +381,21 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         new TextEncoder().encode("dummy"),
       );
       runRes = await run((D1) =>
-        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+        D1.prepare("INSERT INTO spec_items VALUES (?, ?, ?, ?, ?)")
           .bind(2, 99, "🐱", sha1, null)
           .run(),
       );
       equalD1Result(runRes[0], runRes[1]);
       runRes = await run((D1) =>
-        D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
+        D1.prepare("INSERT INTO spec_items VALUES (?, ?, ?, ?, ?)")
           .bind(3, 99, "xxx", new Uint8Array(16), null)
           .run(),
       );
       equalD1Result(runRes[0], runRes[1]);
 
-      let rawRes = await run((D1) => D1.prepare("SELECT * from items").raw());
+      let rawRes = await run((D1) =>
+        D1.prepare("SELECT * from spec_items").raw(),
+      );
       deepStrictEqual(rawRes[0], rawRes[1]);
     },
   ]);

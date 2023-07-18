@@ -5,7 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/cloudflare/internal/d1-api.ts
 // https://github.com/cloudflare/miniflare/blob/master/packages/d1/src/d1js.ts
 
-import { D1PreparedStatement$ } from "./d1-prepared-statement";
+import { D1PreparedStatement$ } from "./d1-prepared-statement.js";
 
 export class D1Database$ {
   #bridgeWranglerOrigin;
