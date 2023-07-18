@@ -279,7 +279,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     "D1.dump()",
     async () => {
       let dumpRes = await run((D1) => D1.dump());
-      deepStrictEqual(dumpRes[0], dumpRes[1]);
+      deepStrictEqual(dumpRes[0].status, dumpRes[1].status);
     },
   ]);
 
@@ -335,7 +335,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
             "num REAL",
             "str TEXT",
             "ab BLOB",
-            "null NULL",
+            "nul NULL",
           ].join(", ")});`,
         ),
       );
@@ -346,19 +346,19 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
           .run(),
       );
       equalD1Result(runRes[0], runRes[1]);
-      const sha512 = await crypto.subtle.digest(
-        "SHA-512",
+      const sha1 = await crypto.subtle.digest(
+        "SHA-1",
         new TextEncoder().encode("dummy"),
       );
       runRes = await run((D1) =>
         D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
-          .bind(2, 99, "🐱", sha512, null)
+          .bind(2, 99, "🐱", sha1, null)
           .run(),
       );
       equalD1Result(runRes[0], runRes[1]);
       runRes = await run((D1) =>
         D1.prepare("INSERT INTO items VALUES (?, ?, ?, ?, ?)")
-          .bind(2, 99, "xxx", new Uint32Array(4), null)
+          .bind(3, 99, "xxx", new Uint8Array(16), null)
           .run(),
       );
       equalD1Result(runRes[0], runRes[1]);

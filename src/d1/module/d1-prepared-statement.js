@@ -17,9 +17,6 @@ const encodeBindValues = (values) =>
     // @ts-expect-error: `length` is missing?
     if (ArrayBuffer.isView(v)) return Array.from(v);
 
-    // For non-ASCII string
-    if (typeof v === "string") return encodeURIComponent(v);
-
     return v;
   });
 

@@ -21,15 +21,14 @@ export class D1Database$ {
   }
 
   /** @type {import("./types.d.ts").Dispatch} */
-  async #dispatch(operation, parameters, body) {
+  async #dispatch(operation, parameters) {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "D1",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
-        "X-BRIDGE-D1-Dispatch": JSON.stringify({ operation, parameters }),
       },
-      body,
+      body: JSON.stringify({ operation, parameters }),
     });
 
     if (!res.ok) {

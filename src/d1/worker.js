@@ -1,15 +1,12 @@
 // @ts-check
 
 /** @param {unknown[]} values */
-const decodeBindValues = (values) => values.map((v) => {
-  // For non-ASCII string
-  if (typeof v === "string") return decodeURIComponent(v);
-
-  // In encoding side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
-  // But here we do not decode them, because current D1 implementation also treats them as `Array`.
-
-  return v;
-});
+const decodeBindValues = (values) =>
+  values.map((v) => {
+    // In encoding side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
+    // But here we do not decode them, because current D1 implementation also treats them as `Array`.
+    return v;
+  });
 
 /**
  * @param {any} binding
@@ -23,9 +20,7 @@ export const isD1Binding = (binding) =>
  * @param {Request} req
  */
 export const handleD1Dispatch = async (D1, req) => {
-  const { operation, parameters } = JSON.parse(
-    req.headers.get("X-BRIDGE-D1-Dispatch") ?? "{}",
-  );
+  const { operation, parameters } = await req.json();
 
   if (operation === "D1Database.dump") {
     const result = await D1.dump();
