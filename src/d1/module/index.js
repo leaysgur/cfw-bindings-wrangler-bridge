@@ -54,8 +54,15 @@ export class D1Database$ {
 
   /** @param {D1PreparedStatement[]} statements */
   async batch(statements) {
-    statements;
-    // TODO: D1Result[]
+    const res = await this.#dispatch("D1Database.batch", [
+      statements.map((s) => {
+        const s$ = /** @type {D1PreparedStatement$} */ (s);
+        return [s$.statement, s$.params];
+      }),
+    ]);
+    const json = await res.json();
+
+    return json;
   }
 
   /** @param {string} query */

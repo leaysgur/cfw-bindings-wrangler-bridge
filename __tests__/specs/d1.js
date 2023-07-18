@@ -53,6 +53,25 @@ const equalD1Result = (aRes, eRes) => {
 
   deepStrictEqual(aRes, eRes);
 };
+/**
+ * @param {PromiseSettledResult<unknown>} aRes
+ * @param {PromiseSettledResult<unknown>} eRes
+ */
+const equalD1ResultArray = (aRes, eRes) => {
+  if (aRes.status === "fulfilled" && eRes.status === "fulfilled") {
+    const [aValues, eValues] = [
+      /** @type {D1Result[]} */ (aRes.value),
+      /** @type {D1Result[]} */ (eRes.value),
+    ];
+
+    for (const idx of eValues.keys()) {
+      _equalD1Result(aValues[idx], eValues[idx]);
+    }
+    return;
+  }
+
+  deepStrictEqual(aRes, eRes);
+};
 
 /**
  * @param {PromiseSettledResult<unknown>} aRes
@@ -156,11 +175,15 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       );
       equalD1Result(allRes[0], allRes[1]);
       allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM users WHERE name = ? AND age = ?").bind("John", 3).all(),
+        D1.prepare("SELECT * FROM users WHERE name = ? AND age = ?")
+          .bind("John", 3)
+          .all(),
       );
       equalD1Result(allRes[0], allRes[1]);
       allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM users WHERE name = ?2 AND age = ?1").bind(2, "John").all(),
+        D1.prepare("SELECT * FROM users WHERE name = ?2 AND age = ?1")
+          .bind(2, "John")
+          .all(),
       );
       equalD1Result(allRes[0], allRes[1]);
     },
@@ -206,9 +229,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         ),
       );
 
-      let allRes = await run((D1) =>
-        D1.prepare("SELECT * FROM todos;").all(),
-      );
+      let allRes = await run((D1) => D1.prepare("SELECT * FROM todos;").all());
       equalD1Result(allRes[0], allRes[1]);
     },
   ]);
@@ -264,7 +285,27 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     },
   ]);
 
-  // D1.batch()
+  specs.push([
+    "D1.batch(statements)",
+    async () => {
+      await run((D1) =>
+        D1.exec(
+          [
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
+            "INSERT INTO users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
+          ].join("\n"),
+        ),
+      );
+
+      let batchRes = await run((D1) =>
+        D1.batch([
+          D1.prepare("UPDATE users SET name = ?1 WHERE id = ?2").bind("Bob", 2),
+          D1.prepare("UPDATE users SET age = ?1 WHERE id = ?2").bind(17, 3),
+        ]),
+      );
+      equalD1ResultArray(batchRes[0], batchRes[1]);
+    },
+  ]);
 
   specs.push([
     "D1.exec(query)",

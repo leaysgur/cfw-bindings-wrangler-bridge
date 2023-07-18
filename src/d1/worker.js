@@ -30,34 +30,48 @@ export const handleD1Dispatch = async (D1, req) => {
   }
 
   if (operation === "D1Database.batch") {
-    // TODO
-    return Response.json([]);
+    const [statementArray] = parameters;
+    const result = await D1.batch(
+      statementArray.map(
+        /** @param {[string, unknown[]]} stmt */ ([statement, params]) =>
+          D1.prepare(statement).bind(...params),
+      ),
+    );
+    return Response.json(result);
   }
 
   if (operation === "D1PreparedStatement.first") {
     const [statement, params, column] = parameters;
-    const result = await D1.prepare(statement).bind(...params).first(column);
+    const result = await D1.prepare(statement)
+      .bind(...params)
+      .first(column);
 
     return Response.json(result);
   }
 
   if (operation === "D1PreparedStatement.all") {
     const [statement, params] = parameters;
-    const result = await D1.prepare(statement).bind(...params).all();
+    const result = await D1.prepare(statement)
+      .bind(...params)
+      .all();
 
     return Response.json(result);
   }
 
   if (operation === "D1PreparedStatement.run") {
     const [statement, params] = parameters;
-    const result = await D1.prepare(statement).bind(...params).run();
+    const result = await D1.prepare(statement)
+      .bind(...params)
+      .run();
 
     return Response.json(result);
   }
 
   if (operation === "D1PreparedStatement.raw") {
     const [statement, params] = parameters;
-    const result = await D1.prepare(statement).bind(...params).raw();
+    const result = await D1.prepare(statement)
+      .bind(...params)
+      .raw();
 
     return Response.json(result);
   }

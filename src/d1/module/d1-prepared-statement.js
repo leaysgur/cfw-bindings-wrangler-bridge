@@ -22,6 +22,13 @@ export class D1PreparedStatement$ {
     this.#dispatch = dispatch;
   }
 
+  get statement() {
+    return this.#statement;
+  }
+  get params() {
+    return this.#params;
+  }
+
   /** @param {unknown[]} values */
   bind(...values) {
     return new D1PreparedStatement$(
