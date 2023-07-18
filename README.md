@@ -107,6 +107,18 @@ At this time, however, the value of `request.origin` will be different from the 
 - [x] `R2MultipartUpload.abort()`
 - [x] `R2MultipartUpload.complete()`
 
+### [D1](https://developers.cloudflare.com/d1/platform/client-api/)
+
+- [x] `D1Database.prepare()`
+- [x] `D1Database.dump()`
+- [x] `D1Database.batch()`
+- [x] `D1Database.exec()`
+- [x] `D1PreparedStatement.bind()`
+- [x] `D1PreparedStatement.first()`
+- [x] `D1PreparedStatement.all()`
+- [x] `D1PreparedStatement.run()`
+- [x] `D1PreparedStatement.raw()`
+
 ## Known limitations
 
 The instances and values available from this module are not 100% compatible.
