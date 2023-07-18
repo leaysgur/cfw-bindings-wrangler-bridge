@@ -5,6 +5,24 @@
 
 /** @typedef {import("./types.d.ts").Dispatch} Dispatch */
 
+/** @param {unknown[]} values */
+const encodeBindValues = (values) =>
+  values.map((v) => {
+    // Docs says for `BLOB` column you should pass `ArrayBuffer`.
+    // https://developers.cloudflare.com/d1/platform/client-api/#type-conversion
+    //
+    // But actually just `Array` is enough to work at the moment.
+    // In addition, `Array` is helpful for us to serialize into JSON.
+    if (v instanceof ArrayBuffer) return Array.from(new Uint8Array(v));
+    // @ts-expect-error: `length` is missing?
+    if (ArrayBuffer.isView(v)) return Array.from(v);
+
+    // For non-ASCII string
+    if (typeof v === "string") return encodeURIComponent(v);
+
+    return v;
+  });
+
 // implements D1PreparedStatement
 export class D1PreparedStatement$ {
   #statement;
@@ -33,55 +51,37 @@ export class D1PreparedStatement$ {
   bind(...values) {
     return new D1PreparedStatement$(
       this.#statement,
-      values.map((v) => {
-        // Our only concern here is to transform values into JSON serializable.
-        // There may be invalid values inside, but we don't care.
-        if (v instanceof ArrayBuffer) return Array.from(new Uint8Array(v));
-        // @ts-expect-error: `length` is missing?
-        if (ArrayBuffer.isView(v)) return Array.from(v);
-
-        return v;
-      }),
+      encodeBindValues(values),
       this.#dispatch,
     );
   }
 
   /** @param {string} [column] */
   async first(column) {
-    const res = await this.#dispatch("D1PreparedStatement.first", [
-      this.#statement,
-      this.#params,
-      column,
-    ]);
-    const json = await res.json();
-
-    return json;
+    return this._send("D1PreparedStatement.first", column);
   }
 
   async run() {
-    const res = await this.#dispatch("D1PreparedStatement.run", [
-      this.#statement,
-      this.#params,
-    ]);
-    const json = await res.json();
-
-    return json;
+    return this._send("D1PreparedStatement.run");
   }
 
   async all() {
-    const res = await this.#dispatch("D1PreparedStatement.all", [
-      this.#statement,
-      this.#params,
-    ]);
-    const json = await res.json();
-
-    return json;
+    return this._send("D1PreparedStatement.all");
   }
 
   async raw() {
-    const res = await this.#dispatch("D1PreparedStatement.raw", [
+    return this._send("D1PreparedStatement.raw");
+  }
+
+  /**
+   * @param {string} operation
+   * @param {unknown} [parameters]
+   */
+  async _send(operation, parameters) {
+    const res = await this.#dispatch(operation, [
       this.#statement,
       this.#params,
+      parameters,
     ]);
     const json = await res.json();
 
