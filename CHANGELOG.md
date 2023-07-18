@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.5.0
+
+- [#14](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/14) Support D1
+
 ## 0.4.0
 
 - [#12](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/12) Support R2 multipart

@@ -6,9 +6,13 @@ kv_namespaces = [
   { binding = "ACTUAL_KV", id = "a-kv", preview_id = "a-kv" },
   { binding = "EXPECT_KV", id = "e-kv", preview_id = "e-kv" },
 ]
-r2_buckets  = [
+r2_buckets = [
   { binding = "ACTUAL_R2", bucket_name = "a-r2", preview_bucket_name = "a-r2" },
   { binding = "EXPECT_R2", bucket_name = "e-r2", preview_bucket_name = "e-r2" },
+]
+d1_databases = [
+  { binding = "ACTUAL_D1", database_name = "a-d1", database_id = "a-d1" },
+  { binding = "EXPECT_D1", database_name = "e-d1", database_id = "e-d1" },
 ]
 services = [ 
   { binding = "ACTUAL_SERVICE", service = "test-service" },

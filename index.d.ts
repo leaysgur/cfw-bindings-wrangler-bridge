@@ -3,4 +3,5 @@ export declare function createBridge(bridgeWranglerOrigin?: string): {
   KV<Type>(namespaceId: string): Type;
   SERVICE<Type>(namespaceId: string, serviceWranlgerOrigin?: string): Type;
   R2<Type>(namespaceId: string): Type;
+  D1<Type>(namespaceId: string): Type;
 };

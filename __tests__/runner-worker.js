@@ -4,6 +4,7 @@ import { createBridge } from "../module.js";
 import { createSpecs as createKVSpecs } from "./specs/kv.js";
 import { createSpecs as specsSERVICESpecs } from "./specs/service.js";
 import { createSpecs as createR2Specs } from "./specs/r2.js";
+import { createSpecs as createD1Specs } from "./specs/d1.js";
 
 /**
  * @typedef {{
@@ -13,6 +14,8 @@ import { createSpecs as createR2Specs } from "./specs/r2.js";
  *   EXPECT_SERVICE: Fetcher;
  *   ACTUAL_R2: R2Bucket;
  *   EXPECT_R2: R2Bucket;
+ *   ACTUAL_D1: D1Database;
+ *   EXPECT_D1: D1Database;
  * }} Env
  */
 
@@ -64,6 +67,14 @@ const runSpecs = async (searchParams, env, writer) => {
     );
     const EXPECT = env.EXPECT_R2;
     suites.set("R2", createR2Specs([ACTUAL, EXPECT]));
+  }
+
+  if (targets.includes("d1")) {
+    const ACTUAL = /** @type {D1Database} */ (
+      /** @type {unknown} */ (bridge.D1("ACTUAL_D1"))
+    );
+    const EXPECT = env.EXPECT_D1;
+    suites.set("D1", createD1Specs([ACTUAL, EXPECT]));
   }
 
   if (suites.size === 0) {
