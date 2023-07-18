@@ -302,6 +302,28 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         ]),
       );
       equalD1ResultArray(batchRes[0], batchRes[1]);
+
+      await run((D1) =>
+        D1.exec(
+          "CREATE TABLE blobs (id INTEGER PRIMARY KEY, b1 BLOB, b2 BLOB);",
+        ),
+      );
+
+      batchRes = await run((D1) =>
+        D1.batch([
+          D1.prepare("INSERT INTO blobs VALUES (?1, ?2, ?3);").bind(
+            1,
+            [1, 2, 3, 4],
+            new ArrayBuffer(10),
+          ),
+          D1.prepare("INSERT INTO blobs VALUES (?1, ?2, ?3);").bind(
+            2,
+            [],
+            new Int16Array(16),
+          ),
+        ]),
+      );
+      equalD1ResultArray(batchRes[0], batchRes[1]);
     },
   ]);
 
