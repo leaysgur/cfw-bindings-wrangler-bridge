@@ -55,26 +55,26 @@ export class D1PreparedStatement$ {
 
   /** @param {string} [column] */
   async first(column) {
-    return this._send("D1PreparedStatement.first", column);
+    return this.#send("D1PreparedStatement.first", column);
   }
 
   async run() {
-    return this._send("D1PreparedStatement.run");
+    return this.#send("D1PreparedStatement.run");
   }
 
   async all() {
-    return this._send("D1PreparedStatement.all");
+    return this.#send("D1PreparedStatement.all");
   }
 
   async raw() {
-    return this._send("D1PreparedStatement.raw");
+    return this.#send("D1PreparedStatement.raw");
   }
 
   /**
    * @param {string} operation
    * @param {unknown} [parameters]
    */
-  async _send(operation, parameters) {
+  async #send(operation, parameters) {
     const res = await this.#dispatch(operation, [
       this.#statement,
       this.#params,
