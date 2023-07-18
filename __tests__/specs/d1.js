@@ -129,9 +129,40 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
     "D1PreparedStatement.bind(...values)",
     async () => {
       let prepareRes = await run((D1) =>
-        D1.prepare("SELECT ? AS value;").bind("foo"),
+        D1.prepare("SELECT ? AS value FROM todos;").bind("Name"),
       );
       equalD1PreparedStatement(prepareRes[0], prepareRes[1]);
+      prepareRes = await run((D1) =>
+        D1.prepare("SELECT ? AS value FROM todos;").bind(),
+      );
+      equalD1PreparedStatement(prepareRes[0], prepareRes[1]);
+    },
+  ]);
+
+  specs.push([
+    "Parameter binding",
+    async () => {
+      await run((D1) =>
+        D1.exec(
+          [
+            "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);",
+            "INSERT INTO users VALUES (1, 'Amy', 20), (2, 'John', 3), (3, 'Carol', 33);",
+          ].join("\n"),
+        ),
+      );
+
+      let allRes = await run((D1) =>
+        D1.prepare("SELECT * FROM users WHERE name = ?").bind("John").all(),
+      );
+      equalD1Result(allRes[0], allRes[1]);
+      allRes = await run((D1) =>
+        D1.prepare("SELECT * FROM users WHERE name = ? AND age = ?").bind("John", 3).all(),
+      );
+      equalD1Result(allRes[0], allRes[1]);
+      allRes = await run((D1) =>
+        D1.prepare("SELECT * FROM users WHERE name = ?2 AND age = ?1").bind(2, "John").all(),
+      );
+      equalD1Result(allRes[0], allRes[1]);
     },
   ]);
 
