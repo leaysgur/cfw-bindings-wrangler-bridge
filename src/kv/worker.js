@@ -1,5 +1,5 @@
 // @ts-check
-import { parse } from "devalue";
+import { stringify, parse } from "devalue";
 
 /** @param {string} key */
 const decodeKey = (key) => decodeURIComponent(key);
@@ -53,7 +53,7 @@ export const handleKVDispatch = async (KV, req) => {
     return new Response(value, {
       headers: {
         "X-BRIDGE-KV-ValueIsNull": `${value === null}`,
-        "X-BRIDGE-KV-Metadata": JSON.stringify(metadata),
+        "X-BRIDGE-KV-Metadata": stringify(metadata),
       },
     });
   }

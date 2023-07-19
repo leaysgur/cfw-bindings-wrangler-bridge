@@ -5,7 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
 // https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
 
-import { stringify } from "devalue";
+import { stringify, parse } from "devalue";
 
 /** @param {string} key */
 const encodeKey = (key) => encodeURIComponent(key);
@@ -103,7 +103,7 @@ export class KVNamespace$ {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
-    const metadata = JSON.parse(
+    const metadata = parse(
       res.headers.get("X-BRIDGE-KV-Metadata") ?? "null",
     );
 
