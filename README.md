@@ -2,7 +2,7 @@
 
 This bridge makes it possible to interact with Cloudflare Workers bindings(like KV, D1, etc...) runtime APIs **in local development**.
 
-In a nutshell, you can use actual KV, D1 APIs during `vite dev`! 😉
+> In a nutshell, you can use actual KV, D1 APIs and values during `vite dev`! 😉
 
 ## How it works
 
@@ -62,13 +62,13 @@ Type definitions should be handled by yourself. 😅
 ## Supported bindings
 
 - [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
-  - All operations are supported 💯
+  - All operations and arguments are supported 💯
 - [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
-  - All operations are supported 💯
+  - All operations and arguments are supported 💯
 - [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
-  - All operations are supported 💯
+  - All operations and arguments are supported 💯
 - [D1](https://developers.cloudflare.com/d1/platform/client-api/)
-  - All operations are supported 💯
+  - All operations and arguments are supported 💯
 - More to come...
 
 ## Examples
