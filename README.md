@@ -1,38 +1,33 @@
 # cfw-bindings-wrangler-bridge
 
-Bridge between **local environment in development** 🌉 **Cloudflare Workers bindings in production**, via `wrangler dev --remote` command.
+This bridge makes it possible to interact with Cloudflare Workers bindings(like KV, D1, etc...) runtime APIs **in local development**.
 
-## Motivation
+> In a nutshell, you can use actual KV, D1 APIs and values during `vite dev`! 😉
 
-Imagine you want to deploy your application to Cloudflare Pages using a framework like SvelteKit.
+## How it works
 
-`vite dev` has nice DX. Deployment is no problem either, with adapters available. GitHub connected auto CI, preview branches are really cool. 🥳
+This bridge has 2 components.
 
-However, as soon as you try to use features specific to the Cloudflare Workers platform (like KV, D1, etc.), you run into problems...
+- Module: Mock module to be injected into the user application
+  - written as pure ESM
+- Worker: Proxy worker to be called by the bridge module
+  - hosted by `wrangler dev (--remote)` in advance
 
-SvelteKit and `vite dev` don't know about such platform-specific features, so you can't verify any behavior during local development. 😢
-(That means `platform.env.MY_KV` is always `undefined`!)
+Since bridge module itself is platform agnostic, you can use it on any platform|environment.
 
-Some frameworks offer to use the `wrangler pages dev` command for local development. But this command is also locally closed, no real data is available.
-(And with Vite-based frameworks, it is often impractical to use this command, as far as I know.)
+- Vite based meta frameworks(Node.js)
+- CLI tools(Bun, Node.js)
+- Static Site Generation, Pre-rendering(Bun, Node.js)
+- Cloudflare Workers in local(`warngler dev`)
+- etc...
 
-Some frameworks also have implementations using `@cloudflare/miniflare` in their adapters. But even in this case, you can only access locally closed data.
+## Usage
 
-This problem also occurs when developing APIs using only Pages Functions(via `wrangler pages dev`).
-
-That is where this bridge comes in!
-This bridge(module + worker) allows you to access the real data even from your local development environment through the `wrangler dev --remote` command.
-
-In addition, this module makes it possible to use the Workers runtime APIs from **everywhere(Node, Bun, Browser, ..etc)** you want. It's really convenient. 🤞
-This means that you can use acutual data at build-time(e.g. SSG, prerendering) too.
-
-## Install
+0️⃣ Install it as usual.
 
 ```sh
 npm install -D cfw-bindings-wrangler-bridge
 ```
-
-## How to use
 
 1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process.
 
@@ -42,7 +37,7 @@ wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker.js --remote
 
 Of course you can interact with local environment by omitting `--remote`.
 
-2️⃣ Create and use bridge anywhere in your app for local development.
+2️⃣ Create bridge and use it anywhere in your app.
 
 ```js
 import { createBridge } from "cfw-bindings-wrangler-bridge";
@@ -57,7 +52,7 @@ const MY_KV = bridge.KV("MY_KV");
 // For TypeScript
 // const MY_KV = bridge.KV<KVNamespace>("MY_KV");
 
-// ✌️ This is real KV!
+// ✌️ This is production KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
@@ -66,52 +61,17 @@ Type definitions should be handled by yourself. 😅
 
 ## Supported bindings
 
-### [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
+- [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
+  - All operations and arguments are supported 💯
+- [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
+  - All operations and arguments are supported 💯
+- [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
+  - All operations and arguments are supported 💯
+- [D1](https://developers.cloudflare.com/d1/platform/client-api/)
+  - All operations and arguments are supported 💯
+- More to come...
 
-All operations are supported. 💯
-
-### [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
-
-All operations are supported. 💯
-
-📝 Service bindings bridge can be used in 2 modes.
-
-```js
-// [1] Normal mode
-const MY_SERVICE = bridge.SERVICE("MY_SERVICE");
-
-// [2] Direct mode:
-const MY_SERVICE = bridge.SERVICE("", "http://127.0.0.1:8686");
-```
-
-In direct mode, you can mix `wrangler dev --remote` and `wrangler dev --local`.
-At this time, however, the value of `request.origin` will be different from the actual environment.
-
-> See also https://github.com/cloudflare/workers-sdk/issues/1182
-
-### [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
-
-All operations are supported. 💯
-
-### [D1](https://developers.cloudflare.com/d1/platform/client-api/)
-
-All operations are supported. 💯
-
-## Known limitations
-
-The instances and values available from this module are not 100% compatible.
-
-For example,
-
-- The class constructor for `KVNamespace`, `R2Object`(aka `HeadResult`), etc are not publicly exposed.
-  - It is impossible to implement the exact same instance...
-- Read-only properties are emulated by simple implementation.
-- If an exception is thrown, it is not a specific error like `TypeError`, but just an `Error`
-- etc...
-
-But I don't think there are any problems in practical use.
-
-## Usage examples
+## Examples
 
 ### CLI
 
@@ -158,7 +118,7 @@ export const handle = async ({ event, resolve }) => {
     event.platform = {
       env: {
         SESSIONS: bridge.KV("SESSIONS"),
-        TODOS: bridge.KV("TODOS"),
+        TODOS: bridge.D1("TODOS"),
       },
     };
   }
@@ -169,19 +129,55 @@ export const handle = async ({ event, resolve }) => {
 
 </details>
 
-## Notes
+## Known limitations
+
+### Compatibility issues
+
+The instances and values available from this module are not 100% compatible.
+
+For example,
+
+- Binding instances
+  - The class constructors like `KVNamespace`, `R2Object`(aka `HeadResult`) are not publicly exposed
+- Enumerable instance properties
+  - Read-only properties are emulated by simple implementation
+  - Some private properties and methods are included
+- Exception
+  - Not a specific error like `TypeError`, but just an `Error`
+- etc...
+
+But I don't think there are any problems in practical use.
+
+### Service bindings
+
+Current `wrangler` implementation does not allow us to mix `wrangler dev (--local)` services and `wrangler dev --remote` services.
+
+> See also https://github.com/cloudflare/workers-sdk/issues/1182
+
+But with this bridge, you can get over it.
+
+```js
+// Normal mode
+// const MY_SERVICE = bridge.SERVICE("MY_SERVICE");
+
+// Direct mode
+const MY_SERVICE = bridge.SERVICE("", "http://127.0.0.1:8686");
+```
+
+With direct mode, you can mix `wrangler dev --remote` and `wrangler dev (--local)`.
+At this time, however, the value of `request.origin` will be different from the actual environment.
+
+## Implementation notes
 
 - Why not use REST API?
   - REST API cannot offer `--local` behavior
-  - `KV.getWithMetadata()` needs 2 separate API calls
-  - `KV.put()` requires using `FormData` with serialized `string`
-  - `R2.*()` are all not supported
+  - Not all bindings are supported
 - How about using `wrangler` CLI commands?
-  - Features are limited, no KV metadata support, etc...
+  - Features are limited too, no KV metadata support, etc...
 - `wrangler.unstable_dev()` is better?
   - Maybe? but it is literally unstable
   - I'm not sure how to ensure `await worker.stop()` on Vite process exit
     - Side-effect should be avoided...
-    - Performance may suffer if repeating start/stop on every call
-  - Someone may use a fixed version of `wrangler` for some reason
-  - Should I care which version of `wrangler` to be used?
+  - Performance may suffer if repeating start/stop on every call?
+  - I don't want to care which version of `wrangler` to be used, supported
+    - Someone may use a fixed version of `wrangler` for some reason
