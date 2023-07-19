@@ -1,5 +1,10 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.5.2
+
+- Refactoring internals
+- Better README
+
 ## 0.5.1
 
 - Refactoring internals

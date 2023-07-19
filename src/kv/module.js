@@ -103,9 +103,7 @@ export class KVNamespace$ {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
-    const metadata = parse(
-      res.headers.get("X-BRIDGE-KV-Metadata") ?? "null",
-    );
+    const metadata = parse(res.headers.get("X-BRIDGE-KV-Metadata") ?? "null");
 
     return { value, metadata };
   }
