@@ -48,7 +48,7 @@ const bridge = createBridge();
 // const bridge = createBridge("http://localhost:3000");
 
 /** @type {import("@cloduflare/workers-types").KVNamespace} */
-const MY_KV = bridge.KV("MY_KV");
+const MY_KV = bridge.KVNamespace("MY_KV");
 // For TypeScript
 // const MY_KV = bridge.KV<KVNamespace>("MY_KV");
 
@@ -63,12 +63,16 @@ Type definitions should be handled by yourself. 😅
 
 - [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
   - All operations and arguments are supported 💯
+  - `bridge.KVNamespace()`
 - [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
   - All operations and arguments are supported 💯
+  - `bridge.Fetcher()`
 - [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
   - All operations and arguments are supported 💯
+  - `bridge.R2Bucket()`
 - [D1](https://developers.cloudflare.com/d1/platform/client-api/)
   - All operations and arguments are supported 💯
+  - `bridge.D1Database()`
 - More to come...
 
 ## Examples
@@ -94,7 +98,7 @@ If you are using REST API in your CLI, now you can replace it.
 +import { createBridge } from "cfw-bindings-wrangler-bridge";
 +
 +const putKV = async (KV_BINDING_NAME, [key, value]) => {
-+  const KV = createBridge().KV(KV_BINDING_NAME);
++  const KV = createBridge().KVNamespace(KV_BINDING_NAME);
 +  await KV.put(key, value);
 +};
 ```
@@ -117,8 +121,8 @@ export const handle = async ({ event, resolve }) => {
 
     event.platform = {
       env: {
-        SESSIONS: bridge.KV("SESSIONS"),
-        TODOS: bridge.D1("TODOS"),
+        SESSIONS: bridge.KVNamespace("SESSIONS"),
+        TODOS: bridge.D1Database("TODOS"),
       },
     };
   }
@@ -158,10 +162,10 @@ But with this bridge, you can get over it.
 
 ```js
 // Normal mode
-// const MY_SERVICE = bridge.SERVICE("MY_SERVICE");
+// const MY_SERVICE = bridge.Fetcher("MY_SERVICE");
 
 // Direct mode
-const MY_SERVICE = bridge.SERVICE("", "http://127.0.0.1:8686");
+const MY_SERVICE = bridge.Fetcher("", "http://127.0.0.1:8686");
 ```
 
 With direct mode, you can mix `wrangler dev --remote` and `wrangler dev (--local)`.

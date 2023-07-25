@@ -9,13 +9,13 @@ export const createBridge = (
   bridgeWranglerOrigin = "http://127.0.0.1:8787",
 ) => ({
   /** @param {string} bindingName */
-  KV: (bindingName) => new KVNamespace$(bridgeWranglerOrigin, bindingName),
+  KVNamespace: (bindingName) => new KVNamespace$(bridgeWranglerOrigin, bindingName),
 
   /**
    * @param {string} bindingName
    * @param {string} [serviceWranglerOrigin]
    */
-  SERVICE: (bindingName, serviceWranglerOrigin) =>
+  Fetcher: (bindingName, serviceWranglerOrigin) =>
     // Current `wrangler dev` cannot mix `--local` and `--remote` workers.
     // https://github.com/cloudflare/workers-sdk/issues/1182
     //
@@ -31,8 +31,8 @@ export const createBridge = (
       : new Fetcher$(bridgeWranglerOrigin, bindingName),
 
   /** @param {string} bindingName */
-  R2: (bindingName) => new R2Bucket$(bridgeWranglerOrigin, bindingName),
+  R2Bucket: (bindingName) => new R2Bucket$(bridgeWranglerOrigin, bindingName),
 
   /** @param {string} bindingName */
-  D1: (bindingName) => new D1Database$(bridgeWranglerOrigin, bindingName),
+  D1Database: (bindingName) => new D1Database$(bridgeWranglerOrigin, bindingName),
 });

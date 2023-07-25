@@ -1,5 +1,12 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.6.0
+
+### Breaking changes
+
+- Bridge module names are changed
+  - `bridge.KV` -> `bridge.KVNamespace` and so on
+
 ## 0.5.2
 
 - Refactoring internals
