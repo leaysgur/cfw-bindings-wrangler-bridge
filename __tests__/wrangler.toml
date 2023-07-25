@@ -1,6 +1,6 @@
 name = "test-runner"
 compatibility_flags = ["nodejs_compat"]
-compatibility_date = "2023-05-18"
+compatibility_date = "2023-07-10"
 
 kv_namespaces = [ 
   { binding = "ACTUAL_KV", id = "a-kv", preview_id = "a-kv" },
@@ -17,4 +17,8 @@ d1_databases = [
 services = [ 
   { binding = "ACTUAL_SERVICE", service = "test-service" },
   { binding = "EXPECT_SERVICE", service = "test-service" },
+]
+queues.producers = [
+  { queue = "a-q1", binding = "ACTUAL_QUEUE" },
+  { queue = "e-q1", binding = "EXPECT_QUEUE" },
 ]
