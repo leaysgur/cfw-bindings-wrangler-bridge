@@ -2,7 +2,7 @@
 
 ## Latest tested `wrangler` version
 
-v3.2.0
+v3.3.0
 
 ## How to run
 
