@@ -64,7 +64,7 @@ Type definitions should be handled by yourself. 😅
 - [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
   - All operations and arguments are supported 💯
   - `bridge.KVNamespace()`
-- [SERVICE](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
+- [Services](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
   - All operations and arguments are supported 💯
   - `bridge.Fetcher()`
 - [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
@@ -73,6 +73,9 @@ Type definitions should be handled by yourself. 😅
 - [D1](https://developers.cloudflare.com/d1/platform/client-api/)
   - All operations and arguments are supported 💯
   - `bridge.D1Database()`
+- [Queues(Producer)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
+  - All operations and arguments are supported 💯
+  - `bridge.Queue()`
 - More to come...
 
 ## Examples
