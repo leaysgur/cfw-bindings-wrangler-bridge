@@ -86,7 +86,7 @@ export class KVNamespace$ {
     ]);
 
     if (res.headers.get("X-BRIDGE-KV-ValueIsNull") === "true")
-      return { value: null, metadata: null };
+      return { value: null, metadata: null, cacheStatus: null };
 
     let type;
     if (typeof typeOrOptions?.type === "string") {
@@ -104,8 +104,9 @@ export class KVNamespace$ {
     if (type === "stream") value = res.body;
 
     const metadata = parse(res.headers.get("X-BRIDGE-KV-Metadata") ?? "null");
+    const cacheStatus = parse(res.headers.get("X-BRIDGE-KV-CacheStatus") ?? "null");
 
-    return { value, metadata };
+    return { value, metadata, cacheStatus };
   }
 
   /** @param {string} key */
