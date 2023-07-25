@@ -4,4 +4,5 @@ export declare function createBridge(bridgeWranglerOrigin?: string): {
   Fetcher<Type>(namespaceId: string, serviceWranlgerOrigin?: string): Type;
   R2Bucket<Type>(namespaceId: string): Type;
   D1Database<Type>(namespaceId: string): Type;
+  Queue<Type>(napeSpaceId: string): Type;
 };

@@ -5,6 +5,7 @@ import { createSpecs as createKVSpecs } from "./specs/kv.js";
 import { createSpecs as specsSERVICESpecs } from "./specs/service.js";
 import { createSpecs as createR2Specs } from "./specs/r2.js";
 import { createSpecs as createD1Specs } from "./specs/d1.js";
+import { createSpecs as createQUEUESpecs } from "./specs/queue.js";
 
 /**
  * @typedef {{
@@ -16,6 +17,8 @@ import { createSpecs as createD1Specs } from "./specs/d1.js";
  *   EXPECT_R2: R2Bucket;
  *   ACTUAL_D1: D1Database;
  *   EXPECT_D1: D1Database;
+ *   ACTUAL_QUEUE: Queue<unknown>;
+ *   EXPECT_QUEUE: Queue<unknown>;
  * }} Env
  */
 
@@ -75,6 +78,14 @@ const runSpecs = async (searchParams, env, writer) => {
     );
     const EXPECT = env.EXPECT_D1;
     suites.set("D1", createD1Specs([ACTUAL, EXPECT]));
+  }
+
+  if (targets.includes("queue")) {
+    const ACTUAL = /** @type {Queue<unknown>} */ (
+      /** @type {unknown} */ (bridge.Queue("ACTUAL_QUEUE"))
+    );
+    const EXPECT = env.EXPECT_QUEUE;
+    suites.set("QUEUE", createQUEUESpecs([ACTUAL, EXPECT]));
   }
 
   if (suites.size === 0) {

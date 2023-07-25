@@ -3,13 +3,15 @@ import { KVNamespace$ } from "./src/kv/module.js";
 import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
 import { R2Bucket$ } from "./src/r2/module/index.js";
 import { D1Database$ } from "./src/d1/module/index.js";
+import { WorkerQueue$ } from "./src/queue/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
   bridgeWranglerOrigin = "http://127.0.0.1:8787",
 ) => ({
   /** @param {string} bindingName */
-  KVNamespace: (bindingName) => new KVNamespace$(bridgeWranglerOrigin, bindingName),
+  KVNamespace: (bindingName) =>
+    new KVNamespace$(bridgeWranglerOrigin, bindingName),
 
   /**
    * @param {string} bindingName
@@ -34,5 +36,9 @@ export const createBridge = (
   R2Bucket: (bindingName) => new R2Bucket$(bridgeWranglerOrigin, bindingName),
 
   /** @param {string} bindingName */
-  D1Database: (bindingName) => new D1Database$(bridgeWranglerOrigin, bindingName),
+  D1Database: (bindingName) =>
+    new D1Database$(bridgeWranglerOrigin, bindingName),
+
+  /** @param {string} bindingName */
+  Queue: (bindingName) => new WorkerQueue$(bridgeWranglerOrigin, bindingName),
 });
