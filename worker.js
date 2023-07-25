@@ -49,8 +49,6 @@ export default {
         (err) => new Response(err.message, { status: 500 }),
       );
 
-    console.log(BINDING);
-    console.log(BINDING.constructor.name);
     if (BINDING_MODULE === "QUEUE" && isQueueBinding(BINDING))
       return handleQueueDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 }),
