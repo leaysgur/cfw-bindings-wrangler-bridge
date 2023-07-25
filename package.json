@@ -26,8 +26,8 @@
     "src"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230710.1",
-    "@types/node": "^20.4.2",
+    "@cloudflare/workers-types": "^4.20230717.1",
+    "@types/node": "^20.4.4",
     "typescript": "^5.1.6"
   },
   "dependencies": {
