@@ -3,6 +3,7 @@ import { KVNamespace$ } from "./src/kv/module.js";
 import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
 import { R2Bucket$ } from "./src/r2/module/index.js";
 import { D1Database$ } from "./src/d1/module/index.js";
+import { WorkerQueue$ } from "./src/queues/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
@@ -35,4 +36,7 @@ export const createBridge = (
 
   /** @param {string} bindingName */
   D1Database: (bindingName) => new D1Database$(bridgeWranglerOrigin, bindingName),
+
+  /** @param {string} bindingName */
+  Queue: (bindingName) => new WorkerQueue$(bridgeWranglerOrigin, bindingName),
 });
