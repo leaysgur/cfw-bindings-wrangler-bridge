@@ -42,7 +42,7 @@ export class WorkerQueue$ {
     return res;
   }
 
-  /** 
+  /**
    * @param {unknown} body
    * @param {QueueSendOptions} [options]
    */
