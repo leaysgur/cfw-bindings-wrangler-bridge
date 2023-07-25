@@ -3,7 +3,7 @@
 // Refs:
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2object-definition
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2objectbody-definition
-// https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/r2Object.ts
+// https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/r2/r2Object.ts
 
 import { hexStringToArrayBuffer } from "../shared.js";
 /**

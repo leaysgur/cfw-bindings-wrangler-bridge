@@ -3,7 +3,7 @@
 // Refs:
 // https://developers.cloudflare.com/workers/runtime-apis/kv/
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/kv.c%2B%2B#L230
-// https://github.com/cloudflare/miniflare/blob/master/packages/kv/src/namespace.ts#L384
+// https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/kv/gateway.ts#L155
 
 import { stringify, parse } from "devalue";
 

@@ -3,7 +3,7 @@
 // Refs:
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-bucket.c%2B%2B
-// https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/bucket.ts
+// https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/r2/gateway.ts#L521
 
 // Notes:
 // `devalue` is only used for `dispatch()` payload.
