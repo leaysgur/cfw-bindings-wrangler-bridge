@@ -42,6 +42,12 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       batchRes = await run((QUEUE) => QUEUE.sendBatch([]));
       equalRejectedResult(batchRes[0], batchRes[1]);
       await sleepAfterRejectedResult();
+
+      batchRes = await run((QUEUE) =>
+        // Can be any `Iterable`
+        QUEUE.sendBatch(new Set([{ body: [1,2,3] }, { body: 4 }])),
+      );
+      deepStrictEqual(batchRes[0], batchRes[1]);
     },
   ]);
 
