@@ -42,9 +42,12 @@ export class WorkerQueue$ {
     return res;
   }
 
-  /** @param {unknown} body */
-  async send(body) {
-    await this.#dispatch("Queue.send", [body]);
+  /** 
+   * @param {unknown} body
+   * @param {QueueSendOptions} [options]
+   */
+  async send(body, options) {
+    await this.#dispatch("Queue.send", [body, options]);
   }
 
   /** @param {Iterable<MessageSendRequest>} messages */

@@ -27,6 +27,22 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       deepStrictEqual(sendRes[0], sendRes[1]);
     },
   ]);
+  specs.push([
+    "QUEUE.send(body, options)",
+    async () => {
+      let sendRes = await run((QUEUE) =>
+        QUEUE.send("Hey", { contentType: "text" }),
+      );
+      deepStrictEqual(sendRes[0], sendRes[1]);
+      sendRes = await run((QUEUE) => QUEUE.send("Hello", {}));
+      deepStrictEqual(sendRes[0], sendRes[1]);
+
+      sendRes = await run((QUEUE) =>
+        QUEUE.send('[{ "this": "is" }, "json"]', { contentType: "json" }),
+      );
+      deepStrictEqual(sendRes[0], sendRes[1]);
+    },
+  ]);
 
   specs.push([
     "QUEUE.sendBatch(messages)",
@@ -45,7 +61,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
 
       batchRes = await run((QUEUE) =>
         // Can be any `Iterable`
-        QUEUE.sendBatch(new Set([{ body: [1,2,3] }, { body: 4 }])),
+        QUEUE.sendBatch(new Set([{ body: [1, 2, 3] }, { body: 4 }])),
       );
       deepStrictEqual(batchRes[0], batchRes[1]);
     },

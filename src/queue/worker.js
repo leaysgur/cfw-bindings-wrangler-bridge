@@ -16,8 +16,8 @@ export const handleQueueDispatch = async (QUEUE, req) => {
   const { operation, parameters } = await req.text().then((t) => parse(t));
 
   if (operation === "Queue.send") {
-    const [body] = parameters;
-    await QUEUE.send(body);
+    const [body, options] = parameters;
+    await QUEUE.send(body, options);
 
     return new Response();
   }
