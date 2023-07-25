@@ -2,6 +2,8 @@
 
 ## 0.6.0
 
+- Support `cacheStatus` property for KV
+
 ### Breaking changes
 
 - Bridge module names are changed

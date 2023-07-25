@@ -47,7 +47,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("kv")) {
     const ACTUAL = /** @type {KVNamespace} */ (
-      /** @type {unknown} */ (bridge.KV("ACTUAL_KV"))
+      /** @type {unknown} */ (bridge.KVNamespace("ACTUAL_KV"))
     );
     const EXPECT = env.EXPECT_KV;
     suites.set("KV", createKVSpecs([ACTUAL, EXPECT]));
@@ -55,7 +55,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("service")) {
     const ACTUAL = /** @type {Fetcher} */ (
-      /** @type {unknown} */ (bridge.SERVICE("ACTUAL_SERVICE"))
+      /** @type {unknown} */ (bridge.Fetcher("ACTUAL_SERVICE"))
     );
     const EXPECT = env.EXPECT_SERVICE;
     suites.set("SERVICE", specsSERVICESpecs([ACTUAL, EXPECT]));
@@ -63,7 +63,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("r2")) {
     const ACTUAL = /** @type {R2Bucket} */ (
-      /** @type {unknown} */ (bridge.R2("ACTUAL_R2"))
+      /** @type {unknown} */ (bridge.R2Bucket("ACTUAL_R2"))
     );
     const EXPECT = env.EXPECT_R2;
     suites.set("R2", createR2Specs([ACTUAL, EXPECT]));
@@ -71,7 +71,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("d1")) {
     const ACTUAL = /** @type {D1Database} */ (
-      /** @type {unknown} */ (bridge.D1("ACTUAL_D1"))
+      /** @type {unknown} */ (bridge.D1Database("ACTUAL_D1"))
     );
     const EXPECT = env.EXPECT_D1;
     suites.set("D1", createD1Specs([ACTUAL, EXPECT]));
