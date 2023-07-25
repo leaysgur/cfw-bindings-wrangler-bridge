@@ -28,7 +28,7 @@ export class WorkerQueue$ {
     const res = await fetch(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
-        "X-BRIDGE-BINDING-MODULE": "QUEUES",
+        "X-BRIDGE-BINDING-MODULE": "QUEUE",
         "X-BRIDGE-BINDING-NAME": this.#bindingName,
       },
       body: stringify({ operation, parameters }),

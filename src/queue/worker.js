@@ -3,16 +3,16 @@ import { parse } from "devalue";
 
 /**
  * @param {any} binding
- * @returns {binding is Queue}
+ * @returns {binding is Queue<Body>}
  */
-export const isQueuesBinding = (binding) =>
+export const isQueueBinding = (binding) =>
   binding.constructor.name === "WorkerQueue";
 
 /**
  * @param {Queue<Body>} QUEUE
  * @param {Request} req
  */
-export const handleQueuesDispatch = async (QUEUE, req) => {
+export const handleQueueDispatch = async (QUEUE, req) => {
   const { operation, parameters } = await req.text().then((t) => parse(t));
 
   if (operation === "Queue.send") {

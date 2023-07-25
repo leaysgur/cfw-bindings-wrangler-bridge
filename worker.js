@@ -6,6 +6,7 @@ import {
 } from "./src/service/worker.js";
 import { isR2Binding, handleR2Dispatch } from "./src/r2/worker.js";
 import { isD1Binding, handleD1Dispatch } from "./src/d1/worker.js";
+import { isQueueBinding, handleQueueDispatch } from "./src/queue/worker.js";
 
 export default {
   /** @type {ExportedHandlerFetchHandler<Record<string, unknown>>} */
@@ -45,6 +46,13 @@ export default {
 
     if (BINDING_MODULE === "D1" && isD1Binding(BINDING))
       return handleD1Dispatch(BINDING, req).catch(
+        (err) => new Response(err.message, { status: 500 }),
+      );
+
+    console.log(BINDING);
+    console.log(BINDING.constructor.name);
+    if (BINDING_MODULE === "QUEUE" && isQueueBinding(BINDING))
+      return handleQueueDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 }),
       );
 
