@@ -61,19 +61,19 @@ Type definitions should be handled by yourself. 😅
 
 ## Supported bindings
 
-- [KV](https://developers.cloudflare.com/workers/runtime-apis/kv/)
+- [KV namespace](https://developers.cloudflare.com/workers/runtime-apis/kv/)
   - All operations and arguments are supported 💯
   - `bridge.KVNamespace()`
-- [Services](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
+- [Service](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
   - All operations and arguments are supported 💯
   - `bridge.Fetcher()`
-- [R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
+- [R2 bucket](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
   - All operations and arguments are supported 💯
   - `bridge.R2Bucket()`
-- [D1](https://developers.cloudflare.com/d1/platform/client-api/)
+- [D1 database](https://developers.cloudflare.com/d1/platform/client-api/)
   - All operations and arguments are supported 💯
   - `bridge.D1Database()`
-- [Queues(Producer)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
+- [Queue(producer only)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
   - All operations and arguments are supported 💯
   - `bridge.Queue()`
 - More to come...

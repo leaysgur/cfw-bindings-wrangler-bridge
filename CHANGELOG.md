@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.7.0
+
+- [#15](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/15) Support Queue(Producer)
+
 ## 0.6.0
 
 - Support `cacheStatus` property for KV
