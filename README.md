@@ -136,6 +136,31 @@ export const handle = async ({ event, resolve }) => {
 
 </details>
 
+### Astro
+
+<details>
+
+```astro
+---
+// your-page.astro
+import { getRuntime } from "@astrojs/cloudflare/runtime";
+import { createBridge } from "cfw-bindings-wrangler-bridge";
+
+let runtime = getRuntime(Astro.request);
+if (import.meta.env.DEV) {
+  const bridge = createBridge();
+
+  runtime.env = {
+    NEWS: bridge.KVNamespace("NEWS"),
+  };
+}
+---
+
+<!-- ... -->
+```
+  
+</details>
+
 ## Known limitations
 
 ### Compatibility issues
