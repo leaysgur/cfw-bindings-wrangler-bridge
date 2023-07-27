@@ -146,7 +146,7 @@ export const handle = async ({ event, resolve }) => {
 import { getRuntime } from "@astrojs/cloudflare/runtime";
 import { createBridge } from "cfw-bindings-wrangler-bridge";
 
-let runtime = getRuntime(Astro.request);
+let runtime = getRuntime(Astro.request) ?? {};
 if (import.meta.env.DEV) {
   const bridge = createBridge();
 
