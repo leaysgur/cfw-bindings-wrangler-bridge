@@ -1,9 +1,5 @@
 # Tests
 
-## Latest tested `wrangler` version
-
-v3.3.0
-
 ## How to run
 
 Follow steps below.
