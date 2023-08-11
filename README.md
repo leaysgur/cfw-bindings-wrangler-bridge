@@ -80,7 +80,7 @@ Type definitions should be handled by yourself. 😅
 
 ## Last tested `wrangler` version
 
-v3.3.0
+v3.5.0
 
 ## Examples
 

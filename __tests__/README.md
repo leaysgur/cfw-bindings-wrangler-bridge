@@ -17,7 +17,7 @@ wrangler dev ../worker.js
 wrangler dev ./runner-worker.js --persist-to .wrangler/_state --port 8686
 
 # Run all specs
-curl -sN 'http://127.0.0.1:8686?t=kv&t=r2&t=service'
+curl -sN 'http://127.0.0.1:8686?t=kv&t=r2&t=d1&t=queue'
 # Or specify which specs to run
 curl -sN 'http://127.0.0.1:8686?t=kv'
 curl -sN 'http://127.0.0.1:8686?t=r2'
