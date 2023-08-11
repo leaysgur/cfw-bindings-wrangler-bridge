@@ -78,6 +78,10 @@ Type definitions should be handled by yourself. 😅
   - `bridge.Queue()`
 - More to come...
 
+## Last tested `wrangler` version
+
+v3.3.0
+
 ## Examples
 
 ### CLI
