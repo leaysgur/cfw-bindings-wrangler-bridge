@@ -73,6 +73,10 @@ Type definitions should be handled by yourself.
 
 v3.4.0
 
+## Last tested `wrangler` version
+
+v3.5.0
+
 ## Examples
 
 ### CLI
