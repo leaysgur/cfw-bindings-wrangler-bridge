@@ -1,25 +1,16 @@
 # cfw-bindings-wrangler-bridge
 
-This bridge makes it possible to interact with Cloudflare Workers bindings(like KV, D1, etc...) runtime APIs **in local development**.
+This bridge makes it possible to interact with **remote** Cloudflare Workers bindings(like KV, D1, etc...) in **local** development.
 
-> In a nutshell, you can use actual KV, D1 APIs and values during `vite dev`! 😉
+> In a nutshell, you can use actual KV, D1 APIs and data during `vite dev`! 😉
 
-## How it works
+## ✋ Before proceeding
 
-This bridge has 2 components.
+If your purpose is to mock bindings for local development and no initial data is needed or can be easily prepared, this library may not be needed.
 
-- Module: Mock module to be injected into the user application
-  - written as pure ESM
-- Worker: Proxy worker to be called by the bridge module
-  - hosted by `wrangler dev (--remote)` in advance
+In this case, we recommend using [`cloudflare/miniflare@3`](https://github.com/cloudflare/miniflare) as API(`getBindings()` + `dispose()`). It is the official, most reliable implementation and well supported.
 
-Since bridge module itself is platform agnostic, you can use it on any platform|environment.
-
-- Vite based meta frameworks(Node.js)
-- CLI tools(Bun, Node.js)
-- Static Site Generation, Pre-rendering(Bun, Node.js)
-- Cloudflare Workers in local(`warngler dev`)
-- etc...
+If `miniflare` does not match for your case or you really need the remote data, please go ahead. 🤤
 
 ## Usage
 
@@ -35,7 +26,7 @@ npm install -D cfw-bindings-wrangler-bridge
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker.js --remote
 ```
 
-Of course you can interact with local environment by omitting `--remote`.
+Of course you can interact with local environment by omitting `--remote`. All the other options(like `--persist-to`) are also available.
 
 2️⃣ Create bridge and use it anywhere in your app.
 
@@ -52,12 +43,12 @@ const MY_KV = bridge.KVNamespace("MY_KV");
 // For TypeScript
 // const MY_KV = bridge.KV<KVNamespace>("MY_KV");
 
-// ✌️ This is production KV!
+// ✌️ This is remote KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
 ```
 
-Type definitions should be handled by yourself. 😅
+Type definitions should be handled by yourself.
 
 ## Supported bindings
 
@@ -76,9 +67,9 @@ Type definitions should be handled by yourself. 😅
 - [Queue(producer only)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
   - All operations and arguments are supported 💯
   - `bridge.Queue()`
-- More to come...
+- More to come...?
 
-## Last tested `wrangler` version
+### Last tested `wrangler` version
 
 v3.5.0
 
@@ -116,13 +107,14 @@ If you are using REST API in your CLI, now you can replace it.
 
 <details>
 
+Be sure to wrap with `if (dev) {}`, not to be included in production build.
+
 ```js
 // server.hooks.js
 import { createBridge } from "cfw-bindings-wrangler-bridge";
 import { dev } from "$app/environment";
 
 export const handle = async ({ event, resolve }) => {
-  // Will be removed if `dev === false`
   if (dev) {
     const bridge = createBridge();
 
@@ -144,6 +136,8 @@ export const handle = async ({ event, resolve }) => {
 
 <details>
 
+Be sure to wrap with `if (import.meta.env.DEV) {}`, not to be included in production build.
+
 ```astro
 ---
 // your-page.astro
@@ -162,8 +156,25 @@ if (import.meta.env.DEV) {
 
 <!-- ... -->
 ```
-  
+
 </details>
+
+## How it works
+
+This bridge has 2 components.
+
+- Module: Mock module to be `import`ed into your application
+  - written as pure ESM
+- Worker: Proxy worker to be called by the bridge module
+  - hosted by `wrangler dev --remote` in advance
+
+Since bridge module itself is platform agnostic, you can use it on any platform|environment.
+
+- Vite based meta frameworks(Node.js)
+- CLI tools(Bun, Node.js)
+- Static Site Generation, Pre-rendering(Bun, Node.js)
+- Cloudflare Workers in local(`warngler dev`)
+- etc...
 
 ## Known limitations
 
