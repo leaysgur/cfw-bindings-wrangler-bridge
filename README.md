@@ -4,13 +4,13 @@ This bridge makes it possible to interact with **remote** Cloudflare Workers bin
 
 > In a nutshell, you can use actual KV, D1 APIs and data during `vite dev`! 😉
 
-## Before proceeding
+## ✋ Before proceeding
 
 If your purpose is to mock bindings for local development and no initial data is needed or can be easily prepared, this library may not be needed.
 
-In this case, we recommend using [`cloudflare/miniflare@3`](https://github.com/cloudflare/miniflare) as API. It is the official, most reliable implementation and well supported.
+In this case, we recommend using [`cloudflare/miniflare@3`](https://github.com/cloudflare/miniflare) as API(`getBindings()` + `dispose()`). It is the official, most reliable implementation and well supported.
 
-If you really need the remote data, please go ahead. 🤤
+If `miniflare` does not match for your case or you really need the remote data, please go ahead. 🤤
 
 ## Usage
 
@@ -26,7 +26,7 @@ npm install -D cfw-bindings-wrangler-bridge
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker.js --remote
 ```
 
-Of course you can interact with local environment by omitting `--remote`.
+Of course you can interact with local environment by omitting `--remote`. All the other options(like `--persist-to`) are also available.
 
 2️⃣ Create bridge and use it anywhere in your app.
 
@@ -70,10 +70,6 @@ Type definitions should be handled by yourself.
 - More to come...?
 
 ### Last tested `wrangler` version
-
-v3.4.0
-
-## Last tested `wrangler` version
 
 v3.5.0
 
