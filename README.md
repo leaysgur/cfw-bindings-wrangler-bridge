@@ -71,7 +71,7 @@ Type definitions should be handled by yourself.
 
 ### Last tested `wrangler` version
 
-v3.6.0
+v3.7.0
 
 ## Examples
 
