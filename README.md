@@ -71,7 +71,18 @@ Type definitions should be handled by yourself.
 
 ### Last tested `wrangler` version
 
-v3.7.0
+v3.8.0
+
+<details>
+<summary>Checked history</summary>
+
+- v3.7.0
+- v3.6.0
+- v3.5.0
+- v3.4.0
+- v3.3.0
+
+</details>
 
 ## Examples
 
