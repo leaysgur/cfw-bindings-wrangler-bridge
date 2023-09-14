@@ -1,6 +1,6 @@
 # cfw-bindings-wrangler-bridge
 
-This bridge makes it possible to interact with **remote** Cloudflare Workers bindings(like KV, D1, etc...) in **local** development.
+This bridge makes it possible to interact with **remote** Cloudflare Workers bindings(like KV, D1, etc...) from anywhere, even in **local** development.
 
 > In a nutshell, you can use actual KV, D1 APIs and data during `vite dev`! 😉
 
@@ -114,7 +114,7 @@ If you are using REST API in your CLI, now you can replace it.
 
 </details>
 
-### SvelteKit
+### SvelteKit local development
 
 <details>
 
@@ -143,7 +143,7 @@ export const handle = async ({ event, resolve }) => {
 
 </details>
 
-### Astro
+### Astro local development
 
 <details>
 
@@ -181,10 +181,11 @@ This bridge has 2 components.
 
 Since bridge module itself is platform agnostic, you can use it on any platform|environment.
 
-- Vite based meta frameworks(Node.js)
-- CLI tools(Bun, Node.js)
-- Static Site Generation, Pre-rendering(Bun, Node.js)
+- Vite based meta frameworks local development
+- CLI tools
+- Static Site Generation, Pre-rendering
 - Cloudflare Workers in local(`warngler dev`)
+- Outside of Cloudflare stack(just deploy `worker.js` for your env and use with `createBridge("https://example.com")`)
 - etc...
 
 ## Known limitations
