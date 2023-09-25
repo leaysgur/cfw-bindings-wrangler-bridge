@@ -309,7 +309,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
       equalR2ObjectResult(putRes[0], putRes[1]);
 
       putRes = await run((R2) =>
-        R2.put("K2", "456", { onlyIf: { secondsGranularity: true } }),
+        R2.put("K2", "456", { httpMetadata: { contentType: "text/html" } }),
       );
       equalR2ObjectResult(putRes[0], putRes[1]);
 
@@ -397,6 +397,7 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         "",
         ".",
         "..",
+        "🐣=NonASCII",
         "key/needs#to+be&encoded?but:ok!",
         "key/with/./and/..",
       ];
@@ -410,23 +411,6 @@ export const createSpecs = ([ACTUAL, EXPECT]) => {
         let deleteRes = await run((R2) => R2.delete(K));
         deepStrictEqual(deleteRes[0], deleteRes[1]);
       }
-    },
-  ]);
-  specs.push([
-    "R2 key can include non-ASCII, but `get()` returns `null`",
-    async () => {
-      const K = "🐣";
-      // Can put
-      let putRes = await run((R2) => R2.put(K, "text"));
-      equalR2ObjectResult(putRes[0], putRes[1]);
-
-      // But cannot get
-      let getRes = await run((R2) => R2.get(K));
-      deepStrictEqual(getRes[0], getRes[1]);
-
-      // But can delete
-      let deleteRes = await run((R2) => R2.delete(K));
-      deepStrictEqual(deleteRes[0], deleteRes[1]);
     },
   ]);
 
