@@ -3,6 +3,7 @@
 ## 0.8.0
 
 - [#18](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/18) Support Vectorize
+  - Since `miniflare` does not support Vectorize yet, tested behaviors are limited
 
 ## 0.7.0
 

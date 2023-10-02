@@ -20,7 +20,7 @@ If `miniflare` does not match for your case or you really need the remote data, 
 npm install -D cfw-bindings-wrangler-bridge
 ```
 
-1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process.
+1️⃣ Set up your `wrangler.toml` properly and start `wrangler dev` process in advance.
 
 ```sh
 wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker.js --remote
@@ -35,13 +35,15 @@ import { createBridge } from "cfw-bindings-wrangler-bridge";
 
 // Default origin is `http://127.0.0.1:8787`
 const bridge = createBridge();
-// Or
+// Or specify default origin
 // const bridge = createBridge("http://localhost:3000");
 
 /** @type {import("@cloduflare/workers-types").KVNamespace} */
 const MY_KV = bridge.KVNamespace("MY_KV");
 // For TypeScript
-// const MY_KV = bridge.KV<KVNamespace>("MY_KV");
+// const MY_KV = bridge.KVNamespace<KVNamespace>("MY_KV");
+// Or specify another wrangler origin to mix `--remote` and `--local`
+// const MY_VEC = bridge.VectorizeIndex<VectorizeIndex>("MY_VEC", "http://localhost:8686");
 
 // ✌️ This is remote KV!
 await MY_KV.put("foo", "bar");
@@ -74,18 +76,18 @@ Type definitions should be handled by yourself.
 
 ### Last tested `wrangler` version
 
-v3.10.0
+v3.10.x
 
 <details>
 <summary>Checked history</summary>
 
-- v3.9.0
-- v3.8.0
-- v3.7.0
-- v3.6.0
-- v3.5.0
-- v3.4.0
-- v3.3.0
+- v3.9.x
+- v3.8.x
+- v3.7.x
+- v3.6.x
+- v3.5.x
+- v3.4.x
+- v3.3.x
 
 </details>
 
@@ -241,13 +243,13 @@ Since `wrangler(miniflare)` does not support Vectorize yet, you need `--remote` 
 
 - Why not use REST API?
   - REST API cannot offer `--local` behavior
-  - Not all bindings are supported
+  - Not all bindings, features are supported
 - How about using `wrangler` CLI commands?
   - Features are limited too, no KV metadata support, etc...
 - `wrangler.unstable_dev()` is better?
   - Maybe? but it is literally unstable
-  - I'm not sure how to ensure `await worker.stop()` on Vite process exit
-    - Side-effect should be avoided...
-  - Performance may suffer if repeating start/stop on every call?
+  - `await worker.stop()` should be called properly, but how?
+    - Performance may suffer if repeating start/stop on every call?
   - I don't want to care which version of `wrangler` to be used, supported
     - Someone may use a fixed version of `wrangler` for some reason
+  - Path to `wrangler.toml` should be managed
