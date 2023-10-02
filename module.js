@@ -4,6 +4,7 @@ import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
 import { R2Bucket$ } from "./src/r2/module/index.js";
 import { D1Database$ } from "./src/d1/module/index.js";
 import { WorkerQueue$ } from "./src/queue/module.js";
+import { VectorizeIndex$ } from "./src/vectorize/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
@@ -41,4 +42,8 @@ export const createBridge = (
 
   /** @param {string} bindingName */
   Queue: (bindingName) => new WorkerQueue$(bridgeWranglerOrigin, bindingName),
+
+  /** @param {string} bindingName */
+  VectorizeIndex: (bindingName) =>
+    new VectorizeIndex$(bridgeWranglerOrigin, bindingName),
 });

@@ -7,9 +7,13 @@ import {
 import { isR2Binding, handleR2Dispatch } from "./src/r2/worker.js";
 import { isD1Binding, handleD1Dispatch } from "./src/d1/worker.js";
 import { isQueueBinding, handleQueueDispatch } from "./src/queue/worker.js";
+import {
+  isVectorizeBinding,
+  handleVectorizeDispatch,
+} from "./src/vectorize/worker.js";
 
+/** @type {ExportedHandler<Record<string, any>>} */
 export default {
-  /** @type {ExportedHandlerFetchHandler<Record<string, unknown>>} */
   async fetch(req, env) {
     // KV or R2 or ...
     const BINDING_MODULE = req.headers.get("X-BRIDGE-BINDING-MODULE");
@@ -51,6 +55,11 @@ export default {
 
     if (BINDING_MODULE === "QUEUE" && isQueueBinding(BINDING))
       return handleQueueDispatch(BINDING, req).catch(
+        (err) => new Response(err.message, { status: 500 }),
+      );
+
+    if (BINDING_MODULE === "VECTORIZE" && isVectorizeBinding(BINDING))
+      return handleVectorizeDispatch(BINDING, req).catch(
         (err) => new Response(err.message, { status: 500 }),
       );
 

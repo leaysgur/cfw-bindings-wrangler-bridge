@@ -15,6 +15,8 @@
     "cloudflare",
     "workers",
     "kv",
+    "d1",
+    "r2",
     "wrangler"
   ],
   "author": "Yuji Sugiura",
@@ -26,8 +28,8 @@
     "src"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230914.0",
-    "@types/node": "^20.6.5",
+    "@cloudflare/workers-types": "^4.20230922.0",
+    "@types/node": "^20.8.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {

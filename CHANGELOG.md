@@ -1,8 +1,12 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.8.0
+
+- [#18](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/18) Support Vectorize
+
 ## 0.7.0
 
-- [#15](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/15) Support Queue(Producer)
+- [#15](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/15) Support Queue(Producer)
 
 ## 0.6.0
 
@@ -24,20 +28,20 @@
 
 ## 0.5.0
 
-- [#14](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/14) Support D1
+- [#14](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/14) Support D1
 
 ## 0.4.0
 
-- [#12](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/12) Support R2 multipart
+- [#12](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/12) Support R2 multipart
 
 ## 0.3.1
 
-- [#10](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values for R2
-- [#11](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/11) Handle non-ASCII keys
+- [#10](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/10) Support all non-POJO values for R2
+- [#11](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/11) Handle non-ASCII keys
 
 ## 0.3.0
 
-- [#4](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/4) Internals rework
+- [#4](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/4) Internals rework
 
 ### Breaking changes
 
@@ -60,17 +64,17 @@
 
 ## 0.2.0
 
-- [#3](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/3) Initial(but partial) support R2 bindings
+- [#3](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/3) Initial(but partial) support R2 bindings
   - Thanks [@ryoppippi](https://github.com/ryoppippi)!
 
 ## 0.1.1
 
-- [#2](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/2) Fix KV key was not decoded
+- [#2](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/2) Fix KV key was not decoded
   - Thanks [@ryoppippi](https://github.com/ryoppippi)!
 
 ## 0.1.0
 
-- [#1](https://github.com/leader22/cfw-bindings-wrangler-bridge/pull/1) Support Service bindings
+- [#1](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/1) Support Service bindings
 
 ## 0.0.1
 

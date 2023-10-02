@@ -31,4 +31,4 @@ export const equalRejectedResult = (actual, expect) => {
 // XXX: Don't know why but sleep is required just after rejected spec.
 // Otherwise, continuous spec fails with `Network connection lost.` error...
 export const sleepAfterRejectedResult = () =>
-  new Promise((r) => setTimeout(r, 100));
+  new Promise((r) => setTimeout(r, 250));
