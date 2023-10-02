@@ -5,4 +5,5 @@ export declare function createBridge(bridgeWranglerOrigin?: string): {
   R2Bucket<Type>(namespaceId: string): Type;
   D1Database<Type>(namespaceId: string): Type;
   Queue<Type>(napeSpaceId: string): Type;
+  VectorizeIndex<Type>(namespaceId: string): Type;
 };

@@ -42,8 +42,6 @@ const bridge = createBridge();
 const MY_KV = bridge.KVNamespace("MY_KV");
 // For TypeScript
 // const MY_KV = bridge.KVNamespace<KVNamespace>("MY_KV");
-// Or specify another wrangler origin to mix `--remote` and `--local`
-// const MY_VEC = bridge.VectorizeIndex<VectorizeIndex>("MY_VEC", "http://localhost:8686");
 
 // ✌️ This is remote KV!
 await MY_KV.put("foo", "bar");
