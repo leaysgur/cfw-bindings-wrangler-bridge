@@ -6,7 +6,7 @@ import { parse } from "devalue";
  * @returns {binding is VectorizeIndex}
  */
 export const isVectorizeBinding = (binding) =>
-  binding.constructor.name === "VectorizeIndex";
+  binding.constructor.name === "VectorizeIndexImpl";
 
 /**
  * @param {VectorizeIndex} Vectorize
