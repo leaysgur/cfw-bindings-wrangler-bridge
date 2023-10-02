@@ -67,15 +67,19 @@ Type definitions should be handled by yourself.
 - [Queue(producer only)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
   - All operations and arguments are supported 💯
   - `bridge.Queue()`
+- [Vectorize](https://developers.cloudflare.com/vectorize/platform/client-api/)
+  - All operations and arguments are supported 💯
+  - `bridge.VectorizeIndex()`
 - More to come...?
 
 ### Last tested `wrangler` version
 
-v3.9.0
+v3.10.0
 
 <details>
 <summary>Checked history</summary>
 
+- v3.9.0
 - v3.8.0
 - v3.7.0
 - v3.6.0
@@ -226,6 +230,12 @@ const MY_SERVICE = bridge.Fetcher("", "http://127.0.0.1:8686");
 
 With direct mode, you can mix `wrangler dev --remote` and `wrangler dev (--local)`.
 At this time, however, the value of `request.origin` will be different from the actual environment.
+
+### Vectorize bindings
+
+Since `wrangler(miniflare)` does not support Vectorize yet, you need `--remote` to interact with Vectorize binding.
+
+> https://github.com/cloudflare/miniflare/issues/700
 
 ## Implementation notes
 
