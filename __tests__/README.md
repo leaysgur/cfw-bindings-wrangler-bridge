@@ -17,10 +17,10 @@ wrangler dev ../worker.js
 wrangler dev ./runner-worker.js --persist-to .wrangler/_state --port 8686
 
 # Run all specs
-curl -sN 'http://127.0.0.1:8686?t=kv&t=r2&t=d1&t=queue'
+curl -sN 'http://127.0.0.1:8686?t=kv&t=r2&t=d1&t=queue&t=vectorize'
 # Or specify which specs to run
 curl -sN 'http://127.0.0.1:8686?t=kv'
-curl -sN 'http://127.0.0.1:8686?t=r2'
+curl -sN 'http://127.0.0.1:8686?t=service'
 ```
 
 If you test SERVICE bindings, extra steps are required in advance.

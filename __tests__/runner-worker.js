@@ -6,6 +6,7 @@ import { createSpecs as specsSERVICESpecs } from "./specs/service.js";
 import { createSpecs as createR2Specs } from "./specs/r2.js";
 import { createSpecs as createD1Specs } from "./specs/d1.js";
 import { createSpecs as createQUEUESpecs } from "./specs/queue.js";
+import { createSpecs as createVECTORIZESpecs } from "./specs/vectorize.js";
 
 /**
  * @typedef {{
@@ -19,6 +20,8 @@ import { createSpecs as createQUEUESpecs } from "./specs/queue.js";
  *   EXPECT_D1: D1Database;
  *   ACTUAL_QUEUE: Queue<unknown>;
  *   EXPECT_QUEUE: Queue<unknown>;
+ *   ACTUAL_VECTORIZE: VectorizeIndex;
+ *   EXPECT_VECTORIZE: VectorizeIndex;
  * }} Env
  */
 
@@ -88,6 +91,14 @@ const runSpecs = async (searchParams, env, writer) => {
     suites.set("QUEUE", createQUEUESpecs([ACTUAL, EXPECT]));
   }
 
+  if (targets.includes("vectorize")) {
+    const ACTUAL = /** @type {VectorizeIndex} */ (
+      /** @type {unknown} */ (bridge.VectorizeIndex("ACTUAL_VECTORIZE"))
+    );
+    const EXPECT = env.EXPECT_VECTORIZE;
+    suites.set("VECTORIZE", createVECTORIZESpecs([ACTUAL, EXPECT]));
+  }
+
   if (suites.size === 0) {
     return finish(
       "No suites to run. Add params like `?t=kv` or `?t=r2&t=service` to the URL to run specs.",
@@ -133,8 +144,8 @@ const runSpecs = async (searchParams, env, writer) => {
   finish("All specs are passed ✨");
 };
 
+/** @type {ExportedHandler<Env>} */
 export default {
-  /** @type {ExportedHandlerFetchHandler<Env>} */
   async fetch(req, env, ctx) {
     const { searchParams } = new URL(req.url);
 

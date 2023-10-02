@@ -1,6 +1,6 @@
 name = "test-runner"
 compatibility_flags = ["nodejs_compat"]
-compatibility_date = "2023-07-10"
+compatibility_date = "2023-09-22"
 
 kv_namespaces = [ 
   { binding = "ACTUAL_KV", id = "a-kv", preview_id = "a-kv" },
@@ -19,6 +19,10 @@ services = [
   { binding = "EXPECT_SERVICE", service = "test-service" },
 ]
 queues.producers = [
-  { queue = "a-q1", binding = "ACTUAL_QUEUE" },
-  { queue = "e-q1", binding = "EXPECT_QUEUE" },
+  { binding = "ACTUAL_QUEUE", queue = "a-q1" },
+  { binding = "EXPECT_QUEUE", queue = "e-q1" },
+]
+vectorize = [
+  { binding = "ACTUAL_VECTORIZE", index_name = "a-vectorize" },
+  { binding = "EXPECT_VECTORIZE", index_name = "e-vectorize" },
 ]
