@@ -52,25 +52,16 @@ Type definitions should be handled by yourself.
 
 ## Supported bindings
 
-- [KV namespace](https://developers.cloudflare.com/workers/runtime-apis/kv/)
-  - All operations and arguments are supported 💯
-  - `bridge.KVNamespace()`
-- [Service](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)
-  - All operations and arguments are supported 💯
-  - `bridge.Fetcher()`
-- [R2 bucket](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
-  - All operations and arguments are supported 💯
-  - `bridge.R2Bucket()`
-- [D1 database](https://developers.cloudflare.com/d1/platform/client-api/)
-  - All operations and arguments are supported 💯
-  - `bridge.D1Database()`
-- [Queue(producer only)](https://developers.cloudflare.com/queues/platform/javascript-apis/)
-  - All operations and arguments are supported 💯
-  - `bridge.Queue()`
-- [Vectorize](https://developers.cloudflare.com/vectorize/platform/client-api/)
-  - All operations and arguments are supported 💯
-  - `bridge.VectorizeIndex()`
-- More to come...?
+| binding                                                                              | module                    | support | memo                                           |
+| :----------------------------------------------------------------------------------- | :------------------------ | :-----: | :--------------------------------------------- |
+| [KV namespace](https://developers.cloudflare.com/workers/runtime-apis/kv/)           | `bridge.KVNamespace()`    |   💯    |                                                |
+| [R2 bucket](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/) | `bridge.R2Bucket()`       |   💯    |                                                |
+| [D1 database](https://developers.cloudflare.com/d1/platform/client-api/)             | `bridge.D1Database()`     |   💯    |                                                |
+| [Service](https://developers.cloudflare.com/workers/runtime-apis/service-bindings/)  | `bridge.Fetcher()`        |   💯    |                                                |
+| [Queue](https://developers.cloudflare.com/queues/platform/javascript-apis/)          | `bridge.Queue()`          |   💯    | Producer usage only                            |
+| [Vectorize](https://developers.cloudflare.com/vectorize/platform/client-api/)        | `bridge.VectorizeIndex()` |   💯    | `--remote` is [required](#vectorize-bindings)) |
+
+More to come...?
 
 ### Last tested `wrangler` version
 
@@ -235,7 +226,7 @@ At this time, however, the value of `request.origin` will be different from the 
 
 Since `wrangler(miniflare)` does not support Vectorize yet, you need `--remote` to interact with Vectorize binding.
 
-> https://github.com/cloudflare/miniflare/issues/700
+> See also https://github.com/cloudflare/miniflare/issues/700
 
 ## Implementation notes
 
