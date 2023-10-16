@@ -63,22 +63,9 @@ Type definitions should be handled by yourself.
 
 More to come...?
 
-### Last tested `wrangler` version
+### Supported `wrangler` version
 
-v3.10.x
-
-<details>
-<summary>Checked history</summary>
-
-- v3.9.x
-- v3.8.x
-- v3.7.x
-- v3.6.x
-- v3.5.x
-- v3.4.x
-- v3.3.x
-
-</details>
+v3.13.x
 
 ## How it works
 
