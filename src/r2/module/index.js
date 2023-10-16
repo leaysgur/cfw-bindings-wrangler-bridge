@@ -54,6 +54,8 @@ export class R2Bucket$ {
         ),
       },
       body,
+      // @ts-expect-error: https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1483
+      duplex: "half",
     });
 
     if (!res.ok) {

@@ -37,6 +37,8 @@ export class KVNamespace$ {
         "X-BRIDGE-KV-Dispatch": stringify({ operation, parameters }),
       },
       body,
+      // @ts-expect-error: https://github.com/microsoft/TypeScript-DOM-lib-generator/issues/1483
+      duplex: "half",
     });
 
     if (!res.ok) {
