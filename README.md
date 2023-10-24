@@ -65,7 +65,7 @@ More to come...?
 
 ### Supported `wrangler` version
 
-v3.13.x
+v3.14.x
 
 ## How it works
 
