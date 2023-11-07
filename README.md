@@ -10,7 +10,9 @@ If your purpose is to mock bindings only for local development and no initial da
 
 In this case, we recommend using [`cloudflare/miniflare@3`](https://github.com/cloudflare/miniflare) as API(`getBindings()` + `dispose()`). It is the official, most reliable implementation and well supported.
 
-If `miniflare` does not match for your case or you really need the remote data, please go ahead. 🤤
+Some of frameworks may have its own support for `miniflare` in their adapters like [SolidStart](https://github.com/solidjs/solid-start/tree/main/packages/start-cloudflare-pages).
+
+If those do not match for your case or you really need the remote data, please go ahead. 🤤
 
 ## Usage
 
@@ -33,7 +35,7 @@ Of course you can interact with local environment by omitting `--remote`. All th
 ```js
 import { createBridge } from "cfw-bindings-wrangler-bridge";
 
-// Default origin is `http://127.0.0.1:8787`
+// Default origin is `http://0.0.0.0:8787`
 const bridge = createBridge();
 // Or specify default origin
 // const bridge = createBridge("http://localhost:3000");

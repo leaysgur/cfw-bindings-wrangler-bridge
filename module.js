@@ -8,7 +8,7 @@ import { VectorizeIndex$ } from "./src/vectorize/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
-  bridgeWranglerOrigin = "http://127.0.0.1:8787",
+  bridgeWranglerOrigin = "http://0.0.0.0:8787",
 ) => ({
   /** @param {string} bindingName */
   KVNamespace: (bindingName) =>

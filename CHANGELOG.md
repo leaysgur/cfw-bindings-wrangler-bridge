@@ -1,5 +1,9 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.9.0
+
+- Change default `wrangler` origin host part from `127.0.0.1` to `0.0.0.0`
+
 ## 0.8.0
 
 - [#18](https://github.com/leaysgur/cfw-bindings-wrangler-bridge/pull/18) Support Vectorize
