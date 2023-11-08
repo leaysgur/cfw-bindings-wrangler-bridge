@@ -1,5 +1,6 @@
 export declare function createBridge(bridgeWranglerOrigin?: string): {
-  // Should be typed here...?
+  getBindings<Type>(): Promise<Type>;
+
   KVNamespace<Type>(namespaceId: string): Type;
   Fetcher<Type>(namespaceId: string, serviceWranlgerOrigin?: string): Type;
   R2Bucket<Type>(namespaceId: string): Type;

@@ -11,10 +11,15 @@ import {
   isVectorizeBinding,
   handleVectorizeDispatch,
 } from "./src/vectorize/worker.js";
+import { getBindings } from "./src/_internals/worker.js";
 
 /** @type {ExportedHandler<Record<string, any>>} */
 export default {
   async fetch(req, env) {
+    const url = new URL(req.url);
+    if (url.pathname === "/_internals/getBindings")
+      return Response.json(getBindings(env));
+
     // KV or R2 or ...
     const BINDING_MODULE = req.headers.get("X-BRIDGE-BINDING-MODULE");
     // MY_KV or MY_R2 or ...

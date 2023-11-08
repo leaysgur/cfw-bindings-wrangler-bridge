@@ -5,11 +5,14 @@ import { R2Bucket$ } from "./src/r2/module/index.js";
 import { D1Database$ } from "./src/d1/module/index.js";
 import { WorkerQueue$ } from "./src/queue/module.js";
 import { VectorizeIndex$ } from "./src/vectorize/module.js";
+import { getBindings } from "./src/_internals/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
 export const createBridge = (
   bridgeWranglerOrigin = "http://0.0.0.0:8787",
 ) => ({
+  getBindings: () => getBindings(bridgeWranglerOrigin),
+
   /** @param {string} bindingName */
   KVNamespace: (bindingName) =>
     new KVNamespace$(bridgeWranglerOrigin, bindingName),
