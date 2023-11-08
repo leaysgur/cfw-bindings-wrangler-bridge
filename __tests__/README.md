@@ -8,12 +8,12 @@ Follow steps below.
 # Set up our bridge worker w/ default settings for testing
 # --persist-to .wrangler/state
 # --port 8787
-# Uses `wrangler.toml` for `test-runner`
+# Uses the same `wrangler.toml` with `test-runner`
 wrangler dev ../worker.js
 
 # Set up test-runner worker w/ another cache storage
 # If the same storage used, it ends up with SQL dead lock error...
-# Also uses `wrangler.toml` for `test-runner`
+# Also uses the same `wrangler.toml` with `bridge-worker`
 wrangler dev ./runner-worker.js --persist-to .wrangler/_state --port 8686
 
 # Run all specs
