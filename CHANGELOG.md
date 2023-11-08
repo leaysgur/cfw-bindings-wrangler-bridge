@@ -1,5 +1,11 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.9.2
+
+- Retry changing default `wrangler` origin host part from `127.0.0.1` to `0.0.0.0`
+- Add CORS headers for browser usage
+- Fix `KV.getWithMetadata()` w/ `null` metadata error
+
 ## 0.9.1
 
 - Rollback default `wrangler` origin host part from `0.0.0.0` to `127.0.0.1`
