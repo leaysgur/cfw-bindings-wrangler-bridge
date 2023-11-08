@@ -34,7 +34,7 @@ export const handleVectorizeDispatch = async (VECTORIZE, req) => {
 
     return Response.json(result);
   }
-  
+
   if (operation === "VectorizeIndex.upsert") {
     const [vectors] = parameters;
     const result = await VECTORIZE.upsert(vectors);
@@ -58,4 +58,3 @@ export const handleVectorizeDispatch = async (VECTORIZE, req) => {
 
   throw new Error(`${operation}() is not supported.`);
 };
-
