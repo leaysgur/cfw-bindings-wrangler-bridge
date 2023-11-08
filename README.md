@@ -65,9 +65,9 @@ Type definitions should be handled by yourself.
 
 More to come...?
 
-### Supported `wrangler` version
+### Latest tested `wrangler` version
 
-v3.14.x
+v3.15.x
 
 ## How it works
 
