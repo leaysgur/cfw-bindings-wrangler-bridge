@@ -8,7 +8,7 @@ import { VectorizeIndex$ } from "./src/vectorize/module.js";
 import { getBindings } from "./src/_internals/module.js";
 
 /** @param {string} [bridgeWranglerOrigin] */
-export const createBridge = (bridgeWranglerOrigin = "http://0.0.0.0:8787") => ({
+export const createBridge = (bridgeWranglerOrigin = "http://127.0.0.1:8787") => ({
   getBindings: () => getBindings(bridgeWranglerOrigin),
 
   /** @param {string} bindingName */

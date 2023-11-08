@@ -1,5 +1,10 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.9.3
+
+- Finaly rollback default `wrangler` origin host part from `0.0.0.0` to `127.0.0.1`
+  - `0.0.0.0` is non routable...
+
 ## 0.9.2
 
 - Retry changing default `wrangler` origin host part from `127.0.0.1` to `0.0.0.0`
