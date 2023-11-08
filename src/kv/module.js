@@ -105,9 +105,10 @@ export class KVNamespace$ {
     if (type === "arrayBuffer") value = await res.arrayBuffer();
     if (type === "stream") value = res.body;
 
-    const metadata = parse(res.headers.get("X-BRIDGE-KV-Metadata") ?? "null");
+    // `null` is `[null]` in `devalue`
+    const metadata = parse(res.headers.get("X-BRIDGE-KV-Metadata") ?? "[null]");
     const cacheStatus = parse(
-      res.headers.get("X-BRIDGE-KV-CacheStatus") ?? "null",
+      res.headers.get("X-BRIDGE-KV-CacheStatus") ?? "[null]",
     );
 
     return { value, metadata, cacheStatus };
