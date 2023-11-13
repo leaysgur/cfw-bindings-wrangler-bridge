@@ -51,7 +51,7 @@ export class D1Database$ {
     return arrayBuffer;
   }
 
-  /** @param {D1PreparedStatement[]} statements */
+  /** @param {import("@cloudflare/workers-types/experimental").D1PreparedStatement[]} statements */
   async batch(statements) {
     const res = await this.#dispatch("D1Database.batch", [
       statements.map((stmt) => {

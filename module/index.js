@@ -1,14 +1,16 @@
 // @ts-check
-import { KVNamespace$ } from "./src/kv/module.js";
-import { Fetcher$, DirectFetcher$ } from "./src/service/module.js";
-import { R2Bucket$ } from "./src/r2/module/index.js";
-import { D1Database$ } from "./src/d1/module/index.js";
-import { WorkerQueue$ } from "./src/queue/module.js";
-import { VectorizeIndex$ } from "./src/vectorize/module.js";
-import { getBindings } from "./src/_internals/module.js";
+import { KVNamespace$ } from "./kv/index.js";
+import { Fetcher$, DirectFetcher$ } from "./service/index.js";
+import { R2Bucket$ } from "./r2/index.js";
+import { D1Database$ } from "./d1/index.js";
+import { WorkerQueue$ } from "./queue/index.js";
+import { VectorizeIndex$ } from "./vectorize/index.js";
+import { getBindings } from "./_internals/index.js";
+
+const DEFAULT_BRIDGE_WRANGLER_ORIGIN = "http://127.0.0.1:8787";
 
 /** @param {string} [bridgeWranglerOrigin] */
-export const createBridge = (bridgeWranglerOrigin = "http://127.0.0.1:8787") => ({
+export const createBridge = (bridgeWranglerOrigin = DEFAULT_BRIDGE_WRANGLER_ORIGIN) => ({
   getBindings: () => getBindings(bridgeWranglerOrigin),
 
   /** @param {string} bindingName */

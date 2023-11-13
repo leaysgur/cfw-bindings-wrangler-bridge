@@ -44,13 +44,13 @@ export class WorkerQueue$ {
 
   /**
    * @param {unknown} body
-   * @param {QueueSendOptions} [options]
+   * @param {import("@cloudflare/workers-types/experimental").QueueSendOptions} [options]
    */
   async send(body, options) {
     await this.#dispatch("Queue.send", [body, options]);
   }
 
-  /** @param {Iterable<MessageSendRequest>} messages */
+  /** @param {Iterable<import("@cloudflare/workers-types/experimental").MessageSendRequest>} messages */
   async sendBatch(messages) {
     await this.#dispatch("Queue.sendBatch", [messages]);
   }

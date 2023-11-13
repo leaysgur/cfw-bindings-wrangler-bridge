@@ -5,7 +5,7 @@
 // https://developers.cloudflare.com/r2/api/workers/workers-api-reference/#r2objectbody-definition
 // https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/r2/r2Object.ts
 
-import { hexStringToArrayBuffer } from "../shared.js";
+import { hexStringToArrayBuffer } from "./shared.js";
 /**
  * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
  * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
@@ -20,7 +20,7 @@ class Checksums$ {
   sha384;
   sha512;
 
-  /** @param {R2StringChecksums} checksums */
+  /** @param {import("@cloudflare/workers-types/experimental").R2StringChecksums} checksums */
   constructor(checksums) {
     this.#checksums = checksums;
 

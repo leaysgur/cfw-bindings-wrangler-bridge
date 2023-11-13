@@ -23,6 +23,3 @@ export const arrayBufferToHexString = (arrayBuffer) => {
 
 /** @param {string} key */
 export const encodeKey = (key) => encodeURIComponent(key);
-
-/** @param {string} key */
-export const decodeKey = (key) => decodeURIComponent(key);

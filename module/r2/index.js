@@ -15,7 +15,7 @@
 import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { R2MultipartUpload$ } from "./multipart.js";
-import { arrayBufferToHexString, encodeKey } from "../shared.js";
+import { arrayBufferToHexString, encodeKey } from "./shared.js";
 /**
  * @typedef {import("./types.d.ts").Dispatch} Dispatch
  * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
@@ -66,11 +66,10 @@ export class R2Bucket$ {
     return res;
   }
 
-  /** @param {R2ListOptions} [options] */
+  /** @param {import("@cloudflare/workers-types/experimental").R2ListOptions} [options] */
   async list(options) {
     const res = await this.#dispatch("R2Bucket.list", [options]);
-    /** @type {R2ObjectsJSON} */
-    const json = await res.json();
+    const json = /** @type {R2ObjectsJSON} */ (await res.json());
 
     return {
       ...json,
@@ -81,7 +80,7 @@ export class R2Bucket$ {
   /**
    * @param {string} key
    * @param {ReadableStream | ArrayBuffer | ArrayBufferView | string | null | Blob} value
-   * @param {R2PutOptions} [options]
+   * @param {import("@cloudflare/workers-types/experimental").R2PutOptions} [options]
    */
   async put(key, value, options) {
     const res = await this.#dispatch(
@@ -91,15 +90,14 @@ export class R2Bucket$ {
       // And it seems to have the same effect...
       value ?? undefined,
     );
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = /** @type {null | R2ObjectJSON} */ (await res.json());
 
     return json === null ? null : new HeadResult$(json);
   }
 
   /**
    * @param {string} key
-   * @param {R2GetOptions} [options]
+   * @param {import("@cloudflare/workers-types/experimental").R2GetOptions} [options]
    */
   async get(key, options) {
     const res = await this.#dispatch("R2Bucket.get", [encodeKey(key), options]);
@@ -110,16 +108,14 @@ export class R2Bucket$ {
       return new GetResult$(json, res);
     }
 
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = /** @type {null | R2ObjectJSON} */ (await res.json());
     return json === null ? null : new HeadResult$(json);
   }
 
   /** @param {string} key */
   async head(key) {
     const res = await this.#dispatch("R2Bucket.head", [encodeKey(key)]);
-    /** @type {null | R2ObjectJSON} */
-    const json = await res.json();
+    const json = /** @type {null | R2ObjectJSON} */ (await res.json());
 
     return json === null ? null : new HeadResult$(json);
   }
@@ -135,15 +131,14 @@ export class R2Bucket$ {
 
   /**
    * @param {string} key
-   * @param {R2MultipartOptions} [options]
+   * @param {import("@cloudflare/workers-types/experimental").R2MultipartOptions} [options]
    */
   async createMultipartUpload(key, options) {
     const res = await this.#dispatch("R2Bucket.createMultipartUpload", [
       encodeKey(key),
       options,
     ]);
-    /** @type {R2MultipartUploadJSON} */
-    const json = await res.json();
+    const json = /** @type {R2MultipartUploadJSON} */ (await res.json());
 
     return new R2MultipartUpload$(json, this.#dispatch.bind(this));
   }

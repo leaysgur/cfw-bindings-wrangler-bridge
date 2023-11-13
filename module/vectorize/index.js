@@ -50,8 +50,8 @@ export class VectorizeIndex$ {
   }
 
   /**
-   * @param {VectorFloatArray | number[]} vector
-   * @param {VectorizeQueryOptions} options
+   * @param {import("@cloudflare/workers-types/experimental").VectorFloatArray | number[]} vector
+   * @param {import("@cloudflare/workers-types/experimental").VectorizeQueryOptions} options
    */
   async query(vector, options) {
     const res = await this.#dispatch("VectorizeIndex.query", [vector, options]);
@@ -60,7 +60,7 @@ export class VectorizeIndex$ {
     return json;
   }
 
-  /** @param {VectorizeVector[]} vectors */
+  /** @param {import("@cloudflare/workers-types/experimental").VectorizeVector[]} vectors */
   async insert(vectors) {
     const res = await this.#dispatch("VectorizeIndex.insert", [vectors]);
     const json = await res.json();
@@ -68,7 +68,7 @@ export class VectorizeIndex$ {
     return json;
   }
 
-  /** @param {VectorizeVector[]} vectors */
+  /** @param {import("@cloudflare/workers-types/experimental").VectorizeVector[]} vectors */
   async upsert(vectors) {
     const res = await this.#dispatch("VectorizeIndex.upsert", [vectors]);
     const json = await res.json();

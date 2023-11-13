@@ -1,10 +1,10 @@
 // @ts-check
-import { isD1Binding } from "../d1/worker.js";
-import { isKVBinding } from "../kv/worker.js";
-import { isQueueBinding } from "../queue/worker.js";
-import { isR2Binding } from "../r2/worker.js";
-import { isServiceBinding } from "../service/worker.js";
-import { isVectorizeBinding } from "../vectorize/worker.js";
+import { isD1Binding } from "../d1/index.js";
+import { isKVBinding } from "../kv/index.js";
+import { isQueueBinding } from "../queue/index.js";
+import { isR2Binding } from "../r2/index.js";
+import { isServiceBinding } from "../service/index.js";
+import { isVectorizeBinding } from "../vectorize/index.js";
 
 /** @param {Record<string, unknown>} env */
 export const getBindings = (env) => {

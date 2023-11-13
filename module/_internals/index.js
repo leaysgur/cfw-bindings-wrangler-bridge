@@ -1,10 +1,10 @@
 // @ts-check
-import { KVNamespace$ } from "../kv/module.js";
-import { Fetcher$ } from "../service/module.js";
-import { R2Bucket$ } from "../r2/module/index.js";
-import { D1Database$ } from "../d1/module/index.js";
-import { WorkerQueue$ } from "../queue/module.js";
-import { VectorizeIndex$ } from "../vectorize/module.js";
+import { KVNamespace$ } from "../kv/index.js";
+import { Fetcher$ } from "../service/index.js";
+import { R2Bucket$ } from "../r2/index.js";
+import { D1Database$ } from "../d1/index.js";
+import { WorkerQueue$ } from "../queue/index.js";
+import { VectorizeIndex$ } from "../vectorize/index.js";
 
 /** @param {string} wranglerOrigin */
 export const getBindings = async (wranglerOrigin) => {
@@ -13,7 +13,7 @@ export const getBindings = async (wranglerOrigin) => {
   const res = await fetch(url, {
     headers: { "content-type": "application/json" },
   });
-  const env = await res.json();
+  const env = /** @type {any} */ (await res.json());
 
   /** @type {Record<string, any>} */
   const bindings = {};

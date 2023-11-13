@@ -5,7 +5,7 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-multipart.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/multipart.ts
 
-import { encodeKey } from "../shared.js";
+import { encodeKey } from "./shared.js";
 import { HeadResult$ } from "./r2-object.js";
 /**
  * @typedef {import("./types.d.ts").Dispatch} Dispatch
@@ -35,7 +35,7 @@ export class R2MultipartUpload$ {
 
   /**
    * @param {number} partNumber
-   * @param {ReadableStream | (ArrayBuffer | ArrayBufferView) | string | Blob} value
+   * @param {ReadableStream | ArrayBuffer | ArrayBufferView | string | Blob} value
    */
   async uploadPart(partNumber, value) {
     const res = await this.#dispatch(
@@ -43,7 +43,6 @@ export class R2MultipartUpload$ {
       [encodeKey(this.key), this.uploadId, partNumber],
       value,
     );
-    /** @type {R2UploadedPart} */
     const json = await res.json();
 
     return json;
@@ -56,15 +55,14 @@ export class R2MultipartUpload$ {
     ]);
   }
 
-  /** @param {R2UploadedPart[]} uploadedParts */
+  /** @param {import("@cloudflare/workers-types/experimental").R2UploadedPart[]} uploadedParts */
   async complete(uploadedParts) {
     const res = await this.#dispatch("R2MultipartUpload.complete", [
       encodeKey(this.key),
       this.uploadId,
       uploadedParts,
     ]);
-    /** @type {R2ObjectJSON} */
-    const json = await res.json();
+    const json = /** @type {R2ObjectJSON} */ (await res.json());
 
     return new HeadResult$(json);
   }

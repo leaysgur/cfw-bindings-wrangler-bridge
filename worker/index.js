@@ -1,17 +1,17 @@
 // @ts-check
-import { isKVBinding, handleKVDispatch } from "./src/kv/worker.js";
+import { isKVBinding, handleKVDispatch } from "./kv/index.js";
 import {
   isServiceBinding,
   handleServiceDispatch,
-} from "./src/service/worker.js";
-import { isR2Binding, handleR2Dispatch } from "./src/r2/worker.js";
-import { isD1Binding, handleD1Dispatch } from "./src/d1/worker.js";
-import { isQueueBinding, handleQueueDispatch } from "./src/queue/worker.js";
+} from "./service/index.js";
+import { isR2Binding, handleR2Dispatch } from "./r2/index.js";
+import { isD1Binding, handleD1Dispatch } from "./d1/index.js";
+import { isQueueBinding, handleQueueDispatch } from "./queue/index.js";
 import {
   isVectorizeBinding,
   handleVectorizeDispatch,
-} from "./src/vectorize/worker.js";
-import { getBindings } from "./src/_internals/worker.js";
+} from "./vectorize/index.js";
+import { getBindings } from "./_internals/index.js";
 
 /** @type {ExportedHandlerFetchHandler<Record<string, any>>} */
 const handleInternalsRequest = (req, env) => {

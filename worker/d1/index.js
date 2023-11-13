@@ -3,7 +3,7 @@ import { parse } from "devalue";
 
 /** @param {unknown[]} values */
 const decodeBindValues = (values) =>
-  // In encoding side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
+  // In module side, `ArrayBuffer` and `ArrayBufferView` are encoded as `Array`.
   // But here we do not decode them, because current D1 implementation also treats them as `Array`.
   values;
 

@@ -49,7 +49,7 @@ export class KVNamespace$ {
     return res;
   }
 
-  /** @param {KVNamespaceListOptions} [options] */
+  /** @param {import("@cloudflare/workers-types/experimental").KVNamespaceListOptions} [options] */
   async list(options) {
     const res = await this.#dispatch("KVNamespace.list", [options]);
     const json = await res.json();
@@ -59,8 +59,8 @@ export class KVNamespace$ {
 
   /**
    * @param {string} key
-   * @param {string | ArrayBuffer | ArrayBufferView | ReadableStream} value
-   * @param {KVNamespacePutOptions} [options]
+   * @param {ReadableStream | ArrayBuffer | ArrayBufferView | string} value
+   * @param {import("@cloudflare/workers-types/experimental").KVNamespacePutOptions} [options]
    */
   async put(key, value, options) {
     await this.#dispatch("KVNamespace.put", [encodeKey(key), options], value);
@@ -69,7 +69,7 @@ export class KVNamespace$ {
   /**
    * @template Type
    * @param {string} key
-   * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
+   * @param {import("@cloudflare/workers-types/experimental").KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async get(key, typeOrOptions) {
     const { value } = await this.getWithMetadata(key, typeOrOptions);
@@ -79,7 +79,7 @@ export class KVNamespace$ {
   /**
    * @template Type
    * @param {string} key
-   * @param {KVNamespaceGetOptions<Type>} [typeOrOptions]
+   * @param {import("@cloudflare/workers-types/experimental").KVNamespaceGetOptions<Type>} [typeOrOptions]
    */
   async getWithMetadata(key, typeOrOptions) {
     const res = await this.#dispatch("KVNamespace.getWithMetadata", [

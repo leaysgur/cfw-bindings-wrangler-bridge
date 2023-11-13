@@ -6,8 +6,7 @@
  */
 export const isServiceBinding = (binding) =>
   // This is true in remote but `Object` in local :(
-  // binding.constructor.name === "Fetcher"
-  typeof binding.fetch === "function";
+  binding.constructor.name === "Fetcher" || typeof binding.fetch === "function";
 
 /**
  * @param {Fetcher} SERVICE
