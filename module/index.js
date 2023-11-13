@@ -7,15 +7,19 @@ import { WorkerQueue$ } from "./queue/index.js";
 import { VectorizeIndex$ } from "./vectorize/index.js";
 import { getBindings } from "./_internals/index.js";
 
-const DEFAULT_BRIDGE_WRANGLER_ORIGIN = "http://127.0.0.1:8787";
-
-/** @param {string} [bridgeWranglerOrigin] */
-export const createBridge = (bridgeWranglerOrigin = DEFAULT_BRIDGE_WRANGLER_ORIGIN) => ({
-  getBindings: () => getBindings(bridgeWranglerOrigin),
+/**
+ * @param {string} [bridgeWranglerOrigin]
+ * @param {typeof fetch} [fetchImpl]
+ */
+export const createBridge = (
+  bridgeWranglerOrigin = "http://127.0.0.1:8787",
+  fetchImpl = fetch,
+) => ({
+  getBindings: () => getBindings(bridgeWranglerOrigin, fetchImpl),
 
   /** @param {string} bindingName */
   KVNamespace: (bindingName) =>
-    new KVNamespace$(bridgeWranglerOrigin, bindingName),
+    new KVNamespace$(bridgeWranglerOrigin, bindingName, fetchImpl),
 
   /**
    * @param {string} bindingName
@@ -25,28 +29,30 @@ export const createBridge = (bridgeWranglerOrigin = DEFAULT_BRIDGE_WRANGLER_ORIG
     // Current `wrangler dev` cannot mix `--local` and `--remote` workers.
     // https://github.com/cloudflare/workers-sdk/issues/1182
     //
-    // If bridge(worker) runs in `--local`,
+    // If worker runs in `--local`,
     //   it is allowed to call service(worker) running in local.
-    // If bridge(worker) runs in `--remote`,
+    // If worker runs in `--remote`,
     //   it is allowed to call service(worker) actually deployed.
-    // (There is no ways to call service(worker) running with `dev --remote`.)
+    // (There is no ways to call service(worker) running with `dev --remote`!)
     //
-    // But with our bridge, it is possible to mix them by calling service(worker) directly!
+    // But using this bridge makes it possible by calling service(worker) directly!
     serviceWranglerOrigin
-      ? new DirectFetcher$(serviceWranglerOrigin)
-      : new Fetcher$(bridgeWranglerOrigin, bindingName),
+      ? new DirectFetcher$(serviceWranglerOrigin, fetchImpl)
+      : new Fetcher$(bridgeWranglerOrigin, bindingName, fetchImpl),
 
   /** @param {string} bindingName */
-  R2Bucket: (bindingName) => new R2Bucket$(bridgeWranglerOrigin, bindingName),
+  R2Bucket: (bindingName) =>
+    new R2Bucket$(bridgeWranglerOrigin, bindingName, fetchImpl),
 
   /** @param {string} bindingName */
   D1Database: (bindingName) =>
-    new D1Database$(bridgeWranglerOrigin, bindingName),
+    new D1Database$(bridgeWranglerOrigin, bindingName, fetchImpl),
 
   /** @param {string} bindingName */
-  Queue: (bindingName) => new WorkerQueue$(bridgeWranglerOrigin, bindingName),
+  Queue: (bindingName) =>
+    new WorkerQueue$(bridgeWranglerOrigin, bindingName, fetchImpl),
 
   /** @param {string} bindingName */
   VectorizeIndex: (bindingName) =>
-    new VectorizeIndex$(bridgeWranglerOrigin, bindingName),
+    new VectorizeIndex$(bridgeWranglerOrigin, bindingName, fetchImpl),
 });

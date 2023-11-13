@@ -1,9 +1,6 @@
 // @ts-check
 import { isKVBinding, handleKVDispatch } from "./kv/index.js";
-import {
-  isServiceBinding,
-  handleServiceDispatch,
-} from "./service/index.js";
+import { isServiceBinding, handleServiceDispatch } from "./service/index.js";
 import { isR2Binding, handleR2Dispatch } from "./r2/index.js";
 import { isD1Binding, handleD1Dispatch } from "./d1/index.js";
 import { isQueueBinding, handleQueueDispatch } from "./queue/index.js";
@@ -15,10 +12,14 @@ import { getBindings } from "./_internals/index.js";
 
 /** @type {ExportedHandlerFetchHandler<Record<string, any>>} */
 const handleInternalsRequest = (req, env) => {
-  if (req.url.endsWith("/_internals/getBindings"))
+  const INTERNALS_METHOD = req.headers.get("X-BRIDGE-INTERNALS");
+
+  if (INTERNALS_METHOD === "getBindings")
     return Response.json(getBindings(env));
 
-  return Response.json("Not supported internals.", { status: 404 });
+  return Response.json(`Not supported internals method: ${INTERNALS_METHOD}.`, {
+    status: 404,
+  });
 };
 
 /** @type {ExportedHandlerFetchHandler<Record<string, any>>} */
@@ -90,10 +91,8 @@ export default {
         },
       });
 
-    const url = new URL(req.url);
-
     let res;
-    if (url.pathname.startsWith("/_internals")) {
+    if (req.headers.has("X-BRIDGE-INTERNALS")) {
       res = await handleInternalsRequest(req, env, ctx);
     } else {
       res = await handleBridgeRequest(req, env, ctx);

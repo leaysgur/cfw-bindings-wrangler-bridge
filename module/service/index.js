@@ -7,14 +7,17 @@
 export class Fetcher$ {
   #bridgeWranglerOrigin;
   #bindingName;
+  #fetchImpl;
 
   /**
    * @param {string} origin
    * @param {string} bindingName
+   * @param {typeof fetch} fetchImpl
    */
-  constructor(origin, bindingName) {
+  constructor(origin, bindingName, fetchImpl) {
     this.#bridgeWranglerOrigin = origin;
     this.#bindingName = bindingName;
+    this.#fetchImpl = fetchImpl;
   }
 
   /**
@@ -36,16 +39,21 @@ export class Fetcher$ {
       }),
     );
 
-    return fetch(req);
+    return this.#fetchImpl(req);
   }
 }
 
 export class DirectFetcher$ {
   #serviceWranglerOrigin;
+  #fetchImpl;
 
-  /** @param {string} origin */
-  constructor(origin) {
+  /** 
+   * @param {string} origin
+   * @param {typeof fetch} fetchImpl
+   */
+  constructor(origin, fetchImpl) {
     this.#serviceWranglerOrigin = origin;
+    this.#fetchImpl = fetchImpl;
   }
 
   /**
@@ -65,6 +73,6 @@ export class DirectFetcher$ {
     url.host = serviceWranglerUrl.host;
 
     // Direct `fetch()` to user's service(worker)
-    return fetch(url, originalReq);
+    return this.#fetchImpl(url, originalReq);
   }
 }

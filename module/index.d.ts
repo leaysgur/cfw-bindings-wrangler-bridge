@@ -1,4 +1,7 @@
-export declare function createBridge(bridgeWranglerOrigin?: string): {
+export declare function createBridge(
+  bridgeWranglerOrigin?: string,
+  fetchImpl?: typeof fetch,
+): {
   getBindings<Type>(): Promise<Type>;
 
   KVNamespace<Type>(namespaceId: string): Type;

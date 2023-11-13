@@ -13,14 +13,17 @@ const encodeKey = (key) => encodeURIComponent(key);
 export class KVNamespace$ {
   #bridgeWranglerOrigin;
   #bindingName;
+  #fetchImpl;
 
   /**
    * @param {string} origin
    * @param {string} bindingName
+   * @param {typeof fetch} fetchImpl
    */
-  constructor(origin, bindingName) {
+  constructor(origin, bindingName, fetchImpl) {
     this.#bridgeWranglerOrigin = origin;
     this.#bindingName = bindingName;
+    this.#fetchImpl = fetchImpl;
   }
 
   /**
@@ -29,7 +32,7 @@ export class KVNamespace$ {
    * @param {BodyInit} [body]
    */
   async #dispatch(operation, parameters, body) {
-    const res = await fetch(this.#bridgeWranglerOrigin, {
+    const res = await this.#fetchImpl(this.#bridgeWranglerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "KV",
