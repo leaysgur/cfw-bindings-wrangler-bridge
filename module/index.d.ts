@@ -1,13 +1,39 @@
-export declare function createBridge(
-  bridgeWranglerOrigin?: string,
-  fetchImpl?: typeof fetch,
-): {
-  getBindings<Type>(): Promise<Type>;
+export type BridgeModuleOptions =
+  // `UnstableDevWorker.fetch`
+  | {
+      fetchImpl: typeof fetch;
+    }
+  // `fetch` external process w/ custom origin
+  | {
+      bridgeWorkerOrigin: string;
+    };
+// or `fetch` external process w/ default origin
+// | undefined;
 
-  KVNamespace<Type>(namespaceId: string): Type;
-  Fetcher<Type>(namespaceId: string, serviceWranlgerOrigin?: string): Type;
-  R2Bucket<Type>(namespaceId: string): Type;
-  D1Database<Type>(namespaceId: string): Type;
-  Queue<Type>(napeSpaceId: string): Type;
-  VectorizeIndex<Type>(namespaceId: string): Type;
-};
+export declare function getBindings<Env>(
+  options?: BridgeModuleOptions,
+): Promise<Env>;
+
+export declare class KVNamespace$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}
+
+export declare class R2Bucket$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}
+
+export declare class D1Database$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}
+
+export declare class WorkerQueue$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}
+
+export declare class VectorizeIndex$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}
+
+export declare class Fetcher$<T> {
+  constructor(namespaceId: string, options?: BridgeModuleOptions): T;
+}

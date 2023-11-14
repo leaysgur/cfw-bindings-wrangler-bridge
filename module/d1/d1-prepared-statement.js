@@ -4,7 +4,7 @@
 // https://developers.cloudflare.com/d1/platform/client-api/#query-statement-methods
 // https://github.com/cloudflare/workerd/blob/main/src/cloudflare/internal/d1-api.ts
 
-/** @typedef {import("./types.d.ts").Dispatch} Dispatch */
+/** @typedef {import("./types.ts").Dispatch} Dispatch */
 
 /** @param {unknown[]} values */
 const encodeBindValues = (values) =>

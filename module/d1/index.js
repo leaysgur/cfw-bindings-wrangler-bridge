@@ -6,26 +6,29 @@
 
 import { stringify } from "devalue";
 import { D1PreparedStatement$ } from "./d1-prepared-statement.js";
+import { resolveModuleOptions } from "../utils.js";
+/** @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions */
 
 export class D1Database$ {
-  #bridgeWranglerOrigin;
   #bindingName;
   #fetchImpl;
+  #bridgeWorkerOrigin;
 
   /**
-   * @param {string} origin
    * @param {string} bindingName
-   * @param {typeof fetch} fetchImpl
+   * @param {BridgeModuleOptions} [options]
    */
-  constructor(origin, bindingName, fetchImpl) {
-    this.#bridgeWranglerOrigin = origin;
+  constructor(bindingName, options) {
     this.#bindingName = bindingName;
+
+    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#fetchImpl = fetchImpl;
+    this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
-  /** @type {import("./types.d.ts").Dispatch} */
+  /** @type {import("./types.ts").Dispatch} */
   async #dispatch(operation, parameters) {
-    const res = await this.#fetchImpl(this.#bridgeWranglerOrigin, {
+    const res = await this.#fetchImpl(this.#bridgeWorkerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "D1",

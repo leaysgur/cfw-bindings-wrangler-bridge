@@ -7,8 +7,8 @@
 
 import { hexStringToArrayBuffer } from "./shared.js";
 /**
- * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
- * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
+ * @typedef {import("./types.ts").R2ObjectJSON} R2ObjectJSON
+ * @typedef {import("./types.ts").R2ObjectsJSON} R2ObjectsJSON
  */
 
 // implements R2Checksums

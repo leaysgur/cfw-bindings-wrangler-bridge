@@ -16,32 +16,35 @@ import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { R2MultipartUpload$ } from "./multipart.js";
 import { arrayBufferToHexString, encodeKey } from "./shared.js";
+import { resolveModuleOptions } from "../utils.js";
 /**
- * @typedef {import("./types.d.ts").Dispatch} Dispatch
- * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
- * @typedef {import("./types.d.ts").R2ObjectsJSON} R2ObjectsJSON
- * @typedef {import("./types.d.ts").R2MultipartUploadJSON} R2MultipartUploadJSON
+ * @typedef {import("./types.ts").Dispatch} Dispatch
+ * @typedef {import("./types.ts").R2ObjectJSON} R2ObjectJSON
+ * @typedef {import("./types.ts").R2ObjectsJSON} R2ObjectsJSON
+ * @typedef {import("./types.ts").R2MultipartUploadJSON} R2MultipartUploadJSON
+ * @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions
  */
 
 export class R2Bucket$ {
-  #bridgeWranglerOrigin;
   #bindingName;
   #fetchImpl;
+  #bridgeWorkerOrigin;
 
   /**
-   * @param {string} origin
    * @param {string} bindingName
-   * @param {typeof fetch} fetchImpl
+   * @param {BridgeModuleOptions} [options]
    */
-  constructor(origin, bindingName, fetchImpl) {
-    this.#bridgeWranglerOrigin = origin;
+  constructor(bindingName, options) {
     this.#bindingName = bindingName;
+
+    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#fetchImpl = fetchImpl;
+    this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
   /** @type {Dispatch} */
   async #dispatch(operation, parameters, body) {
-    const res = await this.#fetchImpl(this.#bridgeWranglerOrigin, {
+    const res = await this.#fetchImpl(this.#bridgeWorkerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "R2",

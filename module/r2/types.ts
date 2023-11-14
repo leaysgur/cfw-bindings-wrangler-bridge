@@ -1,4 +1,10 @@
-import type { R2Object, R2StringChecksums, R2HTTPMetadata, R2MultipartUpload } from "@cloudflare/workers-types/experimental";
+import type {
+  R2Object,
+  R2Objects,
+  R2StringChecksums,
+  R2HTTPMetadata,
+  R2MultipartUpload,
+} from "@cloudflare/workers-types/experimental";
 
 export type Dispatch = (
   operation: string,

@@ -6,24 +6,27 @@
 // https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/kv/gateway.ts#L155
 
 import { stringify, parse } from "devalue";
+import { resolveModuleOptions } from "../utils.js";
+/** @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions */
 
 /** @param {string} key */
 const encodeKey = (key) => encodeURIComponent(key);
 
 export class KVNamespace$ {
-  #bridgeWranglerOrigin;
   #bindingName;
   #fetchImpl;
+  #bridgeWorkerOrigin;
 
   /**
-   * @param {string} origin
    * @param {string} bindingName
-   * @param {typeof fetch} fetchImpl
+   * @param {BridgeModuleOptions} [options]
    */
-  constructor(origin, bindingName, fetchImpl) {
-    this.#bridgeWranglerOrigin = origin;
+  constructor(bindingName, options) {
     this.#bindingName = bindingName;
+
+    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#fetchImpl = fetchImpl;
+    this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
   /**
@@ -32,7 +35,7 @@ export class KVNamespace$ {
    * @param {BodyInit} [body]
    */
   async #dispatch(operation, parameters, body) {
-    const res = await this.#fetchImpl(this.#bridgeWranglerOrigin, {
+    const res = await this.#fetchImpl(this.#bridgeWorkerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "KV",

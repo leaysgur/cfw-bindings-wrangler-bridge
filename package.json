@@ -3,12 +3,13 @@
   "version": "0.9.3",
   "type": "module",
   "exports": {
-    "types": "./index.d.ts",
-    "default": "./module.js"
+    "default": "./module/index.js",
+    "types": "./module/index.d.ts"
   },
   "scripts": {
     "format": "npx prettier@latest -w .",
-    "typecheck": "tsc -p ./jsconfig.json",
+    "lint:module": "tsc -p ./module/jsconfig.json",
+    "lint:worker": "tsc -p ./worker/jsconfig.json",
     "test": "echo 'See ./__tests__ directory.'"
   },
   "keywords": [
@@ -17,15 +18,14 @@
     "kv",
     "d1",
     "r2",
-    "wrangler"
+    "wrangler",
+    "bindings"
   ],
   "author": "Yuji Sugiura",
   "license": "MIT",
   "files": [
-    "module.js",
-    "worker.js",
-    "index.d.ts",
-    "src"
+    "worker",
+    "module"
   ],
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20230922.0",

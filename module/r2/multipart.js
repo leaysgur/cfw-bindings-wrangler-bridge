@@ -5,12 +5,12 @@
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/r2-multipart.c%2B%2B
 // https://github.com/cloudflare/miniflare/blob/master/packages/r2/src/multipart.ts
 
-import { encodeKey } from "./shared.js";
 import { HeadResult$ } from "./r2-object.js";
+import { encodeKey } from "./shared.js";
 /**
- * @typedef {import("./types.d.ts").Dispatch} Dispatch
- * @typedef {import("./types.d.ts").R2MultipartUploadJSON} R2MultipartUploadJSON
- * @typedef {import("./types.d.ts").R2ObjectJSON} R2ObjectJSON
+ * @typedef {import("./types.ts").Dispatch} Dispatch
+ * @typedef {import("./types.ts").R2MultipartUploadJSON} R2MultipartUploadJSON
+ * @typedef {import("./types.ts").R2ObjectJSON} R2ObjectJSON
  */
 
 // implements R2MultipartUpload
