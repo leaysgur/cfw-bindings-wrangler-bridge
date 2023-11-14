@@ -16,7 +16,7 @@ import { stringify } from "devalue";
 import { HeadResult$, GetResult$ } from "./r2-object.js";
 import { R2MultipartUpload$ } from "./multipart.js";
 import { arrayBufferToHexString, encodeKey } from "./shared.js";
-import { resolveModuleOptions } from "../utils.js";
+import { resolveModuleOptions } from "../options.js";
 /**
  * @typedef {import("./types.ts").Dispatch} Dispatch
  * @typedef {import("./types.ts").R2ObjectJSON} R2ObjectJSON
@@ -27,7 +27,6 @@ import { resolveModuleOptions } from "../utils.js";
 
 export class R2Bucket$ {
   #bindingName;
-  #fetchImpl;
   #bridgeWorkerOrigin;
 
   /**
@@ -37,14 +36,13 @@ export class R2Bucket$ {
   constructor(bindingName, options) {
     this.#bindingName = bindingName;
 
-    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
-    this.#fetchImpl = fetchImpl;
+    const { bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
   /** @type {Dispatch} */
   async #dispatch(operation, parameters, body) {
-    const res = await this.#fetchImpl(this.#bridgeWorkerOrigin, {
+    const res = await fetch(this.#bridgeWorkerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "R2",

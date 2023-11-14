@@ -5,14 +5,14 @@ import { R2Bucket$ } from "../r2/index.js";
 import { D1Database$ } from "../d1/index.js";
 import { WorkerQueue$ } from "../queue/index.js";
 import { VectorizeIndex$ } from "../vectorize/index.js";
-import { resolveModuleOptions } from "../utils.js";
+import { resolveModuleOptions } from "../options.js";
 /** @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions */
 
 /** @param {BridgeModuleOptions} [options] */
 export const getBindings = async (options) => {
-  const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
+  const { bridgeWorkerOrigin } = resolveModuleOptions(options);
 
-  const res = await fetchImpl(bridgeWorkerOrigin, {
+  const res = await fetch(bridgeWorkerOrigin, {
     headers: {
       "X-BRIDGE-INTERNALS": "getBindings",
       "content-type": "application/json",

@@ -4,12 +4,11 @@
 // https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
 // https://github.com/cloudflare/workerd/blob/main/src/workerd/api/http.c%2B%2B
 
-import { resolveModuleOptions } from "../utils.js";
+import { resolveModuleOptions } from "../options.js";
 /** @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions */
 
 export class Fetcher$ {
   #bindingName;
-  #fetchImpl;
   #bridgeWorkerOrigin;
 
   /**
@@ -19,8 +18,7 @@ export class Fetcher$ {
   constructor(bindingName, options) {
     this.#bindingName = bindingName;
 
-    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
-    this.#fetchImpl = fetchImpl;
+    const { bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
@@ -43,6 +41,6 @@ export class Fetcher$ {
       }),
     );
 
-    return this.#fetchImpl(req);
+    return fetch(req);
   }
 }

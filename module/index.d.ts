@@ -1,14 +1,6 @@
-export type BridgeModuleOptions =
-  // `UnstableDevWorker.fetch`
-  | {
-      fetchImpl: typeof fetch;
-    }
-  // `fetch` external process w/ custom origin
-  | {
-      bridgeWorkerOrigin: string;
-    };
-// or `fetch` external process w/ default origin
-// | undefined;
+export type BridgeModuleOptions = {
+  bridgeWorkerOrigin?: string;
+};
 
 export declare function getBindings<Env>(
   options?: BridgeModuleOptions,

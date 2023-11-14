@@ -6,12 +6,11 @@
 // https://github.com/cloudflare/miniflare/blob/tre/packages/miniflare/src/plugins/queues/gateway.ts#L92
 
 import { stringify } from "devalue";
-import { resolveModuleOptions } from "../utils.js";
+import { resolveModuleOptions } from "../options.js";
 /** @typedef {import("../index.d.ts").BridgeModuleOptions} BridgeModuleOptions */
 
 export class WorkerQueue$ {
   #bindingName;
-  #fetchImpl;
   #bridgeWorkerOrigin;
 
   /**
@@ -21,8 +20,7 @@ export class WorkerQueue$ {
   constructor(bindingName, options) {
     this.#bindingName = bindingName;
 
-    const { fetchImpl, bridgeWorkerOrigin } = resolveModuleOptions(options);
-    this.#fetchImpl = fetchImpl;
+    const { bridgeWorkerOrigin } = resolveModuleOptions(options);
     this.#bridgeWorkerOrigin = bridgeWorkerOrigin;
   }
 
@@ -31,7 +29,7 @@ export class WorkerQueue$ {
    * @param {unknown[]} parameters
    */
   async #dispatch(operation, parameters) {
-    const res = await this.#fetchImpl(this.#bridgeWorkerOrigin, {
+    const res = await fetch(this.#bridgeWorkerOrigin, {
       method: "POST",
       headers: {
         "X-BRIDGE-BINDING-MODULE": "QUEUE",
