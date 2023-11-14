@@ -1,5 +1,15 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.10.0
+
+### Breaking changes
+
+- Entry export `createBridge()` was removed
+  - Use each binding modules like `KVNamespace$`, `D1Database$` directly
+  - `DirectFetcher$` is also removed, `Fetcher$` can be used instead
+- Bridge worker entry has moved
+  - Like this: `wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote`
+
 ## 0.9.3
 
 - Finaly rollback default `wrangler` origin host part from `0.0.0.0` to `127.0.0.1`
