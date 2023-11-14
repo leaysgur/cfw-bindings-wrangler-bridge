@@ -8,6 +8,7 @@
   },
   "scripts": {
     "format": "npx prettier@latest -w .",
+    "lint": "npm run lint:module && npm run lint:worker",
     "lint:module": "tsc -p ./module/jsconfig.json",
     "lint:worker": "tsc -p ./worker/jsconfig.json",
     "test": "echo 'See ./__tests__ directory.'"
