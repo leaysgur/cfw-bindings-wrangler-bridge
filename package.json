@@ -2,10 +2,8 @@
   "name": "cfw-bindings-wrangler-bridge",
   "version": "0.9.3",
   "type": "module",
-  "exports": {
-    "default": "./module/index.js",
-    "types": "./module/index.d.ts"
-  },
+  "main": "./module/index.js",
+  "types": "./module/index.d.ts",
   "scripts": {
     "format": "npx prettier@latest -w .",
     "lint": "npm run lint:module && npm run lint:worker",
