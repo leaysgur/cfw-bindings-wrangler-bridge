@@ -36,8 +36,6 @@ Then, create bridge modules and use them anywhere in your code.
 import { KVNamespace$, D1Database$ } from "cfw-bindings-wrangler-bridge";
 
 const MY_KV = new KVNamespace$("MY_KV");
-// For TypeScript
-// const MY_KV = KVNamespace$<KVNamespace>("MY_KV");
 
 // Or specify default origin
 const OUR_DB = new D1Database$("OUR_DB", {
@@ -80,15 +78,15 @@ const R2 = new R2Bucket$("ASSETS", {
 // ✌️ This is remote R2!
 const list = await R2.list();
 
-// DO NOT FORGET
+// DO NOT FORGET...
 await worker.stop();
 ```
 
 This is Node.js only option since `wrangler` package depends on Node.js but maybe handy for some cases.
 
-It requires async style APIs and dev worker should be managed.
+It requires async style APIs and dev worker should be managed by yourself.
 
-### Advanced guides
+## Advanced usage
 
 Create multiple module instances automatically by `getBindings()` helper.
 
@@ -133,7 +131,7 @@ const devWorker = await unstable_dev(/* ... */);
 
 // Use remote
 const PROD_ASSETS = new R2Bucket$("ASSETS", {
-  fetchImple: prodWorker.fetch.bind(prodWorker),
+  fetchImpl: prodWorker.fetch.bind(prodWorker),
 });
 // Use local
 const DEV_KV = new KVNamespace$("SNAPSHOTS", {
@@ -141,7 +139,7 @@ const DEV_KV = new KVNamespace$("SNAPSHOTS", {
 });
 ```
 
-## Supported bindings
+## Supported bindings and version
 
 | binding                                                                              | module            | support | memo                                           |
 | :----------------------------------------------------------------------------------- | :---------------- | :-----: | :--------------------------------------------- |
@@ -152,11 +150,9 @@ const DEV_KV = new KVNamespace$("SNAPSHOTS", {
 | [Queue](https://developers.cloudflare.com/queues/platform/javascript-apis/)          | `WorkerQueue$`    |   💯    | Producer usage only                            |
 | [Vectorize](https://developers.cloudflare.com/vectorize/platform/client-api/)        | `VectorizeIndex$` |   💯    | `--remote` only [for now](#vectorize-bindings) |
 
-More to come...? PRs are welcome!
+More to come...? PRs are welcome! 😉
 
-### Latest tested `wrangler` version
-
-v3.15.x
+Latest tested `wrangler` version is `v3.15.x`.
 
 ## Known limitations
 
