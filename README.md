@@ -6,19 +6,45 @@ This module makes it possible to interact with **remote** Cloudflare Workers bin
 
 If your purpose is to mock bindings only for local development and no initial data is needed(or can be easily prepared), this library may not be needed.
 
-In this case, we recommend using [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API. It is the official, most reliable implementation and well supported.
+For this case, we recommend using [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API. It is the official, most reliable implementation and well supported.
 
 Some of frameworks may have its own support for `miniflare` in their adapters like [SolidStart](https://github.com/solidjs/solid-start/tree/main/packages/start-cloudflare-pages) does.
 
 If those do not match for your case or you really need the remote data, please go ahead. 🤤
 
-## Install
+## How it works
+
+This bridge has 2 components.
+
+- Module: Mock module to be `import`ed into your application
+  - written as pure ESM
+  - run on any environment
+- Worker: Proxy worker to be called by the bridge module
+  - hosted by `wrangler dev --remote` in advance
+  - run on Cloudflare Workers
+
+Since bridge module itself is platform agnostic, you can use it on any platform|environment.
+
+- Vite based meta frameworks local development
+- CLI tools
+- Static Site Generation, Pre-rendering
+- Cloudflare Workers local deveploment even inside of `warngler dev`
+- Browser app to inspect local persistent states
+- etc...
+
+Many possibilities are unlocked.
+
+## Usage
+
+### Step 0️⃣: Install
 
 ```sh
 npm install -D cfw-bindings-wrangler-bridge
 ```
 
-## Basic usage
+### Step 1️⃣: Prepare `wrangler.toml` and bridge worker
+
+There are 2 options.
 
 ### Option 1: With external `wrangler dev` process
 
@@ -72,7 +98,7 @@ const worker = await unstable_dev(
 );
 
 const R2 = new R2Bucket$("ASSETS", {
-  fetchImpl: worker.fetch.bind(worker),
+  bridgeWorkerOrigin: `http://${worker.address}:${worker.port}`,
 });
 
 // ✌️ This is remote R2!
@@ -186,28 +212,6 @@ This may be a problem after you deployed that worker.
 Since `wrangler(miniflare)` does not support Vectorize yet, you need `--remote` to interact with Vectorize binding.
 
 > https://github.com/cloudflare/workers-sdk/issues/4360
-
-## How it works
-
-This bridge has 2 components.
-
-- Module: Mock module to be `import`ed into your application
-  - written as pure ESM
-  - run on any environment
-- Worker: Proxy worker to be called by the bridge module
-  - hosted by `wrangler dev --remote` in advance
-  - run on Cloudflare Workers
-
-Since bridge module itself is platform agnostic, you can use it on any platform|environment.
-
-- Vite based meta frameworks local development
-- CLI tools
-- Static Site Generation, Pre-rendering
-- Cloudflare Workers local deveploment even with `warngler dev`
-- Browser app to inspect local persistent states
-- etc...
-
-Many possibilities are unlocked.
 
 ## Examples
 

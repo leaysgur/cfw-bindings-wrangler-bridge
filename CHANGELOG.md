@@ -10,7 +10,7 @@
   - Use each binding modules like `KVNamespace$`, `D1Database$` directly
   - `DirectFetcher$` is also removed, `Fetcher$` can be used instead
 - Bridge worker entry has moved
-  - Like this: `wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote`
+  - Use `wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote`
 
 ## 0.9.3
 
