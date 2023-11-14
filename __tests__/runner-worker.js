@@ -1,6 +1,13 @@
 // @ts-check
 import { AssertionError } from "node:assert";
-import { createBridge } from "../module.js";
+import {
+  KVNamespace$,
+  Fetcher$,
+  R2Bucket$,
+  D1Database$,
+  WorkerQueue$,
+  VectorizeIndex$,
+} from "../module/index.js";
 import { createSpecs as createKVSpecs } from "./specs/kv.js";
 import { createSpecs as specsSERVICESpecs } from "./specs/service.js";
 import { createSpecs as createR2Specs } from "./specs/r2.js";
@@ -49,11 +56,13 @@ const runSpecs = async (searchParams, env, writer) => {
    * }>}
    */
   const suites = new Map();
-  const bridge = createBridge();
+  const options = {
+    bridgeWorkerOrigin: "http://127.0.0.1:8787",
+  };
 
   if (targets.includes("kv")) {
     const ACTUAL = /** @type {KVNamespace} */ (
-      /** @type {unknown} */ (bridge.KVNamespace("ACTUAL_KV"))
+      /** @type {unknown} */ (new KVNamespace$("ACTUAL_KV", options))
     );
     const EXPECT = env.EXPECT_KV;
     suites.set("KV", createKVSpecs([ACTUAL, EXPECT]));
@@ -61,7 +70,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("service")) {
     const ACTUAL = /** @type {Fetcher} */ (
-      /** @type {unknown} */ (bridge.Fetcher("ACTUAL_SERVICE"))
+      /** @type {unknown} */ (new Fetcher$("ACTUAL_SERVICE", options))
     );
     const EXPECT = env.EXPECT_SERVICE;
     suites.set("SERVICE", specsSERVICESpecs([ACTUAL, EXPECT]));
@@ -69,7 +78,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("r2")) {
     const ACTUAL = /** @type {R2Bucket} */ (
-      /** @type {unknown} */ (bridge.R2Bucket("ACTUAL_R2"))
+      /** @type {unknown} */ (new R2Bucket$("ACTUAL_R2", options))
     );
     const EXPECT = env.EXPECT_R2;
     suites.set("R2", createR2Specs([ACTUAL, EXPECT]));
@@ -77,7 +86,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("d1")) {
     const ACTUAL = /** @type {D1Database} */ (
-      /** @type {unknown} */ (bridge.D1Database("ACTUAL_D1"))
+      /** @type {unknown} */ (new D1Database$("ACTUAL_D1", options))
     );
     const EXPECT = env.EXPECT_D1;
     suites.set("D1", createD1Specs([ACTUAL, EXPECT]));
@@ -85,7 +94,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("queue")) {
     const ACTUAL = /** @type {Queue<unknown>} */ (
-      /** @type {unknown} */ (bridge.Queue("ACTUAL_QUEUE"))
+      /** @type {unknown} */ (new WorkerQueue$("ACTUAL_QUEUE", options))
     );
     const EXPECT = env.EXPECT_QUEUE;
     suites.set("QUEUE", createQUEUESpecs([ACTUAL, EXPECT]));
@@ -93,7 +102,7 @@ const runSpecs = async (searchParams, env, writer) => {
 
   if (targets.includes("vectorize")) {
     const ACTUAL = /** @type {VectorizeIndex} */ (
-      /** @type {unknown} */ (bridge.VectorizeIndex("ACTUAL_VECTORIZE"))
+      /** @type {unknown} */ (new VectorizeIndex$("ACTUAL_VECTORIZE", options))
     );
     const EXPECT = env.EXPECT_VECTORIZE;
     suites.set("VECTORIZE", createVECTORIZESpecs([ACTUAL, EXPECT]));
