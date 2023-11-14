@@ -81,6 +81,7 @@ const handleBridgeRequest = (req, env) => {
 /** @type {ExportedHandler<Record<string, any>>} */
 export default {
   async fetch(req, env, ctx) {
+    // CORS is needed if bridge module is running on browsers
     if (req.method === "OPTIONS")
       return new Response(null, {
         status: 204,
@@ -91,13 +92,15 @@ export default {
         },
       });
 
-    let res;
+    let originalRes;
     if (req.headers.has("X-BRIDGE-INTERNALS")) {
-      res = await handleInternalsRequest(req, env, ctx);
+      originalRes = await handleInternalsRequest(req, env, ctx);
     } else {
-      res = await handleBridgeRequest(req, env, ctx);
+      originalRes = await handleBridgeRequest(req, env, ctx);
     }
 
+    // This is required to avoid `Can't modify immutable headers` error
+    const res = new Response(originalRes.body, originalRes);
     res.headers.set("access-control-allow-origin", "*");
     return res;
   },
