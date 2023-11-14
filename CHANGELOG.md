@@ -2,6 +2,8 @@
 
 ## 0.10.0
 
+- Refactor code base by splitting module and worker code
+
 ### Breaking changes
 
 - Entry export `createBridge()` was removed
