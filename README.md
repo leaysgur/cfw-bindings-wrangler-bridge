@@ -280,6 +280,25 @@ export const handle = async ({ event, resolve }) => {
 };
 ```
 
+OR
+
+```ts
+// server.hooks.ts
+import { getBindings } from "cfw-bindings-wrangler-bridge";
+import { dev } from "$app/environment";
+import type { Handle } from "@sveltejs/kit";
+
+let env: App.Platform["env"] | null = null;
+export const handle: Handle = async ({ event, resolve }) => {
+  if (dev) {
+    if (env === null) env = await getBindings();
+    else event.platform = { env };
+  }
+
+  return resolve(event);
+};
+```
+
 </details>
 
 ### Astro local development
