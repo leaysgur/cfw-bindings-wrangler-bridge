@@ -2,9 +2,20 @@
 
 This bridge makes it possible to interact with **remote** Cloudflare Workers bindings(like KV, D1, etc...) **from anywhere** you want.
 
-## ✋ Before proceeding
+For example,
 
-If your purpose is to mock bindings only for local development and no initial data is needed(or can be easily prepared), this may not be needed.
+- Vite based meta frameworks local development
+- CLI tools
+- Static Site Generation, Pre-rendering
+- Cloudflare Workers local deveploment even inside of `warngler dev`
+- Browser app to inspect local persistent states
+- etc...
+
+Many possibilities are unlocked now! 🔓
+
+## Before proceeding
+
+If your purpose is to mock bindings only for closed, local development and no initial data is needed(or can be easily prepared), this may not be needed.
 
 For this case, we recommend using [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API. It is the official, most reliable implementation and well supported.
 
@@ -23,18 +34,7 @@ This bridge has 2 components.
   - hosted by `wrangler dev` or `unstable_dev()` in advance
   - run on Cloudflare Workers environment
 
-Since bridge module itself is platform agnostic, you can use it on any platform|environment.
-
-For example,
-
-- Vite based meta frameworks local development
-- CLI tools
-- Static Site Generation, Pre-rendering
-- Cloudflare Workers local deveploment even inside of `warngler dev`
-- Browser app to inspect local persistent states
-- etc...
-
-Many possibilities are unlocked now! 🔓
+Bridge module itself is platform agnostic, you can use it on any platform|environment.
 
 ## Install & Prerequisite
 
@@ -58,9 +58,8 @@ It's up to your usecase.
 ### 🅰️ With external `wrangler dev` process
 
 ```sh
-wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote
-
-# Worker is running on `http://127.0.0.1:8787` by default
+wrangler dev ./path/to/node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote
+# Worker will be running on `http://127.0.0.1:8787` by default
 ```
 
 Of course you can interact with local environment by omitting `--remote`. All the other options(like `--port`, `--persist-to`) are also available.
@@ -68,34 +67,31 @@ Of course you can interact with local environment by omitting `--remote`. All th
 Then, create bridge modules and use them anywhere in your code.
 
 ```js
-import { KVNamespace$, D1Database$ } from "cfw-bindings-wrangler-bridge";
+import { KVNamespace$ } from "cfw-bindings-wrangler-bridge";
 
 // Default is bound to `http://127.0.0.1:8787`
 const MY_KV = new KVNamespace$("MY_KV");
-
 // Or specify origin
-const OUR_DB = new D1Database$("OUR_DB", {
-  bridgeWorkerOrigin: "http://localhsot:8686",
-});
+// const MY_KV = new KVNamespace$("MY_KV", {
+//   bridgeWorkerOrigin: "http://localhsot:8686",
+// });
 
 // ✌️ This is remote KV!
 await MY_KV.put("foo", "bar");
 await MY_KV.get("foo"); // "bar"
-// ✌️ This is remote D1!
-await OUR_DB.prepare("SELECT * FROM todos").all();
 ```
 
-This is isomorphoc approach, your module can be run on everywhere like Node.js, Bun, Browsers.
+This is isomorphoc approach, your module can be run on everywhere(Node.js, Bun, Browsers, etc).
 
-All setups can be done in synchronous, it keeps your code as simple as possible.
+Setups can be done in synchronous, it keeps your code as simple as possible.
 
 ### 🅱️ With `unstable_dev()` API by `wrangler` package
 
-You need to `npm install -D warngler`, and create `UnstableDevWorker` instance.
+You need to `npm install -D warngler` and create `UnstableDevWorker` instance.
 
 ```js
 import { unstable_dev } from "wrangler";
-import { R2Bucket$ } from "cfw-bindings-wrangler-bridge";
+import { KVNamespace$ } from "cfw-bindings-wrangler-bridge";
 
 const worker = await unstable_dev(
   "./path/to/node_modules/cfw-bindings-wrangler-bridge/worker/index.js",
@@ -106,12 +102,13 @@ const worker = await unstable_dev(
   },
 );
 
-const R2 = new R2Bucket$("ASSETS", {
+const MY_KV = new KVNamespace$("MY_KV", {
   bridgeWorkerOrigin: `http://${worker.address}:${worker.port}`,
 });
 
-// ✌️ This is remote R2!
-const list = await R2.list();
+// ✌️ This is remote KV!
+await MY_KV.put("foo", "bar");
+await MY_KV.get("foo"); // "bar"
 
 // DO NOT FORGET...
 await worker.stop();
@@ -149,29 +146,27 @@ import { Fetcher$ } from "cfw-bindings-wrangler-bridge";
 const AUTH_SERVICE = new Fetcher$("AUTH", {
   bridgeWorkerOrigin: "http://127.0.0.1:3000",
 });
-
 const CART_SERVICE = new Fetcher$("CART", {
   bridgeWorkerOrigin: "http://127.0.0.1:4000",
 });
 ```
 
-This can be done regardless of the type of bindings.
+---
+
+Any type of bindings can be mixed with local and remote.
 
 ```js
 import { unstable_dev } from "wrangler";
 import { R2Bucket$, KVNamespace$ } from "cfw-bindings-wrangler-bridge";
 
 const prodWorker = await unstable_dev(/* ... */);
-const devWorker = await unstable_dev(/* ... */);
 
 // Use remote
 const PROD_ASSETS = new R2Bucket$("ASSETS", {
   bridgeWorkerOrigin: `http://${prodWorker.address}:${prodWorker.port}`,
 });
 // Use local
-const DEV_KV = new KVNamespace$("SNAPSHOTS", {
-  bridgeWorkerOrigin: `http://${devWorker.address}:${devWorker.port}`,
-});
+const DEV_KV = new KVNamespace$("SNAPSHOTS");
 ```
 
 ## Supported bindings and version
