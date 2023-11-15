@@ -2,13 +2,13 @@
   "name": "cfw-bindings-wrangler-bridge",
   "version": "0.9.3",
   "type": "module",
-  "exports": {
-    "types": "./index.d.ts",
-    "default": "./module.js"
-  },
+  "main": "./module/index.js",
+  "types": "./module/index.d.ts",
   "scripts": {
     "format": "npx prettier@latest -w .",
-    "typecheck": "tsc -p ./jsconfig.json",
+    "lint": "npm run lint:module && npm run lint:worker",
+    "lint:module": "tsc -p ./module/jsconfig.json",
+    "lint:worker": "tsc -p ./worker/jsconfig.json",
     "test": "echo 'See ./__tests__ directory.'"
   },
   "keywords": [
@@ -17,19 +17,18 @@
     "kv",
     "d1",
     "r2",
-    "wrangler"
+    "wrangler",
+    "bindings"
   ],
   "author": "Yuji Sugiura",
   "license": "MIT",
   "files": [
-    "module.js",
-    "worker.js",
-    "index.d.ts",
-    "src"
+    "worker",
+    "module"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20230922.0",
-    "@types/node": "^20.8.0",
+    "@cloudflare/workers-types": "^4.20231025.0",
+    "@types/node": "^20.9.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {

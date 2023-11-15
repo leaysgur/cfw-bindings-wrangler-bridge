@@ -9,7 +9,7 @@ Follow steps below.
 # --persist-to .wrangler/state
 # --port 8787
 # Uses the same `wrangler.toml` with `test-runner`
-wrangler dev ../worker.js
+wrangler dev ../worker/index.js
 
 # Set up test-runner worker w/ another cache storage
 # If the same storage used, it ends up with SQL dead lock error...
