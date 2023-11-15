@@ -1,5 +1,11 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.10.1
+
+- Fix TS defs to remove useless generics
+  - It seems TS does not support `class X<T> { constructor(): T }`...
+  - You need to use `new D1Database$() as D1Database` for the time being
+
 ## 0.10.0
 
 - Refactor code base by splitting module and worker code
