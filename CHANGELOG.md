@@ -8,7 +8,7 @@
 
 - Entry export `createBridge()` was removed
   - Use each binding modules like `KVNamespace$`, `D1Database$` directly
-  - `DirectFetcher$` is also removed, `Fetcher$` can be used instead
+- `DirectFetcher$` is also removed, `Fetcher$` can be used instead
 - Bridge worker entry has moved
   - Use `wrangler dev ./node_modules/cfw-bindings-wrangler-bridge/worker/index.js --remote`
 
