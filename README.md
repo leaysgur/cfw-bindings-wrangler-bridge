@@ -182,8 +182,6 @@ const DEV_KV = new KVNamespace$("SNAPSHOTS");
 
 More to come...? PRs are welcome! 😉
 
-Latest tested `wrangler` version is `v3.15.x`.
-
 ## Known limitations
 
 ### Compatibility issues
