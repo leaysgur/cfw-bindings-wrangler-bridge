@@ -13,6 +13,8 @@ For example,
 
 Many possibilities are unlocked now! 🔓
 
+To understand the motivation in detail, see also my talk [slides](https://leaysgur.github.io/slides/cloudflare_workers_tech_talks-2).
+
 ## Before proceeding
 
 If your purpose is to mock bindings only for closed, local development and no initial data is needed(or can be easily prepared), this may not be needed.
@@ -20,6 +22,8 @@ If your purpose is to mock bindings only for closed, local development and no in
 For this case, we recommend using [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API. It is the official, most reliable implementation and well supported.
 
 Some of frameworks may have its own support for `miniflare` in their adapters like [SolidStart](https://github.com/solidjs/solid-start/tree/main/packages/start-cloudflare-pages) does.
+
+`wrangler` module itself may include handy [`getBindingsProxy()`](https://github.com/cloudflare/workers-sdk/pull/4523) API in near future.
 
 If those do not match for your case or you really need the remote data, please go ahead. 🤤
 
