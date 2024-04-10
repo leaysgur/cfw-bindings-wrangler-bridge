@@ -4,28 +4,25 @@ This bridge makes it possible to interact with **remote** Cloudflare Workers bin
 
 For example,
 
-- Vite based meta frameworks local development
-- CLI tools
-- Static Site Generation, Pre-rendering
-- Cloudflare Workers local deveploment even inside of `warngler dev`
-- Browser app to inspect local persistent states
+- Use remote data with Vite based meta frameworks local development
+- CLI tools to sync remote data to local, copy remote data to remote
+- Static Site Generation, Pre-rendering with remote data
 - etc...
 
 Many possibilities are unlocked now! 🔓
 
 To understand the motivation in detail, see also my talk [slides](https://leaysgur.github.io/slides/cloudflare_workers_tech_talks-2).
 
-## Before proceeding
-
-If your purpose is to mock bindings only for closed, local development and no initial data is needed(or can be easily prepared), this may not be needed.
-
-For this case, we recommend using [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API. It is the official, most reliable implementation and well supported.
-
-Some of frameworks may have its own support for `miniflare` in their adapters like [SolidStart](https://github.com/solidjs/solid-start/tree/main/packages/start-cloudflare-pages) does.
-
-`wrangler` module itself may include handy [`getBindingsProxy()`](https://github.com/cloudflare/workers-sdk/pull/4523) API in near future.
-
-If those do not match for your case or you really need the remote data, please go ahead. 🤤
+> [!IMPORTANT]  
+> If your purpose is to mock bindings only for closed, local development and no initial data is needed(or can be easily prepared), you may not need this bridge.
+>
+> For these cases, we recommend using mock APIs like:
+>
+> - [`miniflare@3`](https://github.com/cloudflare/workers-sdk/tree/main/packages/miniflare#class-miniflare) API
+>   - Some of frameworks may have its own support for `miniflare` in their adapters like [SolidStart](https://github.com/solidjs/solid-start/tree/main/packages/start-cloudflare-pages)
+> - [`getPlatformProxy()`](https://developers.cloudflare.com/workers/wrangler/api/#getplatformproxy) from `wrangler` module
+>
+> If those do not match for your case or you really need the remote data, please go ahead. 🤤
 
 ## How it works
 
@@ -172,6 +169,9 @@ const PROD_ASSETS = new R2Bucket$("ASSETS", {
 // Use local
 const DEV_KV = new KVNamespace$("SNAPSHOTS");
 ```
+
+> [!NOTE]  
+> AFAIK, this is the only way to achieve this situation for now.
 
 ## Supported bindings and version
 
