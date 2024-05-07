@@ -18,7 +18,7 @@ export type R2ObjectJSON = Omit<
 > & {
   uploaded: string;
   checksums: R2StringChecksums;
-  httpMetadata: Omit<R2HTTPMetadata, "cacheExpiry"> & {
+  httpMetadata?: Omit<R2HTTPMetadata, "cacheExpiry"> & {
     // Original is typeof `Date`
     cacheExpiry?: string;
   };
