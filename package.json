@@ -27,11 +27,11 @@
     "module"
   ],
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20231025.0",
-    "@types/node": "^20.9.0",
-    "typescript": "^5.2.2"
+    "@cloudflare/workers-types": "^4.20240502.0",
+    "@types/node": "^20.12.10",
+    "typescript": "^5.4.5"
   },
   "dependencies": {
-    "devalue": "^4.3.2"
+    "devalue": "^5.0.0"
   }
 }
