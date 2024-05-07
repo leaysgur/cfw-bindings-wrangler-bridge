@@ -61,6 +61,7 @@ export class HeadResult$ {
   httpMetadata;
   customMetadata;
   range;
+  storageClass;
 
   /** @param {R2ObjectJSON} metadata */
   constructor(metadata) {
@@ -82,6 +83,7 @@ export class HeadResult$ {
       delete this.httpMetadata.cacheExpiry;
     this.customMetadata = metadata.customMetadata;
     this.range = metadata.range;
+    this.storageClass = metadata.storageClass;
 
     // JSG_LAZY_READONLY_INSTANCE_PROPERTY
     Object.freeze(this);
