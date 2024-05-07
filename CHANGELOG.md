@@ -1,5 +1,10 @@
 # cfw-bindings-wrangler-bridge
 
+## 0.11.0
+
+- Support R2 `storageClass` string
+- Fix R2 `httpMetadata` type
+
 ## 0.10.1
 
 - Fix TS defs to remove useless generics
