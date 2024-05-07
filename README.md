@@ -173,7 +173,7 @@ const DEV_KV = new KVNamespace$("SNAPSHOTS");
 > [!NOTE]  
 > AFAIK, this is the only way to achieve this situation for now.
 
-## Supported bindings and version
+## Supported bindings
 
 | binding                                                                              | module            | support | memo                                           |
 | :----------------------------------------------------------------------------------- | :---------------- | :-----: | :--------------------------------------------- |
